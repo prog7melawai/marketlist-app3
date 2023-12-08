@@ -1,0 +1,253 @@
+<template>
+  <div class="sidebar-wrapper" :style="{ width: this.$store.getters.GET_SIDEBAR_WIDTH.sidebarwidth }">
+    <div class="sidebar-logo" id="sidebar-logo">
+      <img
+        id="logo"
+        class="logo"
+        src="/images/logo/movenpick_white.png"
+        alt="logo"/>
+
+      <i class="ri-menu-line sidebar-expand"
+        @click="showSidebar"
+        id="menu-button">
+      </i>
+    </div>
+
+    <div class="sidebar-menu">
+      <div class="menu-link" style="margin-top: 80px">
+        <router-link
+          :to="{ name: 'home' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'home',
+            'link-unactive': this.$route.name !== 'home',
+          }">
+          <i class="ri-home-smile-fill"></i>
+          <h3 v-if="!isHide">Dashboard</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'import' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'import',
+            'link-unactive': this.$route.name !== 'import',
+          }">
+          <i class="ri-file-excel-2-fill"></i>
+          <h3 v-if="!isHide">Import Data</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'transfer' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'transfer',
+            'link-unactive': this.$route.name !== 'transfer',
+          }">
+          <i class="ri-folder-transfer-fill"></i>
+          <h3 v-if="!isHide">Transfer Item</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'transfer' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'transfer',
+            'link-unactive': this.$route.name !== 'transfer',
+          }">
+          <i class="ri-home-8-fill"></i>
+          <h3 v-if="!isHide">Manage Warehouse</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'satuan-jenis' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'satuan-jenis',
+            'link-unactive': this.$route.name !== 'satuan-jenis',
+          }">
+          <i class="ri-box-3-fill"></i>
+          <h3 v-if="!isHide">Units & Types</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'food' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'food',
+            'link-unactive': this.$route.name !== 'food',
+          }">
+          <i class="ri-cake-3-fill"></i>
+          <h3 v-if="!isHide">Menu Makanan</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'marketlist' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'marketlist',
+            'link-unactive': this.$route.name !== 'marketlist',
+          }">
+          <i class="ri-leaf-fill"></i>
+          <h3 v-if="!isHide">Marketlist</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'stockfinance' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'stockfinance',
+            'link-unactive': this.$route.name !== 'stockfinance',
+          }">
+          <i class="ri-scales-2-fill"></i>
+          <h3 v-if="!isHide">Stock Finance</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'event' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'event',
+            'link-unactive': this.$route.name !== 'event',
+          }">
+          <i class="ri-calendar-event-fill"></i>
+          <h3 v-if="!isHide">Event</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'load' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'load',
+            'link-unactive': this.$route.name !== 'load',
+          }">
+          <i class="ri-upload-cloud-2-fill"></i>
+          <h3 v-if="!isHide">Load Excel</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'pr' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'pr',
+            'link-unactive': this.$route.name !== 'pr',
+          }">
+          <i class="ri-article-fill"></i>
+          <h3 v-if="!isHide">Purchase Review</h3>
+        </router-link>
+      </div>
+      <div class="menu-link">
+        <router-link
+          :to="{ name: 'po' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'po',
+            'link-unactive': this.$route.name !== 'po',
+          }">
+          <i class="ri-luggage-cart-fill"></i>
+          <h3 v-if="!isHide">Purchase Order</h3>
+        </router-link>
+      </div>
+      <div class="menu-link" style="margin-bottom: 50px;">
+        <router-link
+          :to="{ name: 'transfer' }"
+          class="nav-link"
+          :class="{
+            'link-active': this.$route.name === 'transfer',
+            'link-unactive': this.$route.name !== 'transfer',
+          }">
+          <i class="ri-user-settings-fill"></i>
+          <h3 v-if="!isHide">Manage User</h3>
+        </router-link>
+      </div>
+    </div>
+
+    <div class="area" :style="{width: this.$store.getters.GET_SIDEBAR_WIDTH.bgsidebar}">
+      <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "SidebarVue",
+  data() {
+    return {
+      sidebarWidth: null,
+      bgsideWidth: null,
+      isHide: false,
+    };
+  },
+  mounted(){
+    if (this.$store.getters.GET_SIDEBAR_WIDTH.sidebarwidth === "18%") {
+        this.isHide = false;
+        this.$emit("swidth", this.$store.getters.GET_SIDEBAR_WIDTH.sidebarwidth);
+        document.getElementById("logo").style.marginLeft = "0";
+        document.getElementById("menu-button").style.marginRight = "0px";
+        let navlink = document.getElementsByClassName("nav-link");
+        for (let nav of navlink) {
+          nav.style.justifyContent = "start";
+          nav.style.padding = "0 10px";
+        }
+    } else {
+        this.isHide = true;
+        this.$emit("swidth", this.$store.getters.GET_SIDEBAR_WIDTH.sidebarwidth);
+        document.getElementById("logo").style.marginLeft = "-200px";
+        document.getElementById("menu-button").style.marginRight = "5px";
+        let navlink = document.getElementsByClassName("nav-link");
+        for (let nav of navlink) {
+          nav.style.justifyContent = "center";
+          nav.style.padding = "0";
+        }
+    }
+  },
+  methods: {
+    showSidebar() {
+      if (this.isHide) {
+        this.isHide = false;
+        this.$store.commit('SET_SIDEBAR_WIDTH', {sidebar: "18%", bg: "17.2%"})
+        this.$emit("swidth", this.$store.getters.GET_SIDEBAR_WIDTH.sidebarwidth);
+        document.getElementById("logo").style.marginLeft = "0";
+        document.getElementById("menu-button").style.marginRight = "0px";
+        let navlink = document.getElementsByClassName("nav-link");
+        for (let nav of navlink) {
+          nav.style.justifyContent = "start";
+          nav.style.padding = "0 10px";
+        }
+      } else {
+        this.isHide = true;
+        this.$store.commit('SET_SIDEBAR_WIDTH', {sidebar: "4%", bg: "3.3%"})
+        this.$emit("swidth", this.$store.getters.GET_SIDEBAR_WIDTH.sidebarwidth);
+        document.getElementById("logo").style.marginLeft = "-200px";
+        document.getElementById("menu-button").style.marginRight = "5px";
+        let navlink = document.getElementsByClassName("nav-link");
+        for (let nav of navlink) {
+          nav.style.justifyContent = "center";
+          nav.style.padding = "0";
+        }
+      }
+    },
+  },
+};
+</script>
