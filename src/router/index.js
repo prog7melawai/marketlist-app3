@@ -14,6 +14,7 @@ import PRDetailView from '../views/PRDetailView.vue'
 import POView from '../views/POView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import SatuanJenisView from '../views/SatuanJenisView.vue'
+import ManageGudangView from '../views/ManageGudangView.vue'
 
 const routes = [
   {path: '/', name: 'home', component: HomeView},
@@ -31,6 +32,7 @@ const routes = [
   {path: '/po', name: 'po', component: POView},
   {path: '/profile', name: 'profile', component: ProfileView},
   {path: '/satuan-jenis', name: 'satuan-jenis', component: SatuanJenisView},
+  {path: '/manage-warehouse', name: 'manage-warehouse', component: ManageGudangView},
 ]
 
 const router = createRouter({

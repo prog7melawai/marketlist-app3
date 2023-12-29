@@ -52,11 +52,11 @@
       </div>
       <div class="menu-link">
         <router-link
-          :to="{ name: 'transfer' }"
+          :to="{ name: 'manage-warehouse' }"
           class="nav-link"
           :class="{
-            'link-active': this.$route.name === 'transfer',
-            'link-unactive': this.$route.name !== 'transfer',
+            'link-active': this.$route.name === 'manage-warehouse',
+            'link-unactive': this.$route.name !== 'manage-warehouse',
           }">
           <i class="ri-home-8-fill"></i>
           <h3 v-if="!isHide">Manage Warehouse</h3>

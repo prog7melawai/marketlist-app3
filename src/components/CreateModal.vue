@@ -49,41 +49,65 @@
           <div
             style="width: 50%; display: flex; flex-direction: column; gap: 15px"
           >
-            <input type="text" class="form-input" placeholder="Food Name" />
-            <select name="" id="" class="select-input">
+            <input 
+              type="text" 
+              class="form-input" 
+              placeholder="Food Name" 
+              v-model="food.foodname"
+            />
+
+            <select name="" id="" class="select-input" v-model="food.category">
               <option>Select Category</option>
               <option value="Western">Western</option>
               <option value="Asia">Asia</option>
-              <option value="Soup & Salad"></option>
+              <option value="Soup & Salad">Soup & Salad</option>
             </select>
+
             <input
               type="number"
               class="form-input"
               placeholder="Quantity Stock"
+              v-model="food.foodstock"
             />
-            <input type="number" class="form-input" placeholder="Food Price" />
+
+            <input 
+              type="number" 
+              class="form-input" 
+              placeholder="Food Price"
+              v-model="food.price"
+            />
+
             <input
               type="number"
               class="form-input"
               placeholder="Discount Price"
+              v-model="food.ndisc"
             />
+
             <input
               type="number"
               class="form-input"
               placeholder="Service Charge"
+              v-model="food.scharge"
             />
+
           </div>
         </div>
 
         <br />
-        <label for="description" style="margin-top: 10px; font-size: 11pt">
+        <label 
+          for="description" 
+          style="margin-top: 10px;
+          font-size: 11pt">
           Description :
         </label>
+
         <textarea
           name="description"
           id=""
           class="text-input"
           style="margin-top: 5px"
+          v-model="food.fooddesc"
         ></textarea>
 
         <br /><br />
@@ -110,16 +134,17 @@
               </tr>
             </thead>
             <tbody style="text-align: center">
-              <tr v-for="items in product" :key="items.id">
-                <td>{{ items.id }}</td>
-                <td>{{ items.kdbrg }}</td>
+              <tr v-for="(items, idx) in product" :key="items.kd_barang">
+                <td>{{ idx + 1 }}</td>
+                <td>{{ items.kd_barang }}</td>
                 <td>{{ items.name }}</td>
                 <td>{{ items.tipe }}</td>
                 <td>
                   <input
                     type="checkbox"
                     class="select-box"
-                    :value="items.id"
+                    :checked="false"
+                    :value="items.kd_barang"
                     @change="addToCart"
                   />
                 </td>
@@ -135,23 +160,37 @@
           >
             <thead class="bg-theme">
               <tr>
-                <th style="width: 10%">No</th>
+                <th style="width: 5%">No</th>
                 <th style="width: 45%">Food Name</th>
                 <th style="width: 15%">Type</th>
-                <th style="width: 20%">Quantity</th>
+                <th style="width: 15%">Qty</th>
                 <th style="width: 20%">Unit</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="items in receipe" :key="items.id">
-                <td>{{ items.no }}</td>
+              <tr v-for="(items, idx) in receipe" :key="items.id">
+                <td>{{ idx + 1 }}</td>
                 <td>{{ items.name }}</td>
                 <td>{{ items.tipe }}</td>
                 <td>
-                  <input type="number" class="form-input" />
+                  <input 
+                    type="number"
+                    class="form-input"
+                    :id="'qty-' + items.kd_barang"
+                  />
                 </td>
                 <td>
-                  {{ items.satuan }}
+                  <select 
+                    style="width: 60%;height: 40px;border-radius: 5px;"
+                    :id="`satuan-${items.kd_barang}`"
+                    >
+                    <option 
+                      :value="st.kd_satuan" 
+                      v-for="st in satuan" 
+                      :key="st.kd_satuan">
+                      {{ st.kd_satuan }}
+                    </option>
+                  </select>
                 </td>
               </tr>
             </tbody>
@@ -160,15 +199,21 @@
 
         <button
           class="btn-block btn-primary"
-          style="margin-top: 10px; margin-bottom: 20px">
+          style="margin-top: 10px"
+          @click="submitFood">
           <span>Save</span>
         </button>
+
+        <div style="width:100%;
+        height: 30px;">
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: "CreateModalVue",
   data() {
@@ -180,13 +225,50 @@ export default {
       images: [],
       product: [],
       receipe: [],
+      satuan: [],
+      food: {
+        category: null,
+        foodname: null,
+        foodimage: null,
+        imagefile: null,
+        foodstock: 0,
+        fooddesc: null,
+        userid: null,
+        price: null,
+        ndisc: null,
+        scharge: null,
+        ntax: null,
+      }
     };
   },
   mounted() {
-    this.product = [...this.$store.state.products];
+    this.getSatuan()
+    this.getFood()
   },
   methods: {
+    async getSatuan(){
+      try {
+        const { data } = await axios.get('/mastersatuan', {
+          headers: { Authorization: 'asdasdasdasdas' }
+        })
+
+        this.satuan = data
+      } catch(error){
+        console.log(error)
+      }
+    },
+    async getFood() {
+      const { data } = await axios.get('/masterbarang', {
+          headers: {
+            Filter: 'all',
+            Authorization: 'asdasdasdasdasda'
+          }
+      })
+
+      this.product = data
+    },
     closeModal() {
+      this.receipe = []
       document.getElementById("modal-dialog").classList.remove("fade-in-down");
       document.getElementById("modal-dialog").classList.add("fade-out-down");
       document.getElementById("overlay").classList.remove("fade-in");
@@ -267,32 +349,64 @@ export default {
       const id = e.srcElement._value;
       if (e.srcElement.checked) {
         const find = this.product.filter((obj) => {
-          return obj.id === id;
+          return obj.kd_barang === id;
         });
 
         if (find) {
           this.receipe.push(find[0]);
         }
-
-        let j = 1;
-        this.receipe.forEach((data) => {
-          data.no = j;
-          j++;
-        });
       } else if (!e.srcElement.checked) {
         const find = this.product.filter((obj) => {
-          return obj.id === id;
+          return obj.kd_barang === id;
         });
 
-        this.cart.splice(this.cart.indexOf(find[0]), 1);
-
-        let j = 1;
-        this.receipe.forEach((data) => {
-          data.no = j;
-          j++;
-        });
+        this.receipe.splice(this.receipe.indexOf(find[0]), 1);
       }
     },
+    async submitFood(){
+      try {
+        const item = {
+          itemid: '',
+          itemqty: '',
+          itemunit: ''
+        }
+
+        const items = []
+        this.receipe.forEach((data) => {
+          item.itemid = data.kd_barang
+          item.itemqty = document.getElementById(`qty-${data.kd_barang}`).value
+          item.itemunit = document.getElementById(`satuan-${data.kd_barang}`).value
+          items.push(item)
+        })
+
+        const formData = new FormData()
+        formData.append('category', this.food.category)
+        formData.append('foodname', this.food.foodname)
+        formData.append('foodimage', this.selectedfile)
+        formData.append('imagefile', this.filelist)
+        formData.append('fooddesc', this.food.fooddesc)
+        formData.append('userid', 'admin')
+        formData.append('price', this.food.price)
+        formData.append('ndisc', this.food.ndisc)
+        formData.append('scharge', this.food.scharge)
+        formData.append('ntax', this.food.ntax)
+        for (var i = 0; i < items.length; i++) {
+          formData.append('items[]', items[i]);
+        }
+
+        // for (var pair of formData.entries()) {
+        //     console.log(pair[0]+ ', ' + pair[1]); 
+        // }
+
+        const { data } = await axios.post('/mastermenu', formData, {
+          headers: { Authorization: 'asdasdasdasd' }
+        })
+
+        console.log(data)
+      } catch(error){
+        console.log(error)
+      }
+    }
   },
 };
 </script>
@@ -313,11 +427,11 @@ export default {
 .modal-dialog {
   position: relative;
   width: 90%;
-  max-width: 650px;
+  max-width: 800px;
   height: 90%;
   max-height: 850px;
   background: var(--white);
-  border-radius: 10px;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   justify-content: start;
