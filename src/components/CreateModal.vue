@@ -379,11 +379,12 @@ export default {
           items.push(item)
         })
 
+        const filename = String(this.food.foodname).replace(" ", "_") + '.' + String(this.selectedfile).split('.').pop();
         const formData = new FormData()
         formData.append('category', this.food.category)
         formData.append('foodname', this.food.foodname)
-        formData.append('foodimage', this.selectedfile)
-        formData.append('imagefile', this.filelist)
+        formData.append('foodimage', filename)
+        formData.append('imagefile', this.filelist, filename)
         formData.append('fooddesc', this.food.fooddesc)
         formData.append('userid', 'admin')
         formData.append('price', this.food.price)
@@ -473,7 +474,7 @@ export default {
 }
 
 .form-input {
-  width: 90%;
+  width: 94%;
   height: 40px;
   border-radius: 5px;
   border: 1.5px solid var(--canvas);

@@ -317,7 +317,6 @@ export default {
             }
         })
 
-        console.log(data)
         this.food = data
         this.pagelength = this.food.length
         for (let i = 0; i < this.food.length; i += parseInt(this.perpage)) {

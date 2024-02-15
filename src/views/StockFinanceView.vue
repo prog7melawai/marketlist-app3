@@ -335,7 +335,7 @@ export default {
       }
     },
     getFooImage(filename) {
-      return "https://reservasi.tamani-pos.online/files/images/" + filename;
+      return "/images/foods/" + filename;
     },
     setStatus(stock, min) {
       if (stock < min) return "Running Out";

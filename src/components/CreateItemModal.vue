@@ -302,7 +302,12 @@ export default {
     async submitItem(){
       try {
         this.loading = true
-        let image = this.selectedfile ?? 'default.png';
+
+        let filename = 'default.png'
+        if(this.selectedfile){
+          filename = String(this.food.foodname).replace(" ", "_") + '.' + String(this.selectedfile).split('.').pop();
+        }
+        
         const formData = new FormData()        
         formData.append('name', this.item.name)
         formData.append('tipe', this.item.tipe)
@@ -313,9 +318,9 @@ export default {
         formData.append('kd_jenis', this.jenis)
         formData.append('qtymin', this.item.qtymin)
         formData.append('qtyday', this.item.qtyday)
-        formData.append('image', image)
+        formData.append('image', filename)
         formData.append('stock', this.item.stock)
-        if(this.filelist.length > 0) formData.append('file', this.filelist[0])
+        if(this.filelist.length > 0) formData.append('file', this.filelist[0], filename)
 
         const { data } = await axios.post('/master-barang', formData, {
             headers: { Authorization: 'asdasdasdasdasda' }
