@@ -21,13 +21,19 @@
                 </select>
 
                 <select class="select-box" style="width: 30%">
-                  <option value="">Empty</option>
                   <option value="">Sample Data</option>
                 </select>
 
-                <button class="btn-primary">Download</button>
+                <button 
+                  class="btn-primary"
+                  @click="downloadTemplate">
+                    <spinner v-if="isDownload"></spinner>
+                    <span v-if="!isDownload">Download</span>
+                </button>
               </div>
             </div>
+            
+            <loader v-if="loading"></loader>
 
             <div
               class="load-excel bg-canvas"
@@ -35,23 +41,17 @@
               @dragleave="dragleave"
               @drop="drop"
               id="drop-box"
+              v-if="!loading"
             >
               <h3>Load Excel Template</h3>
-
-              <select class="select-excel-type" v-model="exceltype">
-                <option value="Master Barang">Master Barang</option>
-                <option value="Master Jenis">Master Jenis</option>
-                <option value="Master Satuan">Master Satuan</option>
-                <option value="Supplier">Supplier</option>
-                <option value="BOM">Bill Of Material</option>
-              </select>
 
               <img
                 src="/images/icons/cloud.svg"
                 alt="cloud"
                 class="cloud-icon"
               />
-              <span class="drop-title">Drag & Drop File Here</span>
+              <span class="drop-title" v-if="!selectedfile">Drag & Drop File Here</span>
+              <span class="filename" v-if="selectedfile">{{ selectedfile }}</span>
               <button
                 class="btn-primary"
                 style="position: relative"
@@ -75,14 +75,39 @@
               >
                 Remove
               </button>
+            </div>
 
-              <span class="filename">{{ selectedfile }}</span>
+            <div class="table-prev-container" v-if="content.length> 0 && !loading">
+                <table class="table-preview">
+                    <thead>
+                        <th width="5%" style="text-align: center;">No</th>
+                        <th width="10%" style="text-align: center;">Kode Barang</th>
+                        <th width="25%" style="text-align: left;">Nama Barang</th>
+                        <th width="25%" style="text-align: left;">Nama Barang 2</th>
+                        <th width="20%" style="text-align: left;">Jenis</th>
+                        <th width="5%" style="text-align: center;">Stn Stok</th>
+                        <th width="5%" style="text-align: center;">Stn Kirim</th>
+                        <th width="5%" style="text-align: center;">Qty</th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in content" :key="item.kode_barang">
+                          <td style="text-align: center;">{{ item.no }}</td>
+                          <td style="text-align: center;">{{ item.kode_barang }}</td>
+                          <td style="text-align: left;">{{ item.nama_barang }}</td>
+                          <td style="text-align: left;">{{ item.nama_barang2 }}</td>
+                          <td style="text-align: left;">{{ item.nama_jenis }}</td>
+                          <td style="text-align: center;">{{ item.satuan_stock }}</td>
+                          <td style="text-align: center;">{{ item.satuan_kirim }}</td>
+                          <td style="text-align: center;">{{ item.qty }}</td>
+                        </tr> 
+                    </tbody>
+                </table>
             </div>
 
             <button
               class="btn-block-theme"
               style="margin-top: 10px"
-              v-if="filelist.length > 0"
+              v-if="selectedfile"
               @click="submitFile"
             >
               Submit
@@ -101,16 +126,34 @@
   >
   </alert-confirm>
 
-  <notification v-if="showNotif" :success="success" :message="message">
+  <notification 
+      v-if="showNotif" 
+      :success="success" 
+      :message="message">
   </notification>
+
+  <alert-confirm 
+      v-if="showAlert"
+      :title="title" 
+      :message="deleteMessage" 
+      :methods="methods" 
+      :url="url" 
+      :header="sheaders"
+      :data="item"
+      @onClosed="onClosed"
+      @onResolve="submitted">
+  </alert-confirm>
 </template>
 
 <script>
+import Loader from '@/components/Loader.vue';
+import Spinner from '@/components/Spinner.vue';
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
 import Notification from "@/components/Notification.vue";
 import ExcelJS from "exceljs";
+import axios from 'axios';
 
 export default {
   name: "LoadView",
@@ -119,6 +162,8 @@ export default {
     NavbarVue,
     AlertConfirm,
     Notification,
+    Loader,
+    Spinner,
   },
   data() {
     return {
@@ -129,10 +174,18 @@ export default {
       exceltype: null,
       headers: [],
       content: [],
-      showConfirm: false,
       showNotif: false,
+      showAlert: false,
       success: false,
       message: null,
+      loading: false,
+      isDownload: false,
+      title: null,
+      deleteMessage: null,
+      methods: null,
+      url: null,
+      sheaders: null,
+      item: null,
     };
   },
   methods: {
@@ -152,7 +205,117 @@ export default {
       event.currentTarget.classList.add("bg-canvas");
       event.currentTarget.classList.remove("bg-orange");
     },
-    drop(event) {
+    async downloadTemplate(){
+      try {
+        this.isDownload = true;
+        const { data } = await axios.get('/pr/asjdhasdasd');
+        const barang = data;
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+
+        worksheet.columns = [
+          { header: 'Kode Barang', key: 'kdbar', width: 15 },
+          { header: 'Nama Barang', key: 'nmbar', width: 30 },
+          { header: 'Nama Barang 2', key: 'nmbar2', width: 30 },
+          { header: 'Kode Jenis', key: 'kode_jenis', width: 10 },
+          { header: 'Nama Jenis', key: 'nama_jenis', width: 20 },
+          { header: "Kdstn Kirim", key: "kdstn_krm", width: 10 },
+          { header: 'Satuan Kirim', key: 'nama_krm', width: 20 },
+          { header: "Kdstn Stok", key: "kdstn_stok", width: 10 },
+          { header: "Satuann Stok", key: "nama_stok", width: 20 },
+          { header: "Quantity", key: "qty", width: 15 },
+        ];
+
+        worksheet.getRow(1).height = 30;
+
+        const startCell = 'A1';
+        const endCell = 'J1';
+        worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
+          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+            const cellAddress = cell.address;
+            if (cellAddress >= startCell && cellAddress <= endCell) {
+              console.log(rowNumber, colNumber)
+              cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'F3F3F3' }
+              };
+              cell.alignment = {
+                horizontal: 'center',
+                vertical: 'middle'
+              };
+            }
+          });
+        });
+
+        barang.forEach(async(data) => {
+          worksheet.addRow({
+            kdbar: data.kdbar,
+            nmbar: data.nmbar,
+            nmbar2: data.nmbar2,
+            kode_jenis: data.kode_jenis,
+            nama_jenis: data.nm_jenis,
+            kdstn_stok: data.kdstn_stok,
+            nama_stok: data.nama_stok,
+            kdstn_krm: data.kdstn_krm,
+            nama_krm: data.nama_krm,
+            qty: 0,
+          });
+        });      
+        
+        // const startColumn = 'A';
+        // const endColumn = 'I';
+        worksheet.eachRow({ includeEmpty: false }, function(row, rowNumber) {
+          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+            const startCell = `A${rowNumber}`;
+            const endCell = `J${rowNumber}`;
+            const cellAddress = cell.address;
+            if (cellAddress >= startCell && cellAddress <= endCell){
+              console.log(rowNumber, colNumber)
+              cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+              };
+            }
+          });
+
+          // for (let col = startColumn.charCodeAt(0); col <= endColumn.charCodeAt(0); col++) {
+          //   const cell = row.getCell(String.fromCharCode(col));
+          //   cell.locked = true;
+          // }
+        });
+
+        // worksheet.getColumn('J').eachCell(function(cell) {
+        //   cell.locked = false;
+        // });
+
+        // worksheet.protect('faamelawai', {
+        //   selectLockedCells: false,
+        //   selectUnlockedCells: true,
+        // });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+
+        a.href = url;
+        a.download = 'TemplatePR.xlsx';
+        a.style = 'opacity: 0';
+        document.body.appendChild(a);
+
+        a.click();
+
+        document.body.removeChild(a);
+        this.isDownload = false;
+      } catch(error){
+        console.log(error);
+      }
+    },
+    async drop(event) {
       event.preventDefault();
       const fileArray = event.dataTransfer.files;
       for (let files of fileArray) {
@@ -166,12 +329,21 @@ export default {
         }
       }
 
+      this.loading = true;
+      await this.readMasterBarang();
+      this.loading = false;
       this.selectedfile = this.filelist[0].name;
+      console.log(this.content)
     },
-    onChange() {
+    async onChange() {
       this.filelist = [...this.$refs.file.files];
-      this.selectedfile = this.filelist[0].name;
       document.getElementById("drop-box").classList.add("bg-orange");
+
+      this.loading = true;
+      await this.readMasterBarang();
+      this.loading = false;
+      this.selectedfile = this.filelist[0].name;
+      console.log(this.content)
     },
     removeFile() {
       this.filelist = [];
@@ -181,75 +353,79 @@ export default {
       document.getElementById("drop-box").classList.remove("bg-orange");
       document.getElementById("drop-box").classList.add("bg-canvas");
     },
-    submitFile() {
-      if (this.exceltype === null) {
-        alert("Please select file type!");
-        return;
-      }
+    async submitFile() {
+      this.title = 'Confirmation'
+      this.deleteMessage = `Are you sure want to submit Transaction ?`
+      this.methods = 'post'
+      this.url = '/pr/askjdhaskjdhaksd'
+      this.sheaders = {}
+      this.item = this.content
+      this.showAlert = true
+    },
+    submitted(value){
+      this.showAlert = false
+      this.message = value.message;
+      this.success = true;
+      this.showNotif = true;
 
-      let i = 1;
-      let rm = 1;
-      let wip = 1;
-      this.content = [];
-      const workbook = new ExcelJS.Workbook();
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        this.fileContent = event.target.result;
-        const excelFile = await workbook.xlsx.load(this.fileContent);
-        const worksheet = excelFile.getWorksheet(1);
-
-        this.content = [];
-        worksheet.eachRow((row, rowNumber) => {
-          // const rowData = row.values;
-          // if(rowData.length !== 75 && row.getCell(1).value){
-          //     alert('Document in wrong format!')
-          //     this.filelist = []
-          //     return;
-          // }
-
-          if (rowNumber === 1) {
-            this.headers = row.values;
-          } else {
-            let kdbrg;
-            let cnt;
-            if (row.getCell(3).value == "RM") {
-              if (rm <= 9) cnt = "0" + String(rm);
-              else cnt = String(rm);
-
-              kdbrg = "RM" + String(cnt);
-              rm++;
-            } else if (row.getCell(3).value == "WIP") {
-              if (wip <= 9) cnt = "0" + String(wip);
-              else cnt = String(wip);
-
-              kdbrg = "WIP" + String(cnt);
-              wip++;
-            }
-
-            const data = {
-              no: i,
-              kode_barang: kdbrg,
-              nama_barang: row.getCell(2).value,
-              tipe: row.getCell(3).value,
-              satuan_stock: row.getCell(4).value,
-              satuan_beli: row.getCell(5).value,
-              konversi: row.getCell(6).value,
-              kd_jenis: row.getCell(7).value,
-              qty_minimum: row.getCell(8).value,
-              qty_perhari: row.getCell(9).value,
-            };
-
-            this.content.push(data);
-            i++;
-          }
-        });
-      };
-
-      reader.readAsArrayBuffer(this.filelist[0]);
+      setTimeout(() => {
+        this.message = null;
+        this.succes = false;
+        this.showNotif = false;
+        window.location.href = '/pr'
+      }, 1300)
     },
     onClosed(value) {
-      this.showConfirm = value;
+      this.showAlert = value;
     },
+    async readMasterBarang() {
+        this.content = [];
+        let nou = 1;
+        const workbook = new ExcelJS.Workbook();
+        const reader = new FileReader();
+        
+        const fileContentPromise = new Promise((resolve, reject) => {
+            reader.onload = (event) => {
+                resolve(event.target.result);
+            };
+            reader.onerror = (error) => {
+                reject(error);
+            };
+        });
+
+        reader.readAsArrayBuffer(this.filelist[0]);
+
+        try {
+            const fileContent = await fileContentPromise;
+            const excelFile = await workbook.xlsx.load(fileContent);
+            const worksheet = excelFile.getWorksheet(1);
+
+            worksheet.eachRow((row, rowNumber) => {
+                if (rowNumber === 3) {
+                    this.headers = row.values;
+                } else if (rowNumber > 3) {
+                    const data = {
+                        no: nou,
+                        kode_barang: row.getCell(1).value,
+                        nama_barang: row.getCell(2).value,
+                        nama_barang2: row.getCell(3).value,
+                        kd_jenis: row.getCell(4).value,
+                        nama_jenis: row.getCell(5).value,
+                        kdstn_stock: row.getCell(6).value,
+                        satuan_stock: row.getCell(7).value,
+                        kdstn_krm: row.getCell(8).value,
+                        satuan_kirim: row.getCell(9).value,
+                        qty: row.getCell(10).value,
+                    };
+
+                    this.content.push(data);
+                    nou++
+                }
+            });
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    }
   },
 };
 </script>

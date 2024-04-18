@@ -48,6 +48,7 @@
                   </button>
                 </div>
 
+                <!-- 
                 <div class="filter-wrapper">
                   <button class="export-btn" @click="showingFilter">
                     <i class="ri-filter-3-fill"></i>
@@ -63,6 +64,7 @@
                     Sort
                   </button>
                 </div>
+                -->
 
                 <div class="filter-wrapper" style="top: 40px">
                   <div
@@ -187,7 +189,7 @@
                 </div>
 
                 <div class="search-container"
-                     style="margin-right: 140px;
+                     style="margin-right: 0px;
                      height: 38px;">
                       <input 
                           type="text" 
@@ -207,11 +209,13 @@
                   <tr>
                     <th style="width: 5%; 
                     border-top-left-radius: 5px">No</th>
-                    <th style="width: 20%">PR Number</th>
-                    <th style="width: 20%">PR Date</th>
-                    <th style="width: 20%">Supplier</th>
+                    <th style="width: 15%">PR Number</th>
+                    <th style="width: 10%">PR Date</th>
+                    <th style="width: 10%">Divisi</th>
+                    <th style="width: 10%">Subdiv</th>
+                    <th style="width: 10%">Dept</th>
                     <th style="width: 10%">Total Item</th>
-                    <th style="width: 10">Status</th>
+                    <th style="width: 15">Status</th>
                     <th style="width: 15%; 
                     border-top-right-radius: 5px">
                       Action
@@ -225,21 +229,24 @@
                     :class="{ 'bg-canvas': idx % 2 == 0 }"
                   >
                     <td>{{ idx + 1 }}</td>
-                    <td>{{ pr.id }}</td>
-                    <td>{{ pr.date }}</td>
-                    <td>{{ pr.supplier }}</td>
+                    <td>{{ pr.pr_no }}</td>
+                    <td>{{ pr.pr_date }}</td>
+                    <td>{{ pr.div_kd }}</td>
+                    <td>{{ pr.subdiv_kd }}</td>
+                    <td>{{ pr.dept_kd }}</td>
                     <td>{{ pr.total_item }}</td>
                     <td>
                       <span
                         :class="{
-                          'capsule-theme': pr.status === 'Approved PO',
-                          'capsule-warning':
-                            pr.status === 'Pending' ||
-                            pr.status === 'Approved PR',
-                          'capsule-danger': pr.status === 'Rejected',
+                          'capsule-theme': pr.f_batal === false,
+                          // 'capsule-warning':
+                          //   pr.status === 'Pending' ||
+                          //   pr.status === 'Approved PR',
+                          'capsule-danger': pr.f_batal === true,
                         }"
                       >
-                        {{ pr.status }}
+                        <span v-if="!pr.f_batal">Confirm</span>
+                        <span v-if="pr.f_batal">Cancel</span>
                       </span>
                     </td>
                     <td>
@@ -248,7 +255,7 @@
                         @click="
                           this.$router.push({
                             name: 'pr-detail',
-                            params: { id: pr.id },
+                            params: { id: pr.pr_no },
                           })
                         "
                       >
@@ -308,6 +315,7 @@
 <script>
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
+import axios from "axios";
 
 export default {
   name: "PRView",
@@ -339,7 +347,6 @@ export default {
     };
   },
   mounted() {
-    this.pr = [...this.$store.state.pr];
     this.getPR();
   },
   methods: {
@@ -348,22 +355,30 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    getPR() {
+    async getPR() {
       const groupSize = this.perpage;
       const newPR = [];
-      this.prs = [];
-      this.total_page = [];
-      this.pr.forEach((data) => {
-        newPR.push(data);
-      });
+      
+      try {
+        const { data } = await axios.get('/prbarang/askdhjadasd');
+        this.pr = data;
+        console.log(data)
 
-      this.pagelength = this.pr.length
-      for (let i = 0; i < newPR.length; i += groupSize) {
-        this.prs.push(newPR.slice(i, i + groupSize));
-      }
+        this.total_page = [];
+        this.pr.forEach((data) => {
+          newPR.push(data);
+        });
 
-      for (let i = 0; i < this.prs.length; i++) {
-        this.total_page.push(i);
+        this.pagelength = this.pr.length
+        for (let i = 0; i < newPR.length; i += groupSize) {
+          this.prs.push(newPR.slice(i, i + groupSize));
+        }
+
+        for (let i = 0; i < this.prs.length; i++) {
+          this.total_page.push(i);
+        }
+      } catch(error){
+        console.log(error);
       }
     },
     getFooImage(filename) {

@@ -321,7 +321,7 @@ export default {
 <style>
 .capsule-theme {
   padding: 5px 15px;
-  background: var(--themecolor);
+  background: var(--green);
   border-radius: 50px;
   color: var(--white);
 }

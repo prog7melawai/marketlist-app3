@@ -15,7 +15,7 @@ body{
     background-color: rgb(247, 247, 247);
     font-family: "Public Sans", sans-serif;
     --sb-track-color: #c3c3c3;
-    --sb-thumb-color: #0da487;
+    --sb-thumb-color: var(--themehover);
     --sb-size: 9px;
     scrollbar-color: var(--sb-thumb-color) 
                      var(--sb-track-color);
@@ -36,9 +36,10 @@ body::-webkit-scrollbar-thumb {
 }
 
 :root{
-    --themecolor: #0da487;
-    --themehover: #58f2d4;
-    --themedark: #077e66;
+    --green: #0da487;
+    --themecolor: #a4880d;
+    --themehover: #b89e4a;
+    --themedark: #a4740d;
     --orangelight: #ffe9d4;
     --orange: #ff9f43;
     --orangehover: #fe820e;
@@ -49,6 +50,7 @@ body::-webkit-scrollbar-thumb {
     --white: #fff;
     --form: #f9f9f6;
     --red: #b21c1c;
+    --redhover: #7e1414;
 }
 
 input::-webkit-outer-spin-button,
@@ -171,8 +173,8 @@ select{
 
 .bg-theme{
     background: #02AAB0;
-    background: -webkit-linear-gradient(bottom, #00CDAC, #02AAB0);
-    background: linear-gradient(to bottom, #00CDAC, #02AAB0);
+    background: -webkit-linear-gradient(bottom, var(--themehover), var(--themecolor));
+    background: linear-gradient(to bottom, var(--themehover), var(--themecolor));
 }
 
 .bg-gradient-gray{
@@ -244,7 +246,7 @@ select{
 .content-wrapper .content .load-excel{
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 200px;
     margin: 0 auto;
     margin-top: 20px;
     border-radius: 10px;
@@ -284,7 +286,7 @@ select{
 }
 
 .content-wrapper .content .load-excel .cloud-icon{
-    width: 200px;
+    width: 50px;
     opacity: 0.5;
 }
 
@@ -342,7 +344,7 @@ select{
     padding: 0 15px;
     border-radius: 3px;
     background: var(--orange);
-    background: -webkit-linear-gradient(bottom, var(--orange), var(--orangehover));
+    background: -webkit-linear-gradient(bottom, var(--red), var(--orangehover));
     background: linear-gradient(to bottom, var(--orange), var(--orangehover));        
     border: none;
     cursor: pointer;
@@ -375,6 +377,27 @@ select{
 
 .btn-danger:hover{
     background: #941304;
+}
+
+.btn-block-theme{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 15px;
+    border-radius: 3px;
+    background: var(--themecolor);
+    background: -webkit-linear-gradient(bottom, var(--themehover), var(--themecolor));
+    background: linear-gradient(to bottom, var(--themehover), var(--themecolor));        
+    border: none;
+    cursor: pointer;
+    color: var(--white);
+}
+
+.btn-block-theme:hover{
+    background: var(--themehover);
 }
 
 .btn-theme{
@@ -566,7 +589,7 @@ thead {
 
 .user-dropdown .dropdown-link:hover,
 .notification-dropdown .dropdown-link:hover{
-    background: var(--orange);
+    background: var(--themehover);
 }
 
 .user-dropdown .dropdown-link i,
@@ -593,7 +616,7 @@ thead {
 }
 
 .user-dropdown .logout-link:hover{
-    background: var(--orange);
+    background: var(--themehover);
 }
 
 .user-dropdown .logout-link i{
@@ -644,7 +667,7 @@ thead {
 .navbar-search .search-box .search-btn{
     width: 15%;
     height: 100%;
-    background: var(--orange);
+    background: var(--red);
     border: none;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -668,7 +691,7 @@ thead {
     transition: all .5s ease;
     overflow-y: scroll;
     --sb-track-color: #c2c2c2;
-    --sb-thumb-color: #6BAF8D;
+    --sb-thumb-color: #af976b;
     --sb-size: 11px;
     scrollbar-color: var(--sb-thumb-color) 
                      var(--sb-track-color);
@@ -769,7 +792,7 @@ thead {
 }
 
 .sidebar-menu .menu-link .nav-link:hover{
-    background: var(--orange);
+    background: var(--red);
 }
 
 .link-unactive{
@@ -780,7 +803,7 @@ thead {
 }
 
 .link-active{
-    background: var(--orange);
+    background: var(--red);
 }
 
 .sidebar-menu .menu-link .nav-link i{
@@ -809,8 +832,8 @@ thead {
 
 .area{
     position: fixed;
-    background: #0da487;  
-    background: -webkit-linear-gradient(left, #2ae0bc, #0da487);  
+    background: #a4950d;  
+    background: -webkit-linear-gradient(left, #d8d8d8, var(--themecolor));  
     height: 105%;
     transition: all .5s ease;
 }
@@ -956,7 +979,7 @@ thead {
     width: 100%;
     max-width: 600px;
     height: 100%;
-    background: rgba(13, 164, 135, 0.43);
+    background: rgba(164, 136, 13, 0.43);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10.7px);
     -webkit-backdrop-filter: blur(10.7px);
@@ -1421,3 +1444,100 @@ animation: roll-out 2s ease infinite;
     transform: translateX(100%) rotate(120deg);
 }
 }
+
+/* Table Preview */
+.table-prev-container{
+    width: 100%;
+    height: 350px; 
+    overflow-y: auto;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.table-preview {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-preview caption {
+    font-size: 1.5em;
+    margin: .5em 0 .75em;
+}
+
+.table-preview tr {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: .35em;
+}
+
+.table-preview th {
+    padding: .625em;
+}
+
+.table-preview td {
+    padding: .625em;    
+}
+
+.table-preview thead th {
+    position: sticky; 
+    top: -1%; 
+    z-index: 1;
+    font-size: .85em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    background-color: #bdbdbd;
+}
+
+@media screen and (max-width: 600px) {
+.table-preview {
+    border: 0;
+}
+
+.table-preview caption {
+    font-size: 1.3em;
+}
+
+.table-preview thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.table-preview tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: .625em;
+}
+
+.table-preview td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: .8em;
+    text-align: right;
+}
+
+.table-preview td::before {
+    /*
+    * aria-label has no advantage, it won't be read inside a .table-preview
+    content: attr(aria-label);
+    */
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.table-preview td:last-child {
+    border-bottom: 0;
+}
+}  

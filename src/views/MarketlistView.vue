@@ -78,10 +78,10 @@
                     <th style="width: 5%; 
                     border-top-left-radius: 5px">No</th>
                     <th style="width: 15%">Image</th>
-                    <th style="width: 20%">Product Name</th>
-                    <th style="width: 10%">Type</th>
+                    <th style="width: 10%">Kode Barang</th>
+                    <th style="width: 20%">Nama Barang</th>
                     <th style="width: 5%">Stock</th>
-                    <th style="width: 10%">Unit</th>
+                    <th style="width: 10%">Satuan</th>
                     <th style="width: 10">Status</th>
                     <th style="width: 15%; 
                     border-top-right-radius: 5px">
@@ -102,17 +102,17 @@
                         style="width: 80px"
                       />
                     </td>
-                    <td>{{ items.name }}</td>
-                    <td>{{ items.tipe }}</td>
-                    <td>{{ items.stock }}</td>
-                    <td>{{ items.satuan_stock }}</td>
+                    <td>{{ items.kdbar }}</td>
+                    <td>{{ items.nmbar }}</td>
+                    <td>0</td>
+                    <td>{{ items.nm_stok }}</td>
                     <td>
                       <span
                         :class="{
-                          'capsule-theme': items.factive,
-                          'capsule-danger': !items.factive,
+                          'capsule-theme': items.f_aktif,
+                          'capsule-danger': !items.f_aktif,
                         }">
-                        {{ setStatus(items.factive) }}
+                        {{ setStatus(items.f_aktif) }}
                       </span>
                     </td>
                     <td>
@@ -310,12 +310,7 @@ export default {
         this.foods = [];
         this.total_page = [];
 
-        const { data } = await axios.get('/masterbarang', {
-            headers: {
-              Filter: 'K001',
-              Authorization: 'asdasdasdasdasda'
-            }
-        })
+        const { data } = await axios.get('/marketlist/asjdgajsdgajhsgdasd')
 
         this.food = data
         this.pagelength = this.food.length

@@ -10,9 +10,9 @@
           <div class="content-title">
             <h2>Detail for #{{ this.$route.params.id }}</h2>
             <span
-              >{{ getMonth(new Date(selectedPR.date).getMonth()) }},
-              {{ new Date(selectedPR.date).getDate() }}
-              {{ new Date(selectedPR.date).getFullYear() }}
+              >{{ getMonth(new Date(selectedPR.pr_date).getMonth()) }},
+              {{ new Date(selectedPR.pr_date).getDate() }}
+              {{ new Date(selectedPR.pr_date).getFullYear() }}
             </span>
           </div>
 
@@ -21,7 +21,7 @@
             style="
               position: absolute;
               top: 20px;
-              right: 238px;
+              right: 125px;
               border-radius: 3px;
             "
             @click="confirmPR"
@@ -29,6 +29,7 @@
             <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
           </button>
 
+          <!-- 
           <button
             class="btn-theme"
             style="position: absolute; top: 20px; right: 125px"
@@ -38,6 +39,7 @@
 
             <span style="position: relative; top: -2px"> Approve </span>
           </button>
+          -->
 
           <button
             class="btn-danger"
@@ -54,33 +56,34 @@
               <div class="po-header">
                 <div class="po-logo">
                   <img
-                    :src="getSupImage(selectedPR.logo)"
+                    src="/images/logo/movenpick.png"
                     :alt="selectedPR.logo"
-                    style="width: 100%; height: 100%; object-fit: cover"
+                    style="width: 100%; height: 100%; object-fit: contain;"
                   />
                 </div>
 
                 <div style="width: 78%; display: flex; flex-direction: column">
-                  <span class="pr-supplier">{{ selectedPR.supplier }}</span>
-                  <span class="pr-contact">{{ selectedPR.contact }}</span>
-                  <span class="pr-address">{{ selectedPR.address }}</span>
+                  <span class="pr-supplier">{{ selectedPR.dept_kd }}</span>
+                  <span class="pr-contact">{{ selectedPR.div_kd }}</span>
+                  <span class="pr-address">{{ selectedPR.subdiv_kd }}</span>
 
                   <span class="pr-deliver">Deliver to:</span>
                   <span class="pr-company">
-                    <img
+                    <!-- <img
                       src="/images/logo/movenpick.png"
                       alt="logo"
                       style="width: 135px"
-                    />
+                    /> -->
                   </span>
-                  <span class="pr-department">{{ selectedPR.department }}</span>
+                  <span class="pr-department">Departmen {{ selectedPR.dept_kd }}</span>
                 </div>
               </div>
 
+              <!-- 
               <div class="progress-order">
                 <div class="progress-line"></div>
                 <div class="progress-line-completed">
-                  <div class="side-step" v-if="selectedPR.step > 0"></div>
+                  <div class="side-step"></div>
                   <div class="center-step" v-if="selectedPR.step > 1"></div>
                   <div class="center-step" v-if="selectedPR.step > 2"></div>
                   <div class="side-step" v-if="selectedPR.step > 3"></div>
@@ -89,8 +92,7 @@
                 <div
                   class="circle"
                   :class="{
-                    completed: selectedPR.step > 0,
-                    pending: selectedPR.step <= 0,
+                    completed: !selectedPR.f_batal
                   }"
                 >
                   <i class="ri-check-line"></i>
@@ -142,6 +144,7 @@
                   </span>
                 </div>
               </div>
+              -->
 
               <table class="table-responsive" aria-describedby="PR Items Data">
                 <thead class="bg-dark">
@@ -149,55 +152,52 @@
                     <th style="width: 5%">No</th>
                     <th style="width: 15%">Product ID</th>
                     <th style="width: 25%" colspan="2">Product Name</th>
-                    <th style="width: 5%">Type</th>
-                    <th style="width: 5%">Qty Order</th>
-                    <th style="width: 10%">Unit</th>
-                    <th style="width: 10%">Category</th>
-                    <th style="width: 15%">Action</th>
+                    <th style="width: 5%">Jenis</th>
+                    <th style="width: 5%">Satuan Stock</th>
+                    <th style="width: 10%">Satuan Kirim</th>
+                    <th style="width: 10%">Quantity</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
                     v-for="(pr, idx) in prs[selectedPage]"
-                    :key="pr.id"
+                    :key="pr.kode_barang"
                     :class="{ 'bg-canvas': idx % 2 == 0 }"
+                    style="height: 60px;"
                   >
                     <td>{{ idx + 1 }}</td>
-                    <td>{{ pr.kdbrg }}</td>
+                    <td>{{ pr.kode_barang }}</td>
                     <td style="text-align: start" colspan="2">
-                      <img
+                      <!-- <img
                         :src="getFoodImage(pr.image)"
                         :alt="pr.image"
                         style="width: 30px"
-                      />
+                      /> -->
 
                       <span
                         style="
                           position: relative;
-                          top: -10px;
                           margin-left: 10px;
                         "
                       >
-                        {{ pr.name }}
+                        {{ pr.nama_barang }}
                       </span>
                     </td>
-                    <td>{{ pr.tipe }}</td>
-                    <td>{{ pr.qtybeli }}</td>
-                    <td>{{ pr.sbeli }}</td>
-                    <td>{{ setCategory(pr.kdjenis) }}</td>
-                    <td>
-                      <button class="btn-danger">Reject</button>
-                    </td>
+                    <td>{{ pr.kd_jenis }}</td>
+                    <td>{{ pr.kdstn_stock }}</td>
+                    <td>{{ pr.kdstn_krm }}</td>
+                    <td>{{ pr.qty }}</td>
                   </tr>
                 </tbody>
               </table>
+
 
               <div class="page-wrapper" v-if="total_page.length > 0">
                 <div style="width: 50%">
                   <span style="font-size: 10pt">
                     Showing {{ prs[selectedPage][0].no }} to
                     {{ prs[selectedPage][prs[selectedPage].length - 1].no }} of
-                    {{ selectedPR.items.length }} entries.
+                    {{ pagelength }} entries.
                   </span>
                 </div>
                 <div
@@ -208,10 +208,13 @@
                     justify-content: end;
                   "
                 >
-                  <div class="page-prev">Previous</div>
+                  <button class="page-prev" @click="prevPagination"
+                    :class="{'paginate-active': start >= 5}">
+                    Previous
+                  </button>
                   <div
                     class="page"
-                    v-for="pg in total_page"
+                    v-for="pg in total_page.slice(start, end)"
                     :key="pg"
                     :class="{
                       'page-active': selectedPage === pg,
@@ -221,7 +224,10 @@
                   >
                     {{ pg + 1 }}
                   </div>
-                  <div class="page-next">Next</div>
+                  <button :class="{'paginate-active': total_page.length > end}"
+                  class="page-next" @click="nextPagination">
+                  Next
+                  </button>
                 </div>
               </div>
             </div>
@@ -244,6 +250,7 @@
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
+import axios from "axios";
 
 export default {
   name: "PRDetailView",
@@ -267,10 +274,12 @@ export default {
       showAlert: false,
       message: null,
       title: null,
+      start: 0,
+      end: 8,
+      pagelength: 0,
     };
   },
   mounted() {
-    this.pr = [...this.$store.state.pr];
     this.getPR();
   },
   methods: {
@@ -279,21 +288,22 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    getPR() {
-      this.pr.forEach((data) => {
-        if (data.id == this.$route.params.id) {
-          this.selectedPR = data;
-        }
-      });
-
-      this.getItem();
+    async getPR() {
+      try {
+        const { data } = await axios.get(`/prdetailbarang/${this.$route.params.id}/asdasdas`)
+        this.selectedPR = data
+        this.getItem(this.selectedPR.items);
+      } catch(error){
+        console.log(error);
+      }
     },
-    getItem() {
+    getItem(items) {
       const groupSize = 10;
       const newPR = [];
       this.prs = [];
       this.total_page = [];
-      this.selectedPR.items.forEach((data) => {
+      this.pagelength = items.length
+      items.forEach((data) => {
         newPR.push(data);
       });
 
@@ -304,6 +314,21 @@ export default {
       for (let i = 0; i < this.prs.length; i++) {
         this.total_page.push(i);
       }
+    },
+    prevPagination(){
+        if(this.start <= 0) return;
+        this.start -= 5
+        this.end -= 5
+    },
+    nextPagination(){
+        if(this.end > this.total_page.length) {
+            this.start = this.total_page.length - 5
+            this.end = this.total_page.length
+            return;
+        }
+
+        this.start += 5
+        this.end += 5
     },
     getFoodImage(filename) {
       return "/images/foods/" + filename;

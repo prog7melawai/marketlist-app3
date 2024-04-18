@@ -57,7 +57,7 @@
             <span>Profile</span>
           </router-link>
           <div class="line"></div>
-          <a class="logout-link">
+          <a @click="logout" class="logout-link">
             <i class="ri-logout-circle-r-line"></i>
             <span>Logout</span>
           </a>
@@ -86,6 +86,14 @@ export default {
       if (this.showNotification) this.showNotification = false;
       else this.showNotification = true;
     },
+    logout(){
+      this.$store.dispatch("LOGOUT")
+      .then(() => {
+          this.$router.push({ path : '/login'});
+      }).catch(() => {
+          this.$router.push({ path : '/login'});
+      });
+    }
   },
 };
 </script>

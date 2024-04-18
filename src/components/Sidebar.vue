@@ -14,7 +14,7 @@
     </div>
 
     <div class="sidebar-menu">
-      <div class="menu-link" style="margin-top: 80px">
+      <!-- <div class="menu-link" style="margin-top: 80px">
         <router-link
           :to="{ name: 'home' }"
           class="nav-link"
@@ -25,8 +25,8 @@
           <i class="ri-home-smile-fill"></i>
           <h3 v-if="!isHide">Dashboard</h3>
         </router-link>
-      </div>
-      <div class="menu-link">
+      </div> -->
+      <div class="menu-link" style="margin-top: 80px">
         <router-link
           :to="{ name: 'import' }"
           class="nav-link"
@@ -38,6 +38,7 @@
           <h3 v-if="!isHide">Import Data</h3>
         </router-link>
       </div>
+      <!-- 
       <div class="menu-link">
         <router-link
           :to="{ name: 'transfer' }"
@@ -85,7 +86,7 @@
           <i class="ri-cake-3-fill"></i>
           <h3 v-if="!isHide">Menu Makanan</h3>
         </router-link>
-      </div>
+      </div> -->
       <div class="menu-link">
         <router-link
           :to="{ name: 'marketlist' }"
@@ -110,6 +111,7 @@
           <h3 v-if="!isHide">Stock Finance</h3>
         </router-link>
       </div>
+      <!-- 
       <div class="menu-link">
         <router-link
           :to="{ name: 'event' }"
@@ -121,7 +123,7 @@
           <i class="ri-calendar-event-fill"></i>
           <h3 v-if="!isHide">Event</h3>
         </router-link>
-      </div>
+      </div> -->
       <div class="menu-link">
         <router-link
           :to="{ name: 'load' }"
@@ -143,7 +145,7 @@
             'link-unactive': this.$route.name !== 'pr',
           }">
           <i class="ri-article-fill"></i>
-          <h3 v-if="!isHide">Purchase Review</h3>
+          <h3 v-if="!isHide">Purchase Requisition</h3>
         </router-link>
       </div>
       <div class="menu-link">
@@ -158,7 +160,7 @@
           <h3 v-if="!isHide">Purchase Order</h3>
         </router-link>
       </div>
-      <div class="menu-link" style="margin-bottom: 50px;">
+      <!-- <div class="menu-link" style="margin-bottom: 50px;">
         <router-link
           :to="{ name: 'transfer' }"
           class="nav-link"
@@ -169,7 +171,7 @@
           <i class="ri-user-settings-fill"></i>
           <h3 v-if="!isHide">Manage User</h3>
         </router-link>
-      </div>
+      </div> -->
     </div>
 
     <div class="area" :style="{width: this.$store.getters.GET_SIDEBAR_WIDTH.bgsidebar}">

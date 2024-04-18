@@ -436,9 +436,9 @@ export default {
 }
 
 .page-active {
-  background: #02aab0;
-  background: -webkit-linear-gradient(to bottom, #00cdac, #02aab0);
-  background: linear-gradient(to bottom, #00cdac, #02aab0);
+  background: var(--themecolor);
+  background: -webkit-linear-gradient(to bottom, var(--themehover), var(--themecolor));
+  background: linear-gradient(to bottom, var(--themehover), var(--themecolor));
   border: 1px solid #cacaca;
 }
 

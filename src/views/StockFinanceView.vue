@@ -81,10 +81,10 @@
                     <th style="width: 5%; 
                     border-top-left-radius: 5px">No</th>
                     <th style="width: 10%">Image</th>
-                    <th style="width: 20%">Product Name</th>
-                    <th style="width: 5%">Type</th>
+                    <th style="width: 5%">Kode Barang</th>
+                    <th style="width: 20%">Nama Barang</th>
                     <th style="width: 5%">Stock</th>
-                    <th style="width: 10%">Unit</th>
+                    <th style="width: 10%">Satuan</th>
                     <th style="width: 5%">Qty Min</th>
                     <th style="width: 5">Qty/Day</th>
                     <th style="width: 10">Status</th>
@@ -106,20 +106,20 @@
                         :alt="items.iamge"
                         style="width: 80px"/>
                     </td>
-                    <td>{{ items.name }}</td>
-                    <td>{{ items.tipe }}</td>
-                    <td>{{ items.stock }}</td>
-                    <td>{{ items.satuan_stock }}</td>
-                    <td>{{ items.qtymin }}</td>
-                    <td>{{ items.qtyday }}</td>
+                    <td>{{ items.kdbar }}</td>
+                    <td>{{ items.nmbar }}</td>
+                    <td>0</td>
+                    <td>{{ items.nm_stok }}</td>
+                    <td>{{ items.qmin }}</td>
+                    <td>{{ items.qmax }}</td>
                     <td>
                       <span
                         :class="{
-                          'capsule-theme': items.stock >= items.qtymin,
-                          'capsule-danger': items.stock < items.qtymin,
+                          'capsule-theme': items.f_aktif,
+                          'capsule-danger': !items.f_aktif,
                         }"
                       >
-                        {{ setStatus(items.stock, items.qtymin) }}
+                        {{ setStatus(items.f_aktif) }}
                       </span>
                     </td>
                     <td>
@@ -128,9 +128,9 @@
                       </button>
 
                       <button class="btn-danger"
-                      style="margin-left: 10px"
-                      @click="showingAlert(items)">
-                        Delete
+                        style="margin-left: 10px"
+                        @click="showingAlert(items)">
+                          Delete
                       </button>
                     </td>
                   </tr>
@@ -317,12 +317,7 @@ export default {
       this.foods = [];
       this.total_page = [];
       
-      const { data } = await axios.get('/masterbarang', {
-          headers: {
-            Filter: 'K002',
-            Authorization: 'asdasdasdasdasda'
-          }
-      })
+      const { data } = await axios.get('/stockfinance/askdhajshdas')
 
       this.food = data
       this.pagelength = this.food.length
@@ -337,10 +332,9 @@ export default {
     getFooImage(filename) {
       return "/images/foods/" + filename;
     },
-    setStatus(stock, min) {
-      if (stock < min) return "Running Out";
-      else if (stock === 0) return "Out Of Stock";
-      else return "Ready";
+    setStatus(aktif) {
+      if (aktif) return "Active";
+      else return "Not Active";
     },
     onClosedModal(value) {
       this.showCreate = value;
@@ -453,13 +447,7 @@ export default {
 
 .export-btn:hover {
   border: 1px solid #cacaca;
-  background: var(--orange);
-  background: -webkit-linear-gradient(
-    bottom,
-    var(--orange),
-    var(--orangehover)
-  );
-  background: linear-gradient(to bottom, var(--orange), var(--orangehover));
+  background: var(--red);
   color: #ffffff;
 }
 </style>

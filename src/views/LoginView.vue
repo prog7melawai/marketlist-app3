@@ -76,6 +76,7 @@ export default {
   name: "LoginView",
   methods: {
     login() {
+      this.$store.commit('SET_AUTH_TOKEN', 'asdkjaskdjhakjsda');
       this.$router.push({ name: "import" });
     },
   },
