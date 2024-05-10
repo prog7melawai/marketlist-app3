@@ -1,7 +1,7 @@
 <template>
     <div class="modal-container fade-in">
         <div class="notification-dialog fade-in-down"
-             :class="{'bg-theme': success, 'bg-gradient-orange': !success}">
+             :class="{'bg-success': success, 'bg-gradient-orange': !success}">
             <div class="notification-body">
                 <span class="notification-message color-white">
                     {{ message }}

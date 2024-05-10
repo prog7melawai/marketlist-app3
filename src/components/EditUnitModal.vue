@@ -25,7 +25,7 @@
             <div style="position: relative">
               <label
                 class="input-placeholder"
-                :class="{ 'color-orange': master.kode }">
+                :class="{ 'color-orange': master.kd_jenis }">
                 Kode
               </label>
 
@@ -33,7 +33,7 @@
                 type="text"
                 class="form-input"
                 id="master-kode"
-                :value="master.kode"
+                v-model="kode_jenis"
                 style="width: 96%"
                 readonly />
             </div>
@@ -41,7 +41,7 @@
             <div style="position: relative">
               <label
                 class="input-placeholder"
-                :class="{ 'color-orange': master.nama }">
+                :class="{ 'color-orange': master.nm_jenis }">
                 Name
               </label>
 
@@ -49,7 +49,7 @@
                 type="text"
                 class="form-input"
                 id="master-nama"
-                :value="master.nama"
+                v-model="nama_jenis"
                 style="width: 96%" />
             </div>
           </div>
@@ -83,7 +83,15 @@ export default {
     return {
       loading: false,
       body: {},
+      authToken: null,
+      nama_jenis: null,
+      kode_jenis: null,
     };
+  },
+  created(){
+    this.kode_jenis = this.master.kd_jenis
+    this.nama_jenis = this.master.nm_jenis
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN
   },
   methods: {
     closeModal() {
@@ -104,21 +112,13 @@ export default {
     async submitMaster() {
       try {
         this.loading = true
-        if(this.url === 'satuan') {
-          this.body = {
-            kode_satuan: document.getElementById("master-kode").value,
-            nama_satuan: document.getElementById("master-nama").value
-          }
-        } else {
-          this.body = {
-            kode_jenis: document.getElementById("master-kode").value,
-            nama_jenis: document.getElementById("master-nama").value
-          }
+        this.body = {
+          kd_jenis: this.kode_jenis,
+          nm_jenis: this.nama_jenis
         }
 
-        const { data } = await axios.put(`/master${this.url}`, this.body, {
-          headers: { Authorization: "asdasdasd" },
-        });
+        console.log()
+        const { data } = await axios.put(`/masbarjenis/${this.authToken}`, this.body);
 
         this.$emit('onResolve', data)
         this.loading = false

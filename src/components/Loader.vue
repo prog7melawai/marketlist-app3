@@ -36,8 +36,8 @@ export default {
 }
 
 #wifi-loader {
-  --background: #62abff;
-  --front-color: #0da487;
+  --background: var(--red);
+  --front-color: var(--red);
   --back-color: #c3c8de;
   --text-color: #414856;
   width: 64px;

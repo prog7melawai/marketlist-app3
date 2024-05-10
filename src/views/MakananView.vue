@@ -319,40 +319,5 @@ export default {
 </script>
 
 <style>
-.capsule-theme {
-  padding: 5px 15px;
-  background: var(--green);
-  border-radius: 50px;
-  color: var(--white);
-}
 
-.capsule-danger {
-  padding: 5px 15px;
-  background: var(--red);
-  border-radius: 50px;
-  color: var(--white);
-}
-
-.capsule-warning {
-  padding: 5px 15px;
-  background: var(--orange);
-  border-radius: 50px;
-  color: var(--white);
-}
-
-.paginate-active{
-  color: var(--dark);
-}
-
-.search-container{
-  position: absolute;
-  top: 0;
-  right: 0px;
-  width: 250px;
-  height: 100%;
-  border: 1px solid var(--light);
-  border-radius: 5px;
-  padding: 0;
-  overflow: hidden;
-}
 </style>

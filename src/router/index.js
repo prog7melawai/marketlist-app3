@@ -13,8 +13,15 @@ import PRView from '../views/PRView.vue'
 import PRDetailView from '../views/PRDetailView.vue'
 import POView from '../views/POView.vue'
 import ProfileView from '../views/ProfileView.vue'
-import SatuanJenisView from '../views/SatuanJenisView.vue'
+import MasterJenisView from '../views/MasterJenisView.vue'
 import ManageGudangView from '../views/ManageGudangView.vue'
+import ContractView from '../views/ContractView.vue'
+import CreateContractView from '../views/CreateContractView.vue'
+import ContractDetailView from '../views/ContractDetailView.vue'
+import CreatePOView from '@/views/CreatePOView.vue'
+import POPRView from '@/views/POPRView.vue'
+import MasterBarangView from '@/views/MasterBarangView.vue'
+import ReceivingView from '@/views/ReceivingView.vue'
 import store from '../store'
 
 const routes = [
@@ -32,8 +39,15 @@ const routes = [
   {path: '/pr-detail/:id', name: 'pr-detail', component: PRDetailView, meta: {login: true}},
   {path: '/po', name: 'po', component: POView, meta: {login: true}},
   {path: '/profile', name: 'profile', component: ProfileView, meta: {login: true}},
-  {path: '/satuan-jenis', name: 'satuan-jenis', component: SatuanJenisView, meta: {login: true}},
+  {path: '/jenis', name: 'jenis', component: MasterJenisView, meta: {login: true}},
   {path: '/manage-warehouse', name: 'manage-warehouse', component: ManageGudangView, meta: {login: true}},
+  {path: '/contract', name: 'contract', component: ContractView, meta: {login: true}},
+  {path: '/create-contract', name: 'create-contract', component: CreateContractView, meta: {login: true}},
+  {path: '/contract-detail/:id', name: 'contract-detail', component: ContractDetailView, meta: {login: true}},
+  {path: '/create-po', name: 'create-po', component: CreatePOView, meta: {login: true}},
+  {path: '/pr-po/:id', name: 'pr-po', component: POPRView, meta: {login: true}},
+  {path: '/masterbarang', name: 'masterbarang', component: MasterBarangView, meta: {login: true}},
+  {path: '/receiving', name: 'receiving', component: ReceivingView, meta: {login: true}},
 ]
 
 const router = createRouter({

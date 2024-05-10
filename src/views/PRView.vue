@@ -8,7 +8,7 @@
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
           <div class="content-title">
-            <h2>Purchase Review</h2>
+            <h2>Purchase Requisition</h2>
           </div>
 
           <div class="content">
@@ -24,6 +24,15 @@
                   <option value="25">25</option>
                   <option value="50">50</option>
                   <option value="100">100</option>
+                </select>
+
+                <select class="select-sort" v-model="status" @change="getPR">
+                  <option value="uncompleted">Uncompleted</option>
+                  <option value="pending">Pending</option>
+                  <option value="approve">Approve</option>
+                  <option value="reject">Reject</option>
+                  <option value="revise">Revise</option>
+                  <option value="all">All</option>
                 </select>
 
                 <div class="export-wrapper">
@@ -205,16 +214,15 @@
                 class="table-responsive"
                 aria-describedby="Purchase Review Data"
               >
-                <thead class="bg-theme">
+                <thead class="bg-dark">
                   <tr>
                     <th style="width: 5%; 
                     border-top-left-radius: 5px">No</th>
                     <th style="width: 15%">PR Number</th>
                     <th style="width: 10%">PR Date</th>
                     <th style="width: 10%">Divisi</th>
-                    <th style="width: 10%">Subdiv</th>
-                    <th style="width: 10%">Dept</th>
-                    <th style="width: 10%">Total Item</th>
+                    <th style="width: 15%">Subdiv</th>
+                    <th style="width: 15%">Dept</th>
                     <th style="width: 15">Status</th>
                     <th style="width: 15%; 
                     border-top-right-radius: 5px">
@@ -222,7 +230,8 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <loader v-if="isloading"></loader>
+                <tbody v-if="!isLoading">
                   <tr
                     v-for="(pr, idx) in prs[selectedPage]"
                     :key="pr.id"
@@ -234,32 +243,40 @@
                     <td>{{ pr.div_kd }}</td>
                     <td>{{ pr.subdiv_kd }}</td>
                     <td>{{ pr.dept_kd }}</td>
-                    <td>{{ pr.total_item }}</td>
                     <td>
                       <span
                         :class="{
-                          'capsule-theme': pr.f_batal === false,
-                          // 'capsule-warning':
-                          //   pr.status === 'Pending' ||
-                          //   pr.status === 'Approved PR',
+                          'capsule-theme': pr.f_approve === true,
+                          'capsule-success': pr.f_batal === false && pr.f_approve === false && pr.f_revise === false,
+                          'capsule-warning': pr.f_revise === true,
                           'capsule-danger': pr.f_batal === true,
                         }"
                       >
-                        <span v-if="!pr.f_batal">Confirm</span>
+                        <span v-if="!pr.f_batal && !pr.f_approve && !pr.f_revise">Waiting</span>
+                        <span v-if="pr.f_revise">Revise</span>
+                        <span v-if="pr.f_approve">Approve</span>
                         <span v-if="pr.f_batal">Cancel</span>
                       </span>
                     </td>
-                    <td>
+                    <td style="display: flex;flex-direction: row;gap: 5px;flex-wrap: wrap;">
                       <button
                         class="btn-theme"
+                        style="width: 80px"
                         @click="
                           this.$router.push({
                             name: 'pr-detail',
                             params: { id: pr.pr_no },
                           })
-                        "
-                      >
+                        ">
                         Details
+                      </button>
+                      <button
+                        class="btn-success" 
+                        style="width: 80px;overflow: hidden"
+                        @click="downloadPR(pr.pr_no)"
+                        v-if="pr.f_revise && isDownloader">
+                        <spinner v-if="isDownload"></spinner>
+                        <span v-if="!isDownload">Download</span>
                       </button>
                     </td>
                   </tr>
@@ -313,8 +330,11 @@
 </template>
 
 <script>
+import Spinner from "@/components/Spinner.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
+import Loader from "@/components/Loader.vue";
+import ExcelJS from "exceljs";
 import axios from "axios";
 
 export default {
@@ -322,6 +342,8 @@ export default {
   components: {
     SidebarVue,
     NavbarVue,
+    Spinner,
+    Loader,
   },
   data() {
     return {
@@ -344,7 +366,21 @@ export default {
       end: 8,
       searchItem: null,
       pagelength: 0,
+      authToken: null,
+      perm: null,
+      permission: [],
+      isDownload: false,
+      isLoading: false,
+      isDownloader: false,
+      status: 'uncompleted',
     };
+  },
+  created(){
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('pr')) window.location.href = '/'
+    this.isDownloader = this.permission.includes('download-pr')
   },
   mounted() {
     this.getPR();
@@ -356,20 +392,24 @@ export default {
       else this.contentWidth = "92%";
     },
     async getPR() {
+      this.isLoading = true;
       const groupSize = this.perpage;
       const newPR = [];
+      this.prs = [];
+      this.total_page = [];
+      this.selectedPage = 0;
       
       try {
-        const { data } = await axios.get('/prbarang/askdhjadasd');
+        const { data } = await axios.get(`/prservice/${this.status}/${this.authToken}`);
         this.pr = data;
-        console.log(data)
 
+        console.log(this.pr)
         this.total_page = [];
         this.pr.forEach((data) => {
           newPR.push(data);
         });
 
-        this.pagelength = this.pr.length
+        this.pagelength = this.pr.length;
         for (let i = 0; i < newPR.length; i += groupSize) {
           this.prs.push(newPR.slice(i, i + groupSize));
         }
@@ -377,8 +417,18 @@ export default {
         for (let i = 0; i < this.prs.length; i++) {
           this.total_page.push(i);
         }
+
+        this.isLoading = false;
       } catch(error){
         console.log(error);
+        if(error.response.status == 401){
+          this.$store.dispatch("LOGOUT")
+          .then(() => {
+              this.$router.push({ path : '/login'});
+          }).catch(() => {
+              this.$router.push({ path : '/login'});
+          });
+        }
       }
     },
     getFooImage(filename) {
@@ -458,7 +508,138 @@ export default {
       for (let a = 0; a < this.prs.length; a++) {
         this.total_page.push(a);
       }
-    }
+    },
+    async downloadPR(prno){
+      try {
+        if(this.isDownload) return;
+        this.isDownload = true;
+        const { data } = await axios.get(`/prdetail2/all/${prno}/${this.authToken}`);
+        const barang = data.items;
+
+        console.log(barang)
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+
+        worksheet.columns = [
+          { header: 'Kode Barang', key: 'kdbar', width: 15 },
+          { header: 'Nama Barang', key: 'nmbar', width: 30 },
+          { header: 'Nama Barang 2', key: 'nmbar2', width: 30 },
+          { header: 'NO PR', key: 'nopr', width: 20 },
+          { header: 'Kode Jenis', key: 'kode_jenis', width: 10 },
+          { header: 'Nama Jenis', key: 'nama_jenis', width: 20 },
+          { header: "Kdstn Kirim", key: "kdstn_krm", width: 10 },
+          { header: 'Satuan Kirim', key: 'nama_krm', width: 20 },
+          { header: "Kdstn Stok", key: "kdstn_stok", width: 10 },
+          { header: "Satuann Stok", key: "nama_stok", width: 20 },
+          { header: "Quantity", key: "qty", width: 15 },
+          { header: "Qty Revise", key: "qty_revise", width: 15 },
+          { header: "Revise Note", key: "revise_note", width: 40 },
+        ];
+
+        worksheet.getRow(1).height = 30;
+
+        const startCell = 'A1';
+        const endCell = 'N1';
+        worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
+          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+            const cellAddress = cell.address;
+            if (cellAddress >= startCell && cellAddress <= endCell) {
+              console.log(rowNumber, colNumber)
+              cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'F3F3F3' }
+              };
+              cell.alignment = {
+                horizontal: 'center',
+                vertical: 'middle'
+              };
+            }
+          });
+        });
+
+        barang.forEach(async(data) => {
+          worksheet.addRow({
+            kdbar: data.kode_barang,
+            nmbar: data.nama_barang,
+            nmbar2: data.nama_barang2,
+            nopr: prno,
+            kode_jenis: data.kd_jenis,
+            nama_jenis: data.nm_jenis,
+            kdstn_stok: data.kdstn_stok,
+            nama_stok: data.nm_stok,
+            kdstn_krm: data.kdstn_kirim,
+            nama_krm: data.nm_kirim,
+            qty: data.qty,
+            qty_revise: data.qty,
+            revise_note: data.revise_note
+          });
+        });      
+        
+        // const startColumn = 'A';
+        // const endColumn = 'I';
+        worksheet.eachRow({ includeEmpty: false }, function(row, rowNumber) {
+          row.getCell(1).protection = {locked: true};
+          row.getCell(2).protection = {locked: true};
+          row.getCell(3).protection = {locked: true};
+          row.getCell(4).protection = {locked: true};
+          row.getCell(5).protection = {locked: true};
+          row.getCell(6).protection = {locked: true};
+          row.getCell(7).protection = {locked: true};
+          row.getCell(8).protection = {locked: true};
+          row.getCell(9).protection = {locked: true};
+          row.getCell(10).protection = {locked: true};
+          row.getCell(11).protection = {locked: true};
+          row.getCell(12).protection = {locked: false};
+          row.getCell(13).protection = {locked: true};
+
+          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+            const startCell = `A${rowNumber}`;
+            const endCell = `N${rowNumber}`;
+            const cellAddress = cell.address;
+            if (cellAddress >= startCell && cellAddress <= endCell){
+              console.log(rowNumber, colNumber)
+              cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+              };
+            }
+          });
+        });
+
+        await worksheet.protect('faamelawai', {
+          selectLockedCells: true,
+          selectUnlockedCells: true,          
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+
+        a.href = url;
+        a.download = 'TemplatePR.xlsx';
+        a.style = 'opacity: 0';
+        document.body.appendChild(a);
+
+        a.click();
+
+        document.body.removeChild(a);
+        this.isDownload = false;
+      } catch(error){
+        console.log(error);
+        if(error.response.status == 401){
+          this.$store.dispatch("LOGOUT")
+          .then(() => {
+              this.$router.push({ path : '/login'});
+          }).catch(() => {
+              this.$router.push({ path : '/login'});
+          });
+        }
+      }
+    },
   },
 };
 </script>

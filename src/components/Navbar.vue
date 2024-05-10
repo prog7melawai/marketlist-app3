@@ -23,12 +23,12 @@
         </div>
         <div class="user-detail">
           <div class="user-image">
-            <img class="profile-image" src="/images/user/john.jpg" alt="user" />
+            <img class="profile-image" src="/images/user/user.png" alt="user" />
           </div>
           <div class="username" @click="showUsrDrp">
-            <h4>John Doe</h4>
+            <h4>{{ username }}</h4>
             <h5>
-              Administrator
+              {{ deptkd }}
               <i class="ri-arrow-down-s-fill"></i>
             </h5>
           </div>
@@ -75,7 +75,13 @@ export default {
     return {
       showUserDropdown: false,
       showNotification: false,
+      username: null,
+      deptkd: null,
     };
+  },
+  created(){
+    this.username = this.$store.getters.GET_AUTH_INFO.id
+    this.deptkd = this.$store.getters.GET_AUTH_INFO.position
   },
   methods: {
     showUsrDrp() {

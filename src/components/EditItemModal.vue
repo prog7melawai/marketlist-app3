@@ -4,7 +4,8 @@
     <div
       class="modal-dialog theme-scroll fade-in-down"
       id="modal-edit"
-      style="max-height: 530px"
+      style="max-height: 500px;
+      overflow: hidden;"
     >
       <div class="btn-close" @click="closeModal">
         <i class="ri-close-fill"></i>
@@ -27,6 +28,16 @@
               </div>
 
               <div v-if="!selectedfile && food.image">
+                <div style="position: absolute;
+                  top: 40%;
+                  left: 50%;
+                  -webkit-transform: translateX(-50%);
+                  transform: translateX(-50%);
+                  font-size: 50pt;
+                  color: var(--red);">
+                  <i class="ri-restart-line"></i>
+                </div>
+                
                 <img :src="getImage(food.image)" class="preview" alt="item" />
               </div>
 
@@ -66,7 +77,22 @@
             <div style="position: relative">
               <label
                 class="input-placeholder"
-                :class="{ 'color-orange': food.name }"
+                :class="{ 'color-orange': food.kd_barang }"
+                >Product ID</label
+              >
+              <input
+                type="text"
+                class="form-input"
+                placeholder="Product Name"
+                id="food-name"
+                :value="food.kd_barang"
+                readonly
+              />
+            </div>
+            <div style="position: relative">
+              <label
+                class="input-placeholder"
+                :class="{ 'color-orange': food.nm_barang }"
                 >Product Name</label
               >
               <input
@@ -74,33 +100,30 @@
                 class="form-input"
                 placeholder="Product Name"
                 id="food-name"
-                :value="food.name"
+                :value="food.nm_barang"
+                readonly
               />
             </div>
-            <select id="food-tipe" class="select-input" :value="food.tipe">
-              <option>Select Type</option>
-              <option value="RM">Raw Material</option>
-              <option value="WIP">Work In Progress</option>
-            </select>
             <div style="position: relative">
               <label
                 class="input-placeholder"
-                :class="{ 'color-orange': food.stock }"
-                >Quantity Stock</label
+                :class="{ 'color-orange': food.nm_jenis }"
+                >Product Types</label
               >
               <input
-                type="number"
+                type="text"
                 class="form-input"
                 placeholder="Quantity Stock"
                 id="food-stock"
-                :value="food.stock"
+                :value="food.nm_jenis"
+                readonly
               />
             </div>
 
             <div style="position: relative">
               <label
                 class="input-placeholder"
-                :class="{ 'color-orange': food.satuan_stock }"
+                :class="{ 'color-orange': food.nmstn_stok }"
                 >Stock Unit</label
               >
               <input
@@ -108,29 +131,31 @@
                 class="form-input"
                 placeholder="Stock Unit"
                 id="stock-unit"
-                :value="food.satuan_stock"
+                :value="food.nmstn_stok"
+                readonly
               />
             </div>
 
             <div style="position: relative">
               <label
                 class="input-placeholder"
-                :class="{ 'color-orange': food.satuan_beli }"
-                >Purchase Unit</label
+                :class="{ 'color-orange': food.f_prod }"
+                >Finnish Good</label
               >
               <input
                 type="text"
                 class="form-input"
                 placeholder="Purchase Unit"
                 id="purchase-unit"
-                :value="food.satuan_beli"
+                :value="food.f_prod"
+                readonly
               />
             </div>
 
             <div style="position: relative">
               <label
                 class="input-placeholder"
-                :class="{ 'color-orange': food.konversi }"
+                :class="{ 'color-orange': food.lok_kd }"
                 >Conversion</label
               >
               <input
@@ -138,50 +163,14 @@
                 class="form-input"
                 placeholder="Conversion"
                 id="conversion"
-                :value="food.konversi"
+                :value="food.lok_kd"
+                readonly
               />
             </div>
           </div>
         </div>
 
         <br />
-
-        <div
-          style="
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-          "
-        >
-          <div style="position: relative; width: 45%">
-            <label
-              class="input-placeholder"
-              :class="{ 'color-orange': food.qtymin }"
-              >Qty Minimum</label
-            >
-            <input
-              type="number"
-              class="form-input"
-              placeholder="Qty Minimum"
-              id="qty-min"
-              :value="food.qtymin"
-            />
-          </div>
-
-          <div style="position: relative; width: 50%">
-            <label
-              class="input-placeholder"
-              :class="{ 'color-orange': food.qtymin }">
-              Qty Per Day
-            </label>
-            <input
-              type="number"
-              class="form-input"
-              placeholder="Qty / Day"
-              id="qty-day"
-              :value="food.qtyday"/>
-          </div>
-        </div>
 
         <button
           class="btn-block btn-primary"
@@ -217,10 +206,11 @@ export default {
       product: [],
       receipe: [],
       loading: false,
+      authToken: null,
     };
   },
   mounted() {
-    this.product = [...this.$store.state.products];
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN;
   },
   methods: {
     closeModal() {
@@ -260,8 +250,21 @@ export default {
         this.filelist.push(fileArray[0]);
       } else {
         alert("Invalid file input: " + fileArray[0].name + "!");
+        document.getElementById("image-edit").classList.add("bg-gradient-gray");
         return;
       }
+
+      this.filename = this.filelist[0].name;
+      const lastDot = this.filename.lastIndexOf('.');
+      const ext = this.filename.substring(lastDot + 1);            
+
+      var blob = this.images.slice(0, this.images.size, this.images.type); 
+      const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
+          type: this.images.type
+      });
+
+      this.filelist = []
+      this.filelist.push(newFile)
 
       this.selectedfile = this.filelist[0].name;
       this.selectedfile = this.selectedfile.substring(0, 25);
@@ -277,6 +280,7 @@ export default {
       let files = Array.prototype.slice.call(e.target.files);
       files.forEach((f) => {
         if (!f.type.match("image.*")) {
+          document.getElementById("image-input").classList.add("bg-gradient-gray");
           return;
         }
 
@@ -288,6 +292,18 @@ export default {
         };
         reader.readAsDataURL(f);
       });
+
+      this.filename = this.filelist[0].name;
+      const lastDot = this.filename.lastIndexOf('.');
+      const ext = this.filename.substring(lastDot + 1);            
+
+      var blob = this.images.slice(0, this.images.size, this.images.type); 
+      const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
+          type: this.images.type
+      });
+
+      this.filelist = []
+      this.filelist.push(newFile)
     },
     removeFile() {
       this.filelist = [];
@@ -299,32 +315,17 @@ export default {
       document.getElementById("image-input").classList.add("bg-gradient-gray");
     },
     getImage(filename) {
-      return "https://reservasi.tamani-pos.online/files/images/" + filename;
+      return `http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/${filename}`;
     },
     async submitItem(){
       try {
         this.loading = true
-        let image = this.selectedfile ?? this.food.image;
         const formData = new FormData()
-        formData.append('kd_barang', this.food.kd_barang);
-        formData.append('name', document.getElementById('food-name').value);
-        formData.append('tipe', document.getElementById('food-tipe').value);
-        formData.append('satuan_stock', document.getElementById('stock-unit').value);
-        formData.append('satuan_beli', document.getElementById('purchase-unit').value);
-        formData.append('konversi', parseInt(document.getElementById('conversion').value));
-        formData.append('factive', true)
-        formData.append('kd_jenis', this.food.kd_jenis);
-        formData.append('qtymin', parseInt(document.getElementById('qty-min').value))
-        formData.append('qtyday', parseInt(document.getElementById('qty-day').value))
-        formData.append('image', image)
-        formData.append('stock', parseInt(document.getElementById('food-stock').value))
-        if(this.filelist.length > 0) formData.append('file', this.filelist[0])
 
-        const { data } = await axios.put('/masterbarang', formData, {
-            headers: {
-              Authorization: 'asdasdasdasdasda'
-            }
-        })
+        formData.append('kd_barang', this.food.kd_barang);
+        if(this.filelist.length > 0) formData.append('filename', this.filelist[0])
+
+        const { data } = await axios.put(`/masbarimages/${this.authToken}`, formData)
 
         this.$emit('onResolve', data)
         this.loading = false

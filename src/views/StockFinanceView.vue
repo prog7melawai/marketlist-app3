@@ -76,7 +76,7 @@
                 class="table-responsive"
                 aria-describedby="Stock Finance Items"
               >
-                <thead class="bg-theme">
+                <thead class="bg-dark">
                   <tr>
                     <th style="width: 5%; 
                     border-top-left-radius: 5px">No</th>
@@ -269,10 +269,17 @@ export default {
       selectedID: null,
       item: {},
       sheaders: {},
+      perm: null,
+      permission: [],
     };
   },
   mounted() {
     this.getFood();
+  },
+  created(){
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('stockfinance')) window.location.href = '/'
   },
   methods: {
     setWidth(value) {

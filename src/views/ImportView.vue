@@ -24,7 +24,7 @@
                 </select>
 
                 <button 
-                  class="btn-primary" 
+                  class="btn-primary" style="width: 100px"
                   @click="downloadTemplate">
                   <spinner v-if="isDownload"></spinner>
                   <span v-if="!isDownload">Download</span>
@@ -44,9 +44,11 @@
             >
               <h3>Load Excel Template</h3>
 
-              <select class="select-excel-type" v-model="exceltype">
-                <option value="Barang">Master Barang</option>
-              </select>
+              <div class="load-divisi-container">
+                  <select class="select-excel-type" v-model="exceltype">
+                    <option value="Barang">Master Barang</option>
+                  </select>
+              </div>              
 
               <img
                 src="/images/icons/cloud.svg"
@@ -179,10 +181,19 @@ export default {
       url: null,
       sheaders: null,
       item: null,
+      authToken: false,
+      perm: null,
+      permission: null,
     };
   },
   mounted(){
     this.setWidth()
+  },
+  created(){
+    this.authToken = this.$store.getters.GET_AUTH_INFO
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('import')) window.location.href = '/'
   },
   methods: {
     setWidth() {
@@ -241,7 +252,7 @@ export default {
     async downloadTemplate(){
       try {
         this.isDownload = true;
-        const { data } = await axios.get('/masterbarang/asjdhasdasd');
+        const { data } = await axios.get(`/masterbarang/${this.authToken}`);
         const barang = data;
 
         const workbook = new ExcelJS.Workbook();
@@ -399,6 +410,14 @@ export default {
         this.isDownload = false;
       } catch(error){
         console.log(error)
+        if(error.response.status == 401){
+          this.$store.dispatch("LOGOUT")
+          .then(() => {
+              this.$router.push({ path : '/login'});
+          }).catch(() => {
+              this.$router.push({ path : '/login'});
+          });
+        }
       }
     },
     async submitFile() {
@@ -419,7 +438,7 @@ export default {
       this.title = 'Confirmation'
       this.deleteMessage = `Are you sure want to submit Transaction ?`
       this.methods = 'post'
-      this.url = '/marketlist/askjdhaskjdhaksd'
+      this.url = `/marketlist/${this.authToken}`
       this.sheaders = {}
       this.item = this.content
       this.showAlert = true;

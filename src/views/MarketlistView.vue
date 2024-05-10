@@ -73,7 +73,7 @@
               <table
                 class="table-responsive"
                 aria-describedby="Marketlist items">
-                <thead class="bg-theme">
+                <thead class="bg-dark">
                   <tr>
                     <th style="width: 5%; 
                     border-top-left-radius: 5px">No</th>
@@ -179,7 +179,7 @@
   <create-modal
     v-show="showCreate"
     tittle="Create New Item"
-    jenis="K001"
+    jenis="m"
     @closed="onClosedModal"
     @onResolve="resolveResponse">
   </create-modal>
@@ -261,10 +261,19 @@ export default {
       selectedID: null,
       item: {},
       sheaders: {},
+      perm: null,
+      permission: null,
+      authToken: null,
     };
   },
   mounted() {
     this.getFood()
+  },
+  created(){
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('marketlist')) window.location.href = '/'
   },
   methods: {
     setWidth(value) {
@@ -310,7 +319,7 @@ export default {
         this.foods = [];
         this.total_page = [];
 
-        const { data } = await axios.get('/marketlist/asjdgajsdgajhsgdasd')
+        const { data } = await axios.get(`/marketlist/${this.authToken}`)
 
         this.food = data
         this.pagelength = this.food.length

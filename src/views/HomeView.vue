@@ -17,7 +17,7 @@
             <div
               style="display: flex; flex-direction: column; margin-left: 10px"
             >
-              <span class="event-title">Purchase Review</span>
+              <span class="event-title">Purchase Requisition</span>
               <span
                 style="
                   font-size: 20pt;
@@ -41,7 +41,7 @@
             <div
               style="display: flex; flex-direction: column; margin-left: 10px"
             >
-              <span class="event-title">Upcoming Event</span>
+              <span class="event-title">Purchase Order</span>
               <span
                 style="
                   font-size: 20pt;
@@ -65,7 +65,7 @@
             <div
               style="display: flex; flex-direction: column; margin-left: 10px"
             >
-              <span class="event-title">Running Out</span>
+              <span class="event-title">Receiving</span>
               <span
                 style="
                   font-size: 20pt;

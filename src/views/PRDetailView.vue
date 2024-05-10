@@ -9,50 +9,43 @@
         <div class="content-wrapper">
           <div class="content-title">
             <h2>Detail for #{{ this.$route.params.id }}</h2>
-            <span
-              >{{ getMonth(new Date(selectedPR.pr_date).getMonth()) }},
+            <span>{{ getMonth(new Date(selectedPR.pr_date).getMonth()) }},
               {{ new Date(selectedPR.pr_date).getDate() }}
               {{ new Date(selectedPR.pr_date).getFullYear() }}
             </span>
           </div>
 
-          <button
-            class="export-btn"
-            style="
-              position: absolute;
-              top: 20px;
-              right: 125px;
-              border-radius: 3px;
-            "
-            @click="confirmPR"
-          >
-            <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
-          </button>
+          <div class="confirm-wrapper">           
+              <button class="export-btn">
+                <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
+              </button>
 
-          <!-- 
-          <button
-            class="btn-theme"
-            style="position: absolute; top: 20px; right: 125px"
-            @click="confirmPR"
-          >
-            <i class="ri-check-line" style="font-size: 14pt"></i>
+              <button class="btn-success" @click="confirmPR" v-if="isApproval && !isRevise && !selectedPR.f_mark && !isLoading && !selectedPR.f_revise">
+                <i class="ri-check-line" style="font-size: 14pt"></i>
+                <span style="position: relative; top: -2px"> Approve </span>
+              </button>
 
-            <span style="position: relative; top: -2px"> Approve </span>
-          </button>
-          -->
+              <button class="btn-danger" @click="cancelPR" v-if="isRejector && !isRevise && !selectedPR.f_mark && !isLoading && !selectedPR.f_revise">
+                <i class="ri-close-line" style="font-size: 14pt"></i>
+                <span style="position: relative; top: -2px"> Reject </span>
+              </button>
 
-          <button
-            class="btn-danger"
-            style="position: absolute; top: 20px; right: 20px"
-            @click="cancelPR"
-          >
-            <i class="ri-close-line" style="font-size: 14pt"></i>
+              <button :class="{'btn-warning': !isRevise, 'btn-danger': isRevise}" @click="revisePR" v-if="isRevisor && !selectedPR.f_mark && !isLoading && !selectedPR.f_revise">
+                <i v-if="!isRevise" class="ri-arrow-go-forward-line" style="font-size: 14pt"></i>
+                <i v-if="isRevise" class="ri-close-line" style="font-size: 14pt"></i>
+                <span v-if="!isRevise" style="position: relative; top: -2px"> Revise </span>
+                <span v-if="isRevise" style="position: relative; top: -2px"> Cancel </span>
+              </button>
 
-            <span style="position: relative; top: -2px"> Denied </span>
-          </button>
+              <button class="btn-success" @click="submitRevise" v-if="isRevisor && isRevise">
+                <i class="ri-send-plane-fill"></i>
+                <span style="position: relative; top: -2px"> Submit Revise </span>
+              </button>
+          </div>
 
           <div class="content">
-            <div style="width: 100%; margin-top: 20px">
+            <loader v-if="isLoading"></loader>
+            <div v-if="!isLoading" style="width: 100%; margin-top: 20px">
               <div class="po-header">
                 <div class="po-logo">
                   <img
@@ -62,20 +55,26 @@
                   />
                 </div>
 
+                <span class="stamp-container">
+                    <img v-if="selectedPR.f_approve" class="stamp-logo" src="/images/logo/approved.png" alt="">
+                    <img v-if="selectedPR.f_batal" class="stamp-logo" src="/images/logo/reject.png" alt="">
+                    <img v-if="selectedPR.f_revise" class="stamp-logo" src="/images/logo/revised.png" alt="">
+                </span>
+
                 <div style="width: 78%; display: flex; flex-direction: column">
                   <span class="pr-supplier">{{ selectedPR.dept_kd }}</span>
-                  <span class="pr-contact">{{ selectedPR.div_kd }}</span>
-                  <span class="pr-address">{{ selectedPR.subdiv_kd }}</span>
+                  <span class="pr-contact">{{ selectedPR.subdiv_kd }}</span>
+                  <span class="pr-address">{{ selectedPR.div_kd }}</span>
 
-                  <span class="pr-deliver">Deliver to:</span>
+                  <span class="pr-deliver">User Created:</span>
                   <span class="pr-company">
-                    <!-- <img
-                      src="/images/logo/movenpick.png"
+                    <img
+                      src="/images/user/user.png"
                       alt="logo"
-                      style="width: 135px"
-                    /> -->
+                      style="width: 25px"
+                    />
+                    <span class="pr-department">{{ selectedPR.cruser }}</span>
                   </span>
-                  <span class="pr-department">Departmen {{ selectedPR.dept_kd }}</span>
                 </div>
               </div>
 
@@ -150,12 +149,19 @@
                 <thead class="bg-dark">
                   <tr>
                     <th style="width: 5%">No</th>
-                    <th style="width: 15%">Product ID</th>
-                    <th style="width: 25%" colspan="2">Product Name</th>
-                    <th style="width: 5%">Jenis</th>
+                    <th style="width: 10%">Product ID</th>
+                    <th style="width: 15%;text-align: left">
+                      <select class="select-jenis" v-model="jenisitems" @change="getPR">
+                          <option value="all">Jenis</option>
+                          <option v-for="jns in jenis" :key="jns.kd_jenis" :value="jns.kd_jenis">{{ jns.nm_jenis }}</option>
+                      </select>
+                    </th>
+                    <th style="width: 20%;text-align: left">Product Name</th>
                     <th style="width: 5%">Satuan Stock</th>
-                    <th style="width: 10%">Satuan Kirim</th>
-                    <th style="width: 10%">Quantity</th>
+                    <th style="width: 5%">Satuan Kirim</th>
+                    <th style="width: 5%">Qty</th>
+                    <th style="width: 5%">Qty Old</th>
+                    <th style="width: 35%" v-if="isRevise || selectedPR.f_revise || selectedPR.revised_user">Note</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -165,9 +171,10 @@
                     :class="{ 'bg-canvas': idx % 2 == 0 }"
                     style="height: 60px;"
                   >
-                    <td>{{ idx + 1 }}</td>
+                    <td>{{ pr.no }}</td>
                     <td>{{ pr.kode_barang }}</td>
-                    <td style="text-align: start" colspan="2">
+                    <td style="text-align: left">{{ pr.nm_jenis }}</td>
+                    <td style="text-align: start">
                       <!-- <img
                         :src="getFoodImage(pr.image)"
                         :alt="pr.image"
@@ -183,10 +190,24 @@
                         {{ pr.nama_barang }}
                       </span>
                     </td>
-                    <td>{{ pr.kd_jenis }}</td>
-                    <td>{{ pr.kdstn_stock }}</td>
-                    <td>{{ pr.kdstn_krm }}</td>
-                    <td>{{ pr.qty }}</td>
+                    <td>{{ pr.nm_stok }}</td>
+                    <td>{{ pr.nm_kirim }}</td>
+                    <td :class="{'qty-update': pr.qty !== pr.qty_old && pr.qty !== 0 && pr.qty_old !== 0}">{{ pr.qty }}</td>
+                    <td>{{ pr.qty_old }}</td>
+                    <!-- <td v-if="pr.qty > 0 && pr.qty_old > 0">{{ pr.qty_old }}</td>
+                    <td v-if="pr.qty == 0 && pr.qty_old > 0">{{ pr.qty }}</td> -->
+                    <td v-if="isRevise || selectedPR.f_revise || selectedPR.revised_user">
+                        <textarea 
+                          class="revise-note"
+                          :class="{'revise-note': !selectedPR.f_revise, 'revised-note': selectedPR.f_revise}"
+                          :id="'note' + pr.kode_barang"
+                          rows="3"
+                          wrap=physical
+                          :value="pr.revise_note"
+                          v-on:keyup="onTypeNote(pr.kode_barang)"
+                          :readonly="selectedPR.f_revise || selectedPR.f_approve || selectedPR.f_batal">
+                        </textarea>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -237,19 +258,40 @@
     </div>
   </div>
 
-  <alert-confirm
-    v-if="showAlert"
-    :title="title"
+  <notification 
+      v-if="showNotif" 
+      :success="success" 
+      :message="message">
+  </notification>
+
+  <notification-alert 
+    v-if="showNotifAlert" 
+    :success="success" 
     :message="message"
-    @onClosed="onClosed"
-  >
+    @onClosed="onClosedNotif">
+  </notification-alert>
+
+  <alert-confirm 
+      v-if="showAlert"
+      :title="title" 
+      :message="deleteMessage" 
+      :methods="methods" 
+      :url="url" 
+      :header="sheaders"
+      :data="item"
+      @onClosed="onClosed"
+      @onResolve="submitted"
+      @onError="onError">
   </alert-confirm>
 </template>
 
 <script>
+import Loader from "@/components/Loader.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
+import Notification from "@/components/Notification.vue";
+import NotificationAlert from "@/components/NotificationAlert.vue";
 import axios from "axios";
 
 export default {
@@ -258,9 +300,18 @@ export default {
     SidebarVue,
     NavbarVue,
     AlertConfirm,
+    Notification,
+    NotificationAlert,
+    Loader,
   },
   data() {
     return {
+      title: null,
+      confirmmessage: null,
+      methods: null,
+      url: null,
+      sheader: null,
+      item: null,
       sidebarWidth: "18%",
       contentWidth: "78%",
       allselected: false,
@@ -271,16 +322,40 @@ export default {
       total_page: [],
       selectedPage: 0,
       selectedPR: {},
+      showNotif: false,
       showAlert: false,
+      showNotifAlert: false,
       message: null,
-      title: null,
+      succes: false,
       start: 0,
       end: 8,
       pagelength: 0,
+      isApproval: false,
+      isApprove: false,
+      isRejector: false,
+      isReject: false,
+      isRevisor: false,
+      isRevise: false,
+      authToken: null,
+      perm: null,
+      permission: [],
+      isLoading: false,
+      jenisitems: 'all',
+      jenis: null,
     };
   },
   mounted() {
     this.getPR();
+    this.getJenisPR();
+  },
+  created(){
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('pr-detail')) window.location.href = '/'
+    this.isApproval = this.permission.includes('approve-pr')
+    this.isRejector = this.permission.includes('reject-pr')
+    this.isRevisor  = this.permission.includes('revise-pr')
   },
   methods: {
     setWidth(value) {
@@ -290,11 +365,37 @@ export default {
     },
     async getPR() {
       try {
-        const { data } = await axios.get(`/prdetailbarang/${this.$route.params.id}/asdasdas`)
+        this.isLoading = true;
+        const { data } = await axios.get(`/prdetail2/${this.jenisitems}/${this.$route.params.id}/${this.authToken}`)
         this.selectedPR = data
         this.getItem(this.selectedPR.items);
+        this.isLoading = false;
       } catch(error){
         console.log(error);
+        if(error.response.status == 401){
+          this.$store.dispatch("LOGOUT")
+          .then(() => {
+              this.$router.push({ path : '/login'});
+          }).catch(() => {
+              this.$router.push({ path : '/login'});
+          });
+        }
+      }
+    },
+    async getJenisPR() {
+      try {
+        const { data } = await axios.get(`/jenispr/${this.$route.params.id}/${this.authToken}`)
+        this.jenis = data;
+      } catch(error){
+        console.log(error);
+        if(error.response.status == 401){
+          this.$store.dispatch("LOGOUT")
+          .then(() => {
+              this.$router.push({ path : '/login'});
+          }).catch(() => {
+              this.$router.push({ path : '/login'});
+          });
+        }
       }
     },
     getItem(items) {
@@ -303,8 +404,11 @@ export default {
       this.prs = [];
       this.total_page = [];
       this.pagelength = items.length
+      let nou = 1;
       items.forEach((data) => {
+        data.no = nou;
         newPR.push(data);
+        nou++
       });
 
       for (let i = 0; i < newPR.length; i += groupSize) {
@@ -344,18 +448,74 @@ export default {
       this.showAlert = value;
     },
     cancelPR() {
-      this.title = "Confirm Cancel";
-      this.message =
-        "Are you sure want to cancel #" +
-        this.$route.params.id +
-        " ? This process cannot be reverted!";
-      this.showAlert = true;
+      const body = {
+          pr_no: this.selectedPR.pr_no,
+          token: this.authToken
+      }
+
+      console.log(body)
+      this.title = 'Confirmation'
+      this.deleteMessage = `Are you sure want to Reject this Transaction ?`
+      this.methods = 'delete'
+      this.url = `/prbarang/${this.authToken}`
+      this.sheaders = null
+      this.item = body
+      this.showAlert = true
     },
     confirmPR() {
-      this.title = "Confirm Submit";
-      this.message =
-        "Are you sure want to confirm #" + this.$route.params.id + " ?";
-      this.showAlert = true;
+      const body = {
+          pr_no: this.selectedPR.pr_no,
+          token: this.authToken
+      }
+
+      console.log(body)
+      this.title = 'Confirmation'
+      this.deleteMessage = `Are you sure want to Approve this Transaction ?`
+      this.methods = 'post'
+      this.url = `/prbarang/${this.authToken}`
+      this.sheaders = null
+      this.item = body
+      this.showAlert = true
+    },
+    revisePR(){
+      if(!this.isRevise) {
+        this.isRevise = true;
+      } else {
+        this.isRevise = false;
+      }
+    },
+    onTypeNote(idbarang){
+      this.selectedPR.items.some((data) => {
+        if(data.kode_barang === idbarang){
+          data.revise_note = document.getElementById(`note${idbarang}`).value;
+        }
+      })
+    },
+    submitRevise(){
+      try {
+        if(!this.isRevise) return;
+        this.selectedPR.items.forEach((data) => {
+          if(!data.revise_note){
+            data.revise_note = ''
+          }
+        })
+
+        const body = {
+            pr_no: this.selectedPR.pr_no,
+            items: this.selectedPR.items
+        }
+
+        console.log(body)
+        this.title = 'Confirmation'
+        this.deleteMessage = `Are you sure want to Revise this Transaction ?`
+        this.methods = 'put'
+        this.url = `/prbarang/${this.authToken}`
+        this.sheaders = null
+        this.item = body
+        this.showAlert = true
+      } catch(error){
+        console.log(error)
+      }
     },
     getMonth(gmonth) {
       let month;
@@ -398,6 +558,29 @@ export default {
       }
 
       return month;
+    },
+    submitted(value){
+      this.showAlert = false
+      this.message = value.message;
+      this.success = true;
+      this.showNotif = true;
+
+      setTimeout(() => {
+        this.message = null;
+        this.succes = false;
+        this.showNotif = false;
+        window.location.href = '/pr'
+      }, 1300)
+    },
+    onError(value){
+      this.showAlert = false
+      this.message = value.message;
+      this.success = false;
+      this.showNotifAlert = true;
+      this.alertMessage = null
+    },
+    onClosedNotif(value) {
+      this.showNotifAlert = value;
     },
   },
 };
@@ -448,6 +631,10 @@ export default {
   font-family: "Fonarto", sans-serif;
   font-size: 16pt;
   color: var(--light);
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: end;
 }
 
 .pr-department {

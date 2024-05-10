@@ -48,7 +48,7 @@
                   </button>
                 </div>
 
-                <div class="filter-wrapper">
+                <!-- <div class="filter-wrapper">
                   <button class="export-btn">
                     <i class="ri-filter-3-fill"></i>
                     Filter
@@ -58,8 +58,8 @@
                     <i class="ri-sort-desc"></i>
                     Sort
                   </button>
-                </div>
-
+                </div> -->
+<!-- 
                 <div class="filter-wrapper" style="top: 40px">
                   <div
                     class="filter-dialog"
@@ -180,11 +180,10 @@
                       <span style="margin-top: -3px">Sort by Status</span>
                     </div>
                   </div>
-                </div>
+                </div> -->
 
                 <div class="search-container"
-                     style="margin-right: 140px;
-                     height: 38px;">
+                     style="height: 38px;">
                       <input 
                           type="text" 
                           class="form-input"
@@ -199,14 +198,16 @@
                 class="table-responsive"
                 aria-describedby="Purchase Order Data"
               >
-                <thead class="bg-theme">
+                <thead class="bg-dark">
                   <tr>
                     <th style="width: 5%; 
                     border-top-left-radius: 5px">No</th>
-                    <th style="width: 20%">PO Number</th>
-                    <th style="width: 20%">PO Date</th>
-                    <th style="width: 20%">Supplier</th>
-                    <th style="width: 10">Status</th>
+                    <th style="width: 15%">PR Number</th>
+                    <th style="width: 10%">PR Date</th>
+                    <th style="width: 15%">Divisi</th>
+                    <th style="width: 15%">Subdivisi</th>
+                    <th style="width: 15%">Department</th>
+                    <th style="width: 15">Status</th>
                     <th style="width: 15%; 
                     border-top-right-radius: 5px">
                       Action
@@ -214,7 +215,35 @@
                   </tr>
                 </thead>
                 <tbody>
-                  
+                  <tr 
+                    v-for="(po, idx) in prs[selectedPage]" :key="po.pr_no"
+                    :class="{ 'bg-canvas': idx % 2 == 0 }"
+                    style="height: 50px;">
+                      <td>{{ po.no }}</td>
+                      <td>{{ po.pr_no }}</td>
+                      <td>{{ po.pr_date }}</td>
+                      <td>{{ po.div_kd }}</td>
+                      <td>{{ po.subdiv_kd }}</td>
+                      <td>{{ po.dept_kd }}</td>
+                      <td>Waiting</td>
+                      <td style="display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                        gap: 5px;">
+                        <button
+                          class="btn-theme"
+                          style="width: 80px"
+                          @click="
+                            this.$router.push({
+                              name: 'pr-po',
+                              params: { id: po.pr_no },
+                            })
+                          ">
+                          Details
+                        </button>
+                      </td>
+                  </tr>
                 </tbody>
               </table>
 
@@ -261,6 +290,7 @@
 <script>
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
+import axios from "axios";
 
 export default {
   name: "POView",
@@ -281,11 +311,19 @@ export default {
       selectedPage: 0,
       selectedPR: {},
       perpage: 10,
+      pr_no: null,
+      error: {
+        pr_no: null,
+      },
+      authToken: null,
+      searchFood: null,
     };
   },
+  created(){
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN
+  },
   mounted() {
-    this.pr = [...this.$store.state.pr];
-    this.getPR();
+    this.getPO();
   },
   methods: {
     setWidth(value) {
@@ -293,21 +331,33 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    getPR() {
-      const groupSize = this.perpage;
-      const newPR = [];
-      this.prs = [];
-      this.total_page = [];
-      this.pr.forEach((data) => {
-        newPR.push(data);
-      });
+    async getPO() {
+      try {
+        const { data } = await axios.get(`/prservice/approve/${this.authToken}`);
+        this.pr = data
+        console.log(this.pr)
 
-      for (let i = 0; i < newPR.length; i += groupSize) {
-        this.prs.push(newPR.slice(i, i + groupSize));
-      }
+        const groupSize = this.perpage;
+        const newPR = [];
+        this.prs = [];
+        this.total_page = [];
 
-      for (let i = 0; i < this.prs.length; i++) {
-        this.total_page.push(i);
+        let j = 1;
+        this.pr.forEach((data) => {
+          data.no = j
+          newPR.push(data);
+          j++
+        });
+
+        for (let i = 0; i < newPR.length; i += groupSize) {
+          this.prs.push(newPR.slice(i, i + groupSize));
+        }
+
+        for (let i = 0; i < this.prs.length; i++) {
+          this.total_page.push(i);
+        }
+      } catch(error){
+        console.log(error)
       }
     },
     getFooImage(filename) {
@@ -324,6 +374,38 @@ export default {
     editModal(item) {
       this.showEdit = true;
       this.selectedFood = item;
+    },
+    searching(){
+      this.prs = []
+      this.total_page = []
+      this.start = 0
+      this.end = 8
+      this.perpage = 10
+
+      const searchTerm = '*' + this.searchFood + '*';
+      const wildcardRegex = new RegExp('^' + searchTerm.replace(/\*/g, '.*') + '$', 'i');
+      const matchingObjects = this.pr.filter(obj =>
+        Object.values(obj).some(value =>
+          typeof value === 'string' && wildcardRegex.test(value)
+        )
+      )
+
+      let j = 1
+      const newPR = []
+      this.pagelength = matchingObjects.length;
+      matchingObjects.forEach((data) => {
+        data.no = j;
+        newPR.push(data);
+        j++;
+      })
+
+      for (let i = 0; i < newPR.length; i += parseInt(this.perpage)) {
+        this.prs.push(newPR.slice(i, i + parseInt(this.perpage)));
+      }
+
+      for (let a = 0; a < this.prs.length; a++) {
+        this.total_page.push(a);
+      }
     },
   },
 };

@@ -52,7 +52,7 @@
               type="text"
               class="form-input"
               placeholder="Food Name"
-              :value="food.name"
+              :value="food.nm_barang"
             />
             <select name="" id="" class="select-input" :value="food.category">
               <option>Select Category</option>

@@ -6,7 +6,8 @@ export const auth = {
         auth_token: null,
         sidebar: {
             sidebarwidth: "18%",
-            bgsidebar: "18%"
+            bgsidebar: "18%",
+            expand: false,
         },
         auth_info: {
             id: null,
@@ -22,11 +23,13 @@ export const auth = {
             division: null,
             subdivision: null,
             department: null,
+            position: null,
             photo: null,
             role: null,
             blood: null,
             joindate: null,
             access_token: null,
+            permission: null
         },
         auth_reset: false
     },
@@ -54,8 +57,9 @@ export const auth = {
             return new Promise ((resolve, reject) => {
                 axios.post('/login', loginData)
                      .then((response) => {
-                        context.commit('SET_AUTH_TOKEN', response.data.data.token);
-                        context.commit('SET_AUTH_INFO', response.data.data.user);
+                        console.log(response)
+                        context.commit('SET_AUTH_TOKEN', response.data.token);
+                        context.commit('SET_AUTH_INFO', response.data);
                         resolve(response);
                      }).catch((error) => {
                         reject(error);
@@ -121,6 +125,7 @@ export const auth = {
         SET_SIDEBAR_WIDTH(state, payload){
             state.sidebar.sidebarwidth = payload.sidebar
             state.sidebar.bgsidebar = payload.bg
+            state.sidebar.expand = payload.exp
         },
         
         SET_AUTH_TOKEN(state, token){
@@ -128,7 +133,7 @@ export const auth = {
         },
 
         SET_AUTH_INFO(state, info){
-            state.auth_info.id = info.id;
+            state.auth_info.id = info.userid;
             state.auth_info.name = info.name;
             state.auth_info.nik = info.nik;
             state.auth_info.gender = info.gender;
@@ -138,14 +143,16 @@ export const auth = {
             state.auth_info.birth_date = info.birth_date;
             state.auth_info.birth_place = info.birth_place;
             state.auth_info.company = info.comp_kd;
-            state.auth_info.division = info.divisi_kd;
-            state.auth_info.subdivision = info.subdivisi_kd;
-            state.auth_info.department = info.dept_kd;
+            state.auth_info.division = info.divkd;
+            state.auth_info.subdivision = info.subdiv_kd;
+            state.auth_info.department = info.deptkd;
+            state.auth_info.position = info.group_code;
             state.auth_info.photo = info.profile;
             state.auth_info.role = info.roleId;
             state.auth_info.blood = info.blood;
             state.auth_info.joindate = info.createdAt;
-            state.auth_info.access_token = info.accessToken;
+            state.auth_info.access_token = info.token;
+            state.auth_info.permission = info.mtext;
         },
 
         SET_AUTH_RESET(state){
@@ -169,11 +176,13 @@ export const auth = {
                     division: null,
                     subdivision: null,
                     department: null,
+                    position: null,
                     image: null,
                     role: false,
                     blood: null,
                     joindate: null,
                     access_token: null,
+                    permission: null,
             }
         }
     }

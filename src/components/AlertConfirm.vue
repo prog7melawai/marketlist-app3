@@ -71,8 +71,7 @@ export default {
       try {
         this.loading = true
         const response = await axios(this.url, {
-          method: this.methods,
-          headers: this.header,
+          method: this.methods,          
           data: this.data,
         });
 
@@ -80,6 +79,15 @@ export default {
         this.loading = false
       } catch (error) {
         console.log(error);
+        this.$emit("onError", error.response.data);
+        if(error.response.status == 401){
+          this.$store.dispatch("LOGOUT")
+          .then(() => {
+              this.$router.push({ path : '/login'});
+          }).catch(() => {
+              this.$router.push({ path : '/login'});
+          });
+        }
       }
     },
   },
