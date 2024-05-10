@@ -80,10 +80,15 @@
                     <th style="width: 15%">Image</th>
                     <th style="width: 10%">Kode Barang</th>
                     <th style="width: 20%">Nama Barang</th>
-                    <th style="width: 5%">Satuan</th>
-                    <th style="width: 10%">Jenis</th>
-                    <th style="width: 10">Status</th>
-                    <th style="width: 15%; border-top-right-radius: 5px">
+                    <th style="width: 7%">Satuan</th>
+                    <th style="width: 18%;text-align: left">
+                        <select class="select-jenis" style="width: 100%;text-align: center;" v-model="kdjns" @change="getMasterbarang">
+                            <option value="all">Jenis</option>
+                            <option v-for="jns in jenis" :key="jns.kdjns" :value="jns.kdjns">{{ jns.nm_jenis }}</option>
+                        </select>
+                    </th>
+                    <th style="width: 5">Status</th>
+                    <th style="width: 10%; border-top-right-radius: 5px">
                       Action
                     </th>
                   </tr>
@@ -272,16 +277,19 @@ export default {
       perm: null,
       permission: null,
       authToken: null,
+      jenis: null,
+      kdjns: 'all',
     };
   },
   mounted() {
     this.getMasterbarang();
+    this.getJenis();
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("marketlist")) window.location.href = "/";
+    if (!this.permission.includes("master-barang")) window.location.href = "/";
   },
   methods: {
     setWidth(value) {
@@ -324,10 +332,12 @@ export default {
     },
     async getMasterbarang() {
       try {
+        this.food = [];
         this.foods = [];
         this.total_page = [];
 
-        const { data } = await axios.get(`/holdingmasbar/${this.authToken}`);
+        console.log(this.kdjns)
+        const { data } = await axios.get(`/holdingmasbar/${this.kdjns}/${this.authToken}`);
 
         this.food = data;
         console.log(this.food)
@@ -341,6 +351,15 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+    async getJenis(){
+      try {
+        const { data } = await axios.get(`/jenismasbar/${this.authToken}`);
+        this.jenis = data
+        console.log(data)
+      } catch(error){
+        console.log(error)
       }
     },
     getFooImage(filename) {

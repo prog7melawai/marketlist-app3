@@ -254,17 +254,17 @@ export default {
         return;
       }
 
-      this.filename = this.filelist[0].name;
-      const lastDot = this.filename.lastIndexOf('.');
-      const ext = this.filename.substring(lastDot + 1);            
+      // this.filename = this.filelist[0].name;
+      // const lastDot = this.filename.lastIndexOf('.');
+      // const ext = this.filename.substring(lastDot + 1);            
 
-      var blob = this.images.slice(0, this.images.size, this.images.type); 
-      const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
-          type: this.images.type
-      });
+      // var blob = this.images.slice(0, this.images.size, this.images.type); 
+      // const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
+      //     type: this.images.type
+      // });
 
-      this.filelist = []
-      this.filelist.push(newFile)
+      // this.filelist = []
+      // this.filelist.push(newFile)
 
       this.selectedfile = this.filelist[0].name;
       this.selectedfile = this.selectedfile.substring(0, 25);
@@ -293,17 +293,18 @@ export default {
         reader.readAsDataURL(f);
       });
 
-      this.filename = this.filelist[0].name;
-      const lastDot = this.filename.lastIndexOf('.');
-      const ext = this.filename.substring(lastDot + 1);            
+      // this.filename = this.filelist[0].name;
+      // const lastDot = this.filename.lastIndexOf('.');
+      // const ext = this.filename.substring(lastDot + 1);            
 
-      var blob = this.images.slice(0, this.images.size, this.images.type); 
-      const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
-          type: this.images.type
-      });
+      // var blob = this.images.slice(0, this.images.size, this.images.type); 
+      // const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
+      //     type: this.images.type
+      // });
 
-      this.filelist = []
-      this.filelist.push(newFile)
+      // this.filelist = []
+      // this.filelist.push(newFile)
+      // console.log(this.filelist)
     },
     removeFile() {
       this.filelist = [];
@@ -320,16 +321,35 @@ export default {
     async submitItem(){
       try {
         this.loading = true
-        const formData = new FormData()
+        
+        // const formData = new FormData()
+        // formData.append('filename', this.filelist[0], `${this.food.kd_barang}.jpg`)
+        // const { data } = await axios.post(`http://localhost:5000/masbarimages`, formData, {
+        //   headers: {
+        //     'Authorization': this.authToken,
+        //   }
+        // })
 
-        formData.append('kd_barang', this.food.kd_barang);
-        if(this.filelist.length > 0) formData.append('filename', this.filelist[0])
+        const file = this.filelist[0];
+        const myblob = new Blob([file], { type: file.type });
+        const myFile = new File([myblob], file.name, { type: file.type });
 
-        const { data } = await axios.put(`/masbarimages/${this.authToken}`, formData)
+        const filename = file.name;
+        const lastDot = filename.lastIndexOf('.');
+        const ext = filename.substring(lastDot + 1);
+        const formData = new FormData();
+        formData.append('filename', myFile, `${this.food.kd_barang}.${ext}`);
+
+        const {data} = await axios.post(`http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/images`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        });
 
         this.$emit('onResolve', data)
         this.loading = false
       } catch(error){
+        this.loading = false
         console.log(error)
       }
     }
