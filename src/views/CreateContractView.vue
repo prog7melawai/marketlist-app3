@@ -106,7 +106,6 @@
                                 <th width="10%">Purchase Units</th>
                                 <th width="10%">Price</th>
                                 <th width="5%">Disc%</th>
-                                <th width="5%">Ppn%</th>
                             </tr>
                         </thead>
 
@@ -144,10 +143,10 @@
                                         style="width: 99%;
                                         height: 40px;
                                         border-radius: 5px;" 
-                                        v-model="masbar.kdstn" 
                                         :id="`satuan${masbar.kdbar}`"
                                         @change="addKdstn(masbar.kdbar)" 
-                                        :disabled="masbar.readonly">
+                                        :disabled="masbar.readonly"
+                                        :value="masbar.kdstn">
                                         <spinner
                                             style="position: absolute;top: 5px"
                                             :id="`spinner${masbar.kdbar}`"></spinner>
@@ -172,14 +171,6 @@
                                         :readonly="masbar.readonly"
                                         v-on:keydown.enter="addDisc(masbar.kdbar)"
                                         :value="masbar.disc">
-                                </td>
-                                <td>
-                                    <input 
-                                        class="form-input" 
-                                        type="number" 
-                                        style="width: 70%;"
-                                        :id="'ppn' + masbar.kdbar"
-                                        v-model="vat">
                                 </td>
                             </tr>
                         </tbody>
@@ -613,7 +604,7 @@ export default {
         this.masbars.filter(data =>
             data.filter(obj => {
                 if(obj.kdbar === id) {
-                    console.log(obj.kdstn)
+                    obj.kdstn = document.getElementById(`satuan${id}`).value;
                 }
             })
         )
@@ -624,6 +615,7 @@ export default {
             this.masbars.forEach(data =>
                 data.forEach(obj => {
                     if(obj.price && obj.kdstn){
+                        obj.vat = 0
                         this.contract.items.push(obj)
                     }        
                 })

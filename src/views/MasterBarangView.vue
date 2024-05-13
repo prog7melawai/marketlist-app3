@@ -104,7 +104,7 @@
                       <img
                         :src="getFoodImage(items.image)"
                         :alt="items.image"
-                        style="width: 80px"
+                        style="width: 60px;height: 60px;object-fit: cover;"
                       />
                     </td>
                     <td>{{ items.kd_barang }}</td>
@@ -357,7 +357,6 @@ export default {
       try {
         const { data } = await axios.get(`/jenismasbar/${this.authToken}`);
         this.jenis = data
-        console.log(data)
       } catch(error){
         console.log(error)
       }
@@ -445,8 +444,11 @@ export default {
       }, 1300);
     },
     getFoodImage(filename) {
-      console.log(`http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/` + filename);
-      return `http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/` + filename;
+      if(filename === undefined){
+        return `http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/default.png`;
+      } else {
+        return `http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/${filename}`;
+      }
     },
   },
 };

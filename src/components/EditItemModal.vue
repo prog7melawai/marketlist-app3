@@ -321,14 +321,6 @@ export default {
     async submitItem(){
       try {
         this.loading = true
-        
-        // const formData = new FormData()
-        // formData.append('filename', this.filelist[0], `${this.food.kd_barang}.jpg`)
-        // const { data } = await axios.post(`http://localhost:5000/masbarimages`, formData, {
-        //   headers: {
-        //     'Authorization': this.authToken,
-        //   }
-        // })
 
         const file = this.filelist[0];
         const myblob = new Blob([file], { type: file.type });
@@ -340,7 +332,7 @@ export default {
         const formData = new FormData();
         formData.append('filename', myFile, `${this.food.kd_barang}.${ext}`);
 
-        const {data} = await axios.post(`http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/images`, formData, {
+        const {data} = await axios.post(`http://172.30.14.206:8810/procurement/web/postimage/${this.food.div_kd}/${this.food.subdiv_kd}/${this.food.dept_kd}/${this.authToken}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             }

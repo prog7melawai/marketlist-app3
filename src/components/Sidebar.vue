@@ -105,6 +105,7 @@
           <h3 v-if="!isHide">Menu Makanan</h3>
         </router-link>
       </div> -->
+      <!-- 
       <div class="menu-link" v-if="permission.includes('marketlist')">
         <router-link
           :to="{ name: 'marketlist' }"
@@ -129,19 +130,19 @@
           <h3 v-if="!isHide">Stock Finance</h3>
         </router-link>
       </div>
-      <!-- 
-      <div class="menu-link">
+      -->
+      <div class="menu-link" v-if="permission.includes('master-barang')">
         <router-link
-          :to="{ name: 'event' }"
+          :to="{ name: 'masterbarang' }"
           class="nav-link"
           :class="{
-            'link-active': this.$route.name === 'event',
-            'link-unactive': this.$route.name !== 'event',
+            'link-active': this.$route.name === 'masterbarang',
+            'link-unactive': this.$route.name !== 'masterbarang',
           }">
-          <i class="ri-calendar-event-fill"></i>
-          <h3 v-if="!isHide">Event</h3>
+          <i class="ri-cake-3-fill"></i>
+          <h3 v-if="!isHide">Master Barang</h3>
         </router-link>
-      </div> -->
+      </div>
       <div class="menu-link" v-if="permission.includes('contract')">
         <router-link
           :to="{ name: 'contract' }"
