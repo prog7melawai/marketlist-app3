@@ -9,7 +9,10 @@
         <div class="content-wrapper">
           <div class="content-title">
             <h2>Kontrak {{ this.$route.params.id }}</h2>
-            <span>{{ getMonth(new Date(selectedContract.kontrak_date).getMonth()) }},
+            <span
+              >{{
+                getMonth(new Date(selectedContract.kontrak_date).getMonth())
+              }},
               {{ new Date(selectedContract.kontrak_date).getDate() }}
               {{ new Date(selectedContract.kontrak_date).getFullYear() }}
             </span>
@@ -23,17 +26,23 @@
             <button
               class="btn-success"
               @click="confirmContract"
-              v-if="isApproval && !selectedContract.tglconf && !selectedContract.tglbatal"
-            >
+              v-if="
+                isApproval &&
+                !selectedContract.tglconf &&
+                !selectedContract.tglbatal
+              ">
               <i class="ri-check-line" style="font-size: 14pt"></i>
               <span style="position: relative; top: -2px"> Approve </span>
             </button>
-            
+
             <button
               class="btn-danger"
               @click="declineContract"
-              v-if="isDecliner && !selectedContract.tglbatal && !selectedContract.tglconf"
-            >
+              v-if="
+                isDecliner &&
+                !selectedContract.tglbatal &&
+                !selectedContract.tglconf
+              ">
               <i class="ri-check-line" style="font-size: 14pt"></i>
               <span style="position: relative; top: -2px"> Decline </span>
             </button>
@@ -47,17 +56,23 @@
                   <img
                     src="/images/logo/movenpick.png"
                     :alt="selectedContract.logo"
-                    style="width: 100%; height: 100%; object-fit: contain"
-                  />
+                    style="width: 100%; height: 100%; object-fit: contain" />
                 </div>
 
                 <span class="stamp-container" v-if="selectedContract.tglconf">
-                    <img class="stamp-logo" src="/images/logo/approved.png" alt="">
+                  <img
+                    class="stamp-logo"
+                    src="/images/logo/approved.png"
+                    alt="" />
                 </span>
 
                 <div style="width: 78%; display: flex; flex-direction: column">
-                  <span class="pr-supplier">{{ selectedContract.dept_kd }}</span>
-                  <span class="pr-contact">{{ selectedContract.subdiv_kd }}</span>
+                  <span class="pr-supplier">{{
+                    selectedContract.dept_kd
+                  }}</span>
+                  <span class="pr-contact">{{
+                    selectedContract.subdiv_kd
+                  }}</span>
                   <span class="pr-address">{{ selectedContract.div_kd }}</span>
 
                   <span class="pr-deliver">User Created:</span>
@@ -65,9 +80,10 @@
                     <img
                       src="/images/user/user.png"
                       alt="logo"
-                      style="width: 25px"
-                    />
-                    <span class="pr-department">{{ selectedContract.cruser }}</span>
+                      style="width: 25px" />
+                    <span class="pr-department">{{
+                      selectedContract.cruser
+                    }}</span>
                   </span>
                 </div>
               </div>
@@ -89,15 +105,14 @@
                     v-for="(pr, idx) in prs[selectedPage]"
                     :key="pr.kode_barang"
                     :class="{ 'bg-canvas': idx % 2 == 0 }"
-                    style="height: 60px"
-                  >
+                    style="height: 60px">
                     <td>{{ pr.no }}</td>
                     <td>{{ pr.kdbar }}</td>
                     <td style="text-align: left">{{ pr.nm_bar }}</td>
                     <td style="text-align: start">{{ pr.nm_satuan }}</td>
                     <td>Rp. {{ formatPrice(pr.harga) }}</td>
                     <td>Rp. {{ formatPrice(pr.disc_rp) }}</td>
-                    <td>Rp. {{ formatPrice(pr.ppn_rp) }}</td>                  
+                    <td>Rp. {{ formatPrice(pr.ppn_rp) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -116,13 +131,11 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: end;
-                  "
-                >
+                  ">
                   <button
                     class="page-prev"
                     @click="prevPagination"
-                    :class="{ 'paginate-active': start >= 5 }"
-                  >
+                    :class="{ 'paginate-active': start >= 5 }">
                     Previous
                   </button>
                   <div
@@ -133,15 +146,13 @@
                       'page-active': selectedPage === pg,
                       'page-unactive': selectedPage !== pg,
                     }"
-                    @click="selectedPage = pg"
-                  >
+                    @click="selectedPage = pg">
                     {{ pg + 1 }}
                   </div>
                   <button
                     :class="{ 'paginate-active': total_page.length > end }"
                     class="page-next"
-                    @click="nextPagination"
-                  >
+                    @click="nextPagination">
                     Next
                   </button>
                 </div>
@@ -153,15 +164,12 @@
     </div>
   </div>
 
-  <notification 
-    v-if="showNotif" 
-    :success="success" 
-    :message="message">
+  <notification v-if="showNotif" :success="success" :message="message">
   </notification>
 
-  <notification-alert 
-    v-if="showNotifAlert" 
-    :success="success" 
+  <notification-alert
+    v-if="showNotifAlert"
+    :success="success"
     :message="message"
     @onClosed="onClosedNotif">
   </notification-alert>
@@ -176,8 +184,7 @@
     :data="item"
     @onClosed="onClosed"
     @onResolve="submitted"
-    @onError="onError"
-  >
+    @onError="onError">
   </alert-confirm>
 </template>
 
@@ -187,7 +194,7 @@ import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
 import Notification from "@/components/Notification.vue";
-import NotificationAlert from '@/components/NotificationAlert.vue';
+import NotificationAlert from "@/components/NotificationAlert.vue";
 import axios from "axios";
 
 export default {
@@ -259,9 +266,11 @@ export default {
     async getContract() {
       try {
         this.isLoading = true;
-        const { data } = await axios.get(`/contractdetail/${this.$route.params.id}/${this.authToken}`);
+        const { data } = await axios.get(
+          `/contractdetail/${this.$route.params.id}/${this.authToken}`
+        );
         this.selectedContract = data;
-        console.log(this.selectedContract)
+        console.log(this.selectedContract);
         this.getItem(this.selectedContract.items);
         this.isLoading = false;
       } catch (error) {
@@ -427,7 +436,7 @@ export default {
 
       return month;
     },
-    submitted(value) {      
+    submitted(value) {
       this.showAlert = false;
       this.message = value.message;
       this.success = true;
@@ -440,16 +449,16 @@ export default {
         // window.location.href = `/contract-detail/${this.$route.params.id}`;
       }, 1300);
     },
-    onError(value){
-      this.showAlert = false
+    onError(value) {
+      this.showAlert = false;
       this.message = value.message;
       this.success = false;
       this.showNotifAlert = true;
-      this.alertMessage = null
+      this.alertMessage = null;
     },
     formatPrice(value) {
-      let val = (value/1).toFixed(2).replace('.', ',')
-      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+      let val = (value / 1).toFixed(2).replace(".", ",");
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     },
   },
 };

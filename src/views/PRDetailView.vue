@@ -9,38 +9,78 @@
         <div class="content-wrapper">
           <div class="content-title">
             <h2>Detail for #{{ this.$route.params.id }}</h2>
-            <span>{{ getMonth(new Date(selectedPR.pr_date).getMonth()) }},
+            <span
+              >{{ getMonth(new Date(selectedPR.pr_date).getMonth()) }},
               {{ new Date(selectedPR.pr_date).getDate() }}
               {{ new Date(selectedPR.pr_date).getFullYear() }}
             </span>
           </div>
 
-          <div class="confirm-wrapper">           
-              <button class="export-btn">
-                <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
-              </button>
+          <div class="confirm-wrapper">
+            <button class="export-btn">
+              <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
+            </button>
 
-              <button class="btn-success" @click="confirmPR" v-if="isApproval && !isRevise && !selectedPR.f_mark && !isLoading && !selectedPR.f_revise">
-                <i class="ri-check-line" style="font-size: 14pt"></i>
-                <span style="position: relative; top: -2px"> Approve </span>
-              </button>
+            <button
+              class="btn-success"
+              @click="confirmPR"
+              v-if="
+                isApproval &&
+                !isRevise &&
+                !selectedPR.f_mark &&
+                !isLoading &&
+                !selectedPR.f_revise
+              ">
+              <i class="ri-check-line" style="font-size: 14pt"></i>
+              <span style="position: relative; top: -2px"> Approve </span>
+            </button>
 
-              <button class="btn-danger" @click="cancelPR" v-if="isRejector && !isRevise && !selectedPR.f_mark && !isLoading && !selectedPR.f_revise">
-                <i class="ri-close-line" style="font-size: 14pt"></i>
-                <span style="position: relative; top: -2px"> Reject </span>
-              </button>
+            <button
+              class="btn-danger"
+              @click="cancelPR"
+              v-if="
+                isRejector &&
+                !isRevise &&
+                !selectedPR.f_mark &&
+                !isLoading &&
+                !selectedPR.f_revise
+              ">
+              <i class="ri-close-line" style="font-size: 14pt"></i>
+              <span style="position: relative; top: -2px"> Reject </span>
+            </button>
 
-              <button :class="{'btn-warning': !isRevise, 'btn-danger': isRevise}" @click="revisePR" v-if="isRevisor && !selectedPR.f_mark && !isLoading && !selectedPR.f_revise">
-                <i v-if="!isRevise" class="ri-arrow-go-forward-line" style="font-size: 14pt"></i>
-                <i v-if="isRevise" class="ri-close-line" style="font-size: 14pt"></i>
-                <span v-if="!isRevise" style="position: relative; top: -2px"> Revise </span>
-                <span v-if="isRevise" style="position: relative; top: -2px"> Cancel </span>
-              </button>
+            <button
+              :class="{ 'btn-warning': !isRevise, 'btn-danger': isRevise }"
+              @click="revisePR"
+              v-if="
+                isRevisor &&
+                !selectedPR.f_mark &&
+                !isLoading &&
+                !selectedPR.f_revise
+              ">
+              <i
+                v-if="!isRevise"
+                class="ri-arrow-go-forward-line"
+                style="font-size: 14pt"></i>
+              <i
+                v-if="isRevise"
+                class="ri-close-line"
+                style="font-size: 14pt"></i>
+              <span v-if="!isRevise" style="position: relative; top: -2px">
+                Revise
+              </span>
+              <span v-if="isRevise" style="position: relative; top: -2px">
+                Cancel
+              </span>
+            </button>
 
-              <button class="btn-success" @click="submitRevise" v-if="isRevisor && isRevise">
-                <i class="ri-send-plane-fill"></i>
-                <span style="position: relative; top: -2px"> Submit Revise </span>
-              </button>
+            <button
+              class="btn-success"
+              @click="submitRevise"
+              v-if="isRevisor && isRevise">
+              <i class="ri-send-plane-fill"></i>
+              <span style="position: relative; top: -2px"> Submit Revise </span>
+            </button>
           </div>
 
           <div class="content">
@@ -51,14 +91,25 @@
                   <img
                     src="/images/logo/movenpick.png"
                     :alt="selectedPR.logo"
-                    style="width: 100%; height: 100%; object-fit: contain;"
-                  />
+                    style="width: 100%; height: 100%; object-fit: contain" />
                 </div>
 
                 <span class="stamp-container">
-                    <img v-if="selectedPR.f_approve" class="stamp-logo" src="/images/logo/approved.png" alt="">
-                    <img v-if="selectedPR.f_batal" class="stamp-logo" src="/images/logo/reject.png" alt="">
-                    <img v-if="selectedPR.f_revise" class="stamp-logo" src="/images/logo/revised.png" alt="">
+                  <img
+                    v-if="selectedPR.f_approve"
+                    class="stamp-logo"
+                    src="/images/logo/approved.png"
+                    alt="" />
+                  <img
+                    v-if="selectedPR.f_batal"
+                    class="stamp-logo"
+                    src="/images/logo/reject.png"
+                    alt="" />
+                  <img
+                    v-if="selectedPR.f_revise"
+                    class="stamp-logo"
+                    src="/images/logo/revised.png"
+                    alt="" />
                 </span>
 
                 <div style="width: 78%; display: flex; flex-direction: column">
@@ -71,8 +122,7 @@
                     <img
                       src="/images/user/user.png"
                       alt="logo"
-                      style="width: 25px"
-                    />
+                      style="width: 25px" />
                     <span class="pr-department">{{ selectedPR.cruser }}</span>
                   </span>
                 </div>
@@ -150,18 +200,34 @@
                   <tr>
                     <th style="width: 5%">No</th>
                     <th style="width: 10%">Product ID</th>
-                    <th style="width: 15%;text-align: left">
-                      <select class="select-jenis" v-model="jenisitems" @change="getPR">
-                          <option value="all">Jenis</option>
-                          <option v-for="jns in jenis" :key="jns.kd_jenis" :value="jns.kd_jenis">{{ jns.nm_jenis }}</option>
+                    <th style="width: 15%; text-align: left">
+                      <select
+                        class="select-jenis"
+                        v-model="jenisitems"
+                        @change="getPR">
+                        <option value="all">Jenis</option>
+                        <option
+                          v-for="jns in jenis"
+                          :key="jns.kd_jenis"
+                          :value="jns.kd_jenis">
+                          {{ jns.nm_jenis }}
+                        </option>
                       </select>
                     </th>
-                    <th style="width: 20%;text-align: left">Product Name</th>
+                    <th style="width: 20%; text-align: left">Product Name</th>
                     <th style="width: 5%">Satuan Stock</th>
                     <th style="width: 5%">Satuan Kirim</th>
                     <th style="width: 5%">Qty</th>
                     <th style="width: 5%">Qty Old</th>
-                    <th style="width: 35%" v-if="isRevise || selectedPR.f_revise || selectedPR.revised_user">Note</th>
+                    <th
+                      style="width: 35%"
+                      v-if="
+                        isRevise ||
+                        selectedPR.f_revise ||
+                        selectedPR.revised_user
+                      ">
+                      Note
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -169,8 +235,7 @@
                     v-for="(pr, idx) in prs[selectedPage]"
                     :key="pr.kode_barang"
                     :class="{ 'bg-canvas': idx % 2 == 0 }"
-                    style="height: 60px;"
-                  >
+                    style="height: 60px">
                     <td>{{ pr.no }}</td>
                     <td>{{ pr.kode_barang }}</td>
                     <td style="text-align: left">{{ pr.nm_jenis }}</td>
@@ -181,37 +246,51 @@
                         style="width: 30px"
                       /> -->
 
-                      <span
-                        style="
-                          position: relative;
-                          margin-left: 10px;
-                        "
-                      >
+                      <span style="position: relative; margin-left: 10px">
                         {{ pr.nama_barang }}
                       </span>
                     </td>
                     <td>{{ pr.nm_stok }}</td>
                     <td>{{ pr.nm_kirim }}</td>
-                    <td :class="{'qty-update': pr.qty !== pr.qty_old && pr.qty !== 0 && pr.qty_old !== 0}">{{ pr.qty }}</td>
+                    <td
+                      :class="{
+                        'qty-update':
+                          pr.qty !== pr.qty_old &&
+                          pr.qty !== 0 &&
+                          pr.qty_old !== 0,
+                      }">
+                      {{ pr.qty }}
+                    </td>
                     <td>{{ pr.qty_old }}</td>
                     <!-- <td v-if="pr.qty > 0 && pr.qty_old > 0">{{ pr.qty_old }}</td>
                     <td v-if="pr.qty == 0 && pr.qty_old > 0">{{ pr.qty }}</td> -->
-                    <td v-if="isRevise || selectedPR.f_revise || selectedPR.revised_user">
-                        <textarea 
-                          class="revise-note"
-                          :class="{'revise-note': !selectedPR.f_revise, 'revised-note': selectedPR.f_revise}"
-                          :id="'note' + pr.kode_barang"
-                          rows="3"
-                          wrap=physical
-                          :value="pr.revise_note"
-                          v-on:keyup="onTypeNote(pr.kode_barang)"
-                          :readonly="selectedPR.f_revise || selectedPR.f_approve || selectedPR.f_batal">
-                        </textarea>
+                    <td
+                      v-if="
+                        isRevise ||
+                        selectedPR.f_revise ||
+                        selectedPR.revised_user
+                      ">
+                      <textarea
+                        class="revise-note"
+                        :class="{
+                          'revise-note': !selectedPR.f_revise,
+                          'revised-note': selectedPR.f_revise,
+                        }"
+                        :id="'note' + pr.kode_barang"
+                        rows="3"
+                        wrap="physical"
+                        :value="pr.revise_note"
+                        v-on:keyup="onTypeNote(pr.kode_barang)"
+                        :readonly="
+                          selectedPR.f_revise ||
+                          selectedPR.f_approve ||
+                          selectedPR.f_batal
+                        ">
+                      </textarea>
                     </td>
                   </tr>
                 </tbody>
               </table>
-
 
               <div class="page-wrapper" v-if="total_page.length > 0">
                 <div style="width: 50%">
@@ -227,10 +306,11 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: end;
-                  "
-                >
-                  <button class="page-prev" @click="prevPagination"
-                    :class="{'paginate-active': start >= 5}">
+                  ">
+                  <button
+                    class="page-prev"
+                    @click="prevPagination"
+                    :class="{ 'paginate-active': start >= 5 }">
                     Previous
                   </button>
                   <div
@@ -241,13 +321,14 @@
                       'page-active': selectedPage === pg,
                       'page-unactive': selectedPage !== pg,
                     }"
-                    @click="selectedPage = pg"
-                  >
+                    @click="selectedPage = pg">
                     {{ pg + 1 }}
                   </div>
-                  <button :class="{'paginate-active': total_page.length > end}"
-                  class="page-next" @click="nextPagination">
-                  Next
+                  <button
+                    :class="{ 'paginate-active': total_page.length > end }"
+                    class="page-next"
+                    @click="nextPagination">
+                    Next
                   </button>
                 </div>
               </div>
@@ -258,30 +339,27 @@
     </div>
   </div>
 
-  <notification 
-      v-if="showNotif" 
-      :success="success" 
-      :message="message">
+  <notification v-if="showNotif" :success="success" :message="message">
   </notification>
 
-  <notification-alert 
-    v-if="showNotifAlert" 
-    :success="success" 
+  <notification-alert
+    v-if="showNotifAlert"
+    :success="success"
     :message="message"
     @onClosed="onClosedNotif">
   </notification-alert>
 
-  <alert-confirm 
-      v-if="showAlert"
-      :title="title" 
-      :message="deleteMessage" 
-      :methods="methods" 
-      :url="url" 
-      :header="sheaders"
-      :data="item"
-      @onClosed="onClosed"
-      @onResolve="submitted"
-      @onError="onError">
+  <alert-confirm
+    v-if="showAlert"
+    :title="title"
+    :message="deleteMessage"
+    :methods="methods"
+    :url="url"
+    :header="sheaders"
+    :data="item"
+    @onClosed="onClosed"
+    @onResolve="submitted"
+    @onError="onError">
   </alert-confirm>
 </template>
 
@@ -340,7 +418,7 @@ export default {
       perm: null,
       permission: [],
       isLoading: false,
-      jenisitems: 'all',
+      jenisitems: "all",
       jenis: null,
     };
   },
@@ -348,14 +426,14 @@ export default {
     this.getPR();
     this.getJenisPR();
   },
-  created(){
-    this.authToken = this.$store.getters.GET_AUTH_TOKEN
-    this.perm = this.$store.getters.GET_AUTH_INFO.permission
-    this.permission = this.perm.split(",")
-    if(!this.permission.includes('pr-detail')) window.location.href = '/'
-    this.isApproval = this.permission.includes('approve-pr')
-    this.isRejector = this.permission.includes('reject-pr')
-    this.isRevisor  = this.permission.includes('revise-pr')
+  created() {
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN;
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission;
+    this.permission = this.perm.split(",");
+    if (!this.permission.includes("pr-detail")) window.location.href = "/";
+    this.isApproval = this.permission.includes("approve-pr");
+    this.isRejector = this.permission.includes("reject-pr");
+    this.isRevisor = this.permission.includes("revise-pr");
   },
   methods: {
     setWidth(value) {
@@ -366,35 +444,43 @@ export default {
     async getPR() {
       try {
         this.isLoading = true;
-        const { data } = await axios.get(`/prdetail2/${this.jenisitems}/${this.$route.params.id}/${this.authToken}`)
-        this.selectedPR = data
+        const { data } = await axios.get(
+          `/prdetail2/${this.jenisitems}/${this.$route.params.id}/${this.authToken}`
+        );
+        this.selectedPR = data;
         this.getItem(this.selectedPR.items);
         this.isLoading = false;
-      } catch(error){
+      } catch (error) {
         console.log(error);
-        if(error.response.status == 401){
-          this.$store.dispatch("LOGOUT")
-          .then(() => {
-              this.$router.push({ path : '/login'});
-          }).catch(() => {
-              this.$router.push({ path : '/login'});
-          });
+        if (error.response.status == 401) {
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
         }
       }
     },
     async getJenisPR() {
       try {
-        const { data } = await axios.get(`/jenispr/${this.$route.params.id}/${this.authToken}`)
+        const { data } = await axios.get(
+          `/jenispr/${this.$route.params.id}/${this.authToken}`
+        );
         this.jenis = data;
-      } catch(error){
+      } catch (error) {
         console.log(error);
-        if(error.response.status == 401){
-          this.$store.dispatch("LOGOUT")
-          .then(() => {
-              this.$router.push({ path : '/login'});
-          }).catch(() => {
-              this.$router.push({ path : '/login'});
-          });
+        if (error.response.status == 401) {
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
         }
       }
     },
@@ -403,12 +489,12 @@ export default {
       const newPR = [];
       this.prs = [];
       this.total_page = [];
-      this.pagelength = items.length
+      this.pagelength = items.length;
       let nou = 1;
       items.forEach((data) => {
         data.no = nou;
         newPR.push(data);
-        nou++
+        nou++;
       });
 
       for (let i = 0; i < newPR.length; i += groupSize) {
@@ -419,20 +505,20 @@ export default {
         this.total_page.push(i);
       }
     },
-    prevPagination(){
-        if(this.start <= 0) return;
-        this.start -= 5
-        this.end -= 5
+    prevPagination() {
+      if (this.start <= 0) return;
+      this.start -= 5;
+      this.end -= 5;
     },
-    nextPagination(){
-        if(this.end > this.total_page.length) {
-            this.start = this.total_page.length - 5
-            this.end = this.total_page.length
-            return;
-        }
+    nextPagination() {
+      if (this.end > this.total_page.length) {
+        this.start = this.total_page.length - 5;
+        this.end = this.total_page.length;
+        return;
+      }
 
-        this.start += 5
-        this.end += 5
+      this.start += 5;
+      this.end += 5;
     },
     getFoodImage(filename) {
       return "/images/foods/" + filename;
@@ -449,72 +535,72 @@ export default {
     },
     cancelPR() {
       const body = {
-          pr_no: this.selectedPR.pr_no,
-          token: this.authToken
-      }
+        pr_no: this.selectedPR.pr_no,
+        token: this.authToken,
+      };
 
-      console.log(body)
-      this.title = 'Confirmation'
-      this.deleteMessage = `Are you sure want to Reject this Transaction ?`
-      this.methods = 'delete'
-      this.url = `/prbarang/${this.authToken}`
-      this.sheaders = null
-      this.item = body
-      this.showAlert = true
+      console.log(body);
+      this.title = "Confirmation";
+      this.deleteMessage = `Are you sure want to Reject this Transaction ?`;
+      this.methods = "delete";
+      this.url = `/prbarang/${this.authToken}`;
+      this.sheaders = null;
+      this.item = body;
+      this.showAlert = true;
     },
     confirmPR() {
       const body = {
-          pr_no: this.selectedPR.pr_no,
-          token: this.authToken
-      }
+        pr_no: this.selectedPR.pr_no,
+        token: this.authToken,
+      };
 
-      console.log(body)
-      this.title = 'Confirmation'
-      this.deleteMessage = `Are you sure want to Approve this Transaction ?`
-      this.methods = 'post'
-      this.url = `/prbarang/${this.authToken}`
-      this.sheaders = null
-      this.item = body
-      this.showAlert = true
+      console.log(body);
+      this.title = "Confirmation";
+      this.deleteMessage = `Are you sure want to Approve this Transaction ?`;
+      this.methods = "post";
+      this.url = `/prbarang/${this.authToken}`;
+      this.sheaders = null;
+      this.item = body;
+      this.showAlert = true;
     },
-    revisePR(){
-      if(!this.isRevise) {
+    revisePR() {
+      if (!this.isRevise) {
         this.isRevise = true;
       } else {
         this.isRevise = false;
       }
     },
-    onTypeNote(idbarang){
+    onTypeNote(idbarang) {
       this.selectedPR.items.some((data) => {
-        if(data.kode_barang === idbarang){
+        if (data.kode_barang === idbarang) {
           data.revise_note = document.getElementById(`note${idbarang}`).value;
         }
-      })
+      });
     },
-    submitRevise(){
+    submitRevise() {
       try {
-        if(!this.isRevise) return;
+        if (!this.isRevise) return;
         this.selectedPR.items.forEach((data) => {
-          if(!data.revise_note){
-            data.revise_note = ''
+          if (!data.revise_note) {
+            data.revise_note = "";
           }
-        })
+        });
 
         const body = {
-            pr_no: this.selectedPR.pr_no,
-            items: this.selectedPR.items
-        }
+          pr_no: this.selectedPR.pr_no,
+          items: this.selectedPR.items,
+        };
 
-        console.log(body)
-        this.title = 'Confirmation'
-        this.deleteMessage = `Are you sure want to Revise this Transaction ?`
-        this.methods = 'put'
-        this.url = `/prbarang/${this.authToken}`
-        this.sheaders = null
-        this.item = body
-        this.showAlert = true
-      } catch(error){
-        console.log(error)
+        console.log(body);
+        this.title = "Confirmation";
+        this.deleteMessage = `Are you sure want to Revise this Transaction ?`;
+        this.methods = "put";
+        this.url = `/prbarang/${this.authToken}`;
+        this.sheaders = null;
+        this.item = body;
+        this.showAlert = true;
+      } catch (error) {
+        console.log(error);
       }
     },
     getMonth(gmonth) {
@@ -559,8 +645,8 @@ export default {
 
       return month;
     },
-    submitted(value){
-      this.showAlert = false
+    submitted(value) {
+      this.showAlert = false;
       this.message = value.message;
       this.success = true;
       this.showNotif = true;
@@ -569,15 +655,15 @@ export default {
         this.message = null;
         this.succes = false;
         this.showNotif = false;
-        window.location.href = '/pr'
-      }, 1300)
+        window.location.href = "/pr";
+      }, 1300);
     },
-    onError(value){
-      this.showAlert = false
+    onError(value) {
+      this.showAlert = false;
       this.message = value.message;
       this.success = false;
       this.showNotifAlert = true;
-      this.alertMessage = null
+      this.alertMessage = null;
     },
     onClosedNotif(value) {
       this.showNotifAlert = value;

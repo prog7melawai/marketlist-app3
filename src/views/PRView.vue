@@ -18,8 +18,7 @@
                   class="warehouse-input"
                   style="width: 80px"
                   v-model="perpage"
-                  @change="getEvent"
-                >
+                  @change="getEvent">
                   <option value="10">10</option>
                   <option value="25">25</option>
                   <option value="50">50</option>
@@ -41,8 +40,7 @@
                     style="
                       border-bottom-left-radius: 5px;
                       border-top-left-radius: 5px;
-                    "
-                  >
+                    ">
                     CSV
                   </button>
                   <button class="export-btn">XLSX</button>
@@ -51,8 +49,7 @@
                     style="
                       border-bottom-right-radius: 5px;
                       border-top-right-radius: 5px;
-                    "
-                  >
+                    ">
                     PDF
                   </button>
                 </div>
@@ -79,20 +76,17 @@
                   <div
                     class="filter-dialog"
                     style="margin-right: 60px"
-                    v-if="showFilter"
-                  >
+                    v-if="showFilter">
                     <div
                       class="sort-item"
                       @click="setFilter('Pending')"
-                      :class="{ 'sort-active': selectedFilter === 'Pending' }"
-                    >
+                      :class="{ 'sort-active': selectedFilter === 'Pending' }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Pending'"
-                        >
+                          v-if="selectedFilter === 'Pending'">
                         </i>
                       </div>
 
@@ -104,15 +98,13 @@
                       @click="setFilter('Approved PR')"
                       :class="{
                         'sort-active': selectedFilter === 'Approved PR',
-                      }"
-                    >
+                      }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Approved PR'"
-                        >
+                          v-if="selectedFilter === 'Approved PR'">
                         </i>
                       </div>
 
@@ -124,15 +116,13 @@
                       @click="setFilter('Approved PO')"
                       :class="{
                         'sort-active': selectedFilter === 'Approved PO',
-                      }"
-                    >
+                      }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Approved PO'"
-                        >
+                          v-if="selectedFilter === 'Approved PO'">
                         </i>
                       </div>
 
@@ -142,15 +132,15 @@
                     <div
                       class="sort-item"
                       @click="setFilter('Completed')"
-                      :class="{ 'sort-active': selectedFilter === 'Completed' }"
-                    >
+                      :class="{
+                        'sort-active': selectedFilter === 'Completed',
+                      }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Completed'"
-                        >
+                          v-if="selectedFilter === 'Completed'">
                         </i>
                       </div>
 
@@ -162,15 +152,13 @@
                     <div
                       class="sort-item"
                       @click="setSort('date')"
-                      :class="{ 'sort-active': selectedSort === 'date' }"
-                    >
+                      :class="{ 'sort-active': selectedSort === 'date' }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedSort === 'date'"
-                        >
+                          v-if="selectedSort === 'date'">
                         </i>
                       </div>
 
@@ -180,15 +168,13 @@
                     <div
                       class="sort-item"
                       @click="setSort('status')"
-                      :class="{ 'sort-active': selectedSort === 'status' }"
-                    >
+                      :class="{ 'sort-active': selectedSort === 'status' }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedSort === 'status'"
-                        >
+                          v-if="selectedSort === 'status'">
                         </i>
                       </div>
 
@@ -197,35 +183,32 @@
                   </div>
                 </div>
 
-                <div class="search-container"
-                     style="margin-right: 0px;
-                     height: 38px;">
-                      <input 
-                          type="text" 
-                          class="form-input"
-                          style="width: 100%"
-                          placeholder="Search PR..."
-                          v-model="searchItem"
-                          @keyup.enter="searching">
+                <div
+                  class="search-container"
+                  style="margin-right: 0px; height: 38px">
+                  <input
+                    type="text"
+                    class="form-input"
+                    style="width: 100%"
+                    placeholder="Search PR..."
+                    v-model="searchItem"
+                    @keyup.enter="searching" />
                 </div>
               </div>
 
               <table
                 class="table-responsive"
-                aria-describedby="Purchase Review Data"
-              >
+                aria-describedby="Purchase Review Data">
                 <thead class="bg-dark">
                   <tr>
-                    <th style="width: 5%; 
-                    border-top-left-radius: 5px">No</th>
+                    <th style="width: 5%; border-top-left-radius: 5px">No</th>
                     <th style="width: 15%">PR Number</th>
                     <th style="width: 10%">PR Date</th>
                     <th style="width: 10%">Divisi</th>
                     <th style="width: 15%">Subdiv</th>
                     <th style="width: 15%">Dept</th>
                     <th style="width: 15">Status</th>
-                    <th style="width: 15%; 
-                    border-top-right-radius: 5px">
+                    <th style="width: 15%; border-top-right-radius: 5px">
                       Action
                     </th>
                   </tr>
@@ -235,8 +218,7 @@
                   <tr
                     v-for="(pr, idx) in prs[selectedPage]"
                     :key="pr.id"
-                    :class="{ 'bg-canvas': idx % 2 == 0 }"
-                  >
+                    :class="{ 'bg-canvas': idx % 2 == 0 }">
                     <td>{{ idx + 1 }}</td>
                     <td>{{ pr.pr_no }}</td>
                     <td>{{ pr.pr_date }}</td>
@@ -247,18 +229,29 @@
                       <span
                         :class="{
                           'capsule-theme': pr.f_approve === true,
-                          'capsule-success': pr.f_batal === false && pr.f_approve === false && pr.f_revise === false,
+                          'capsule-success':
+                            pr.f_batal === false &&
+                            pr.f_approve === false &&
+                            pr.f_revise === false,
                           'capsule-warning': pr.f_revise === true,
                           'capsule-danger': pr.f_batal === true,
-                        }"
-                      >
-                        <span v-if="!pr.f_batal && !pr.f_approve && !pr.f_revise">Waiting</span>
+                        }">
+                        <span
+                          v-if="!pr.f_batal && !pr.f_approve && !pr.f_revise"
+                          >Waiting</span
+                        >
                         <span v-if="pr.f_revise">Revise</span>
                         <span v-if="pr.f_approve">Approve</span>
                         <span v-if="pr.f_batal">Cancel</span>
                       </span>
                     </td>
-                    <td style="display: flex;flex-direction: row;gap: 5px;flex-wrap: wrap;">
+                    <td
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        gap: 5px;
+                        flex-wrap: wrap;
+                      ">
                       <button
                         class="btn-theme"
                         style="width: 80px"
@@ -271,8 +264,8 @@
                         Details
                       </button>
                       <button
-                        class="btn-success" 
-                        style="width: 80px;overflow: hidden"
+                        class="btn-success"
+                        style="width: 80px; overflow: hidden"
                         @click="downloadPR(pr.pr_no)"
                         v-if="pr.f_revise && isDownloader">
                         <spinner v-if="isDownload"></spinner>
@@ -297,10 +290,11 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: end;
-                  "
-                >
-                  <button class="page-prev" @click="prevPagination"
-                    :class="{'paginate-active': start >= 5}">
+                  ">
+                  <button
+                    class="page-prev"
+                    @click="prevPagination"
+                    :class="{ 'paginate-active': start >= 5 }">
                     Previous
                   </button>
                   <div
@@ -311,13 +305,14 @@
                       'page-active': selectedPage === pg,
                       'page-unactive': selectedPage !== pg,
                     }"
-                    @click="selectedPage = pg"
-                  >
+                    @click="selectedPage = pg">
                     {{ pg + 1 }}
                   </div>
-                  <button :class="{'paginate-active': total_page.length > end}"
-                  class="page-next" @click="nextPagination">
-                  Next
+                  <button
+                    :class="{ 'paginate-active': total_page.length > end }"
+                    class="page-next"
+                    @click="nextPagination">
+                    Next
                   </button>
                 </div>
               </div>
@@ -361,7 +356,7 @@ export default {
       showSort: false,
       showFilter: false,
       selectedSort: null,
-      selectedFilter: null,      
+      selectedFilter: null,
       start: 0,
       end: 8,
       searchItem: null,
@@ -372,15 +367,15 @@ export default {
       isDownload: false,
       isLoading: false,
       isDownloader: false,
-      status: 'uncompleted',
+      status: "uncompleted",
     };
   },
-  created(){
-    this.authToken = this.$store.getters.GET_AUTH_TOKEN
-    this.perm = this.$store.getters.GET_AUTH_INFO.permission
-    this.permission = this.perm.split(",")
-    if(!this.permission.includes('pr')) window.location.href = '/'
-    this.isDownloader = this.permission.includes('download-pr')
+  created() {
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN;
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission;
+    this.permission = this.perm.split(",");
+    if (!this.permission.includes("pr")) window.location.href = "/";
+    this.isDownloader = this.permission.includes("download-pr");
   },
   mounted() {
     this.getPR();
@@ -398,12 +393,14 @@ export default {
       this.prs = [];
       this.total_page = [];
       this.selectedPage = 0;
-      
+
       try {
-        const { data } = await axios.get(`/prservice/${this.status}/${this.authToken}`);
+        const { data } = await axios.get(
+          `/prservice/${this.status}/${this.authToken}`
+        );
         this.pr = data;
 
-        console.log(this.pr)
+        console.log(this.pr);
         this.total_page = [];
         this.pr.forEach((data) => {
           newPR.push(data);
@@ -419,15 +416,17 @@ export default {
         }
 
         this.isLoading = false;
-      } catch(error){
+      } catch (error) {
         console.log(error);
-        if(error.response.status == 401){
-          this.$store.dispatch("LOGOUT")
-          .then(() => {
-              this.$router.push({ path : '/login'});
-          }).catch(() => {
-              this.$router.push({ path : '/login'});
-          });
+        if (error.response.status == 401) {
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
         }
       }
     },
@@ -462,44 +461,47 @@ export default {
     setFilter(value) {
       this.selectedFilter = value;
     },
-    prevPagination(){
-        if(this.start <= 0) return;
-        this.start -= 5
-        this.end -= 5
+    prevPagination() {
+      if (this.start <= 0) return;
+      this.start -= 5;
+      this.end -= 5;
     },
-    nextPagination(){
-        if(this.end > this.total_page.length) {
-            this.start = this.total_page.length - 5
-            this.end = this.total_page.length
-            return;
-        }
+    nextPagination() {
+      if (this.end > this.total_page.length) {
+        this.start = this.total_page.length - 5;
+        this.end = this.total_page.length;
+        return;
+      }
 
-        this.start += 5
-        this.end += 5
+      this.start += 5;
+      this.end += 5;
     },
-    searching(){
-      this.prs = []
-      this.total_page = []
-      this.start = 0
-      this.end = 8
-      this.perpage = 10
+    searching() {
+      this.prs = [];
+      this.total_page = [];
+      this.start = 0;
+      this.end = 8;
+      this.perpage = 10;
 
-      const searchTerm = '*' + this.searchItem + '*';
-      const wildcardRegex = new RegExp('^' + searchTerm.replace(/\*/g, '.*') + '$', 'i');
-      const matchingObjects = this.pr.filter(obj =>
-        Object.values(obj).some(value =>
-          typeof value === 'string' && wildcardRegex.test(value)
+      const searchTerm = "*" + this.searchItem + "*";
+      const wildcardRegex = new RegExp(
+        "^" + searchTerm.replace(/\*/g, ".*") + "$",
+        "i"
+      );
+      const matchingObjects = this.pr.filter((obj) =>
+        Object.values(obj).some(
+          (value) => typeof value === "string" && wildcardRegex.test(value)
         )
-      )
+      );
 
-      let j = 1
-      const newPR = []
+      let j = 1;
+      const newPR = [];
       this.pagelength = matchingObjects.length;
       matchingObjects.forEach((data) => {
         data.no = j;
         newPR.push(data);
         j++;
-      })
+      });
 
       for (let i = 0; i < newPR.length; i += parseInt(this.perpage)) {
         this.prs.push(newPR.slice(i, i + parseInt(this.perpage)));
@@ -509,26 +511,28 @@ export default {
         this.total_page.push(a);
       }
     },
-    async downloadPR(prno){
+    async downloadPR(prno) {
       try {
-        if(this.isDownload) return;
+        if (this.isDownload) return;
         this.isDownload = true;
-        const { data } = await axios.get(`/prdetail2/all/${prno}/${this.authToken}`);
+        const { data } = await axios.get(
+          `/prdetail2/all/${prno}/${this.authToken}`
+        );
         const barang = data.items;
 
-        console.log(barang)
+        console.log(barang);
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Sheet1');
+        const worksheet = workbook.addWorksheet("Sheet1");
 
         worksheet.columns = [
-          { header: 'Kode Barang', key: 'kdbar', width: 15 },
-          { header: 'Nama Barang', key: 'nmbar', width: 30 },
-          { header: 'Nama Barang 2', key: 'nmbar2', width: 30 },
-          { header: 'NO PR', key: 'nopr', width: 20 },
-          { header: 'Kode Jenis', key: 'kode_jenis', width: 10 },
-          { header: 'Nama Jenis', key: 'nama_jenis', width: 20 },
+          { header: "Kode Barang", key: "kdbar", width: 15 },
+          { header: "Nama Barang", key: "nmbar", width: 30 },
+          { header: "Nama Barang 2", key: "nmbar2", width: 30 },
+          { header: "NO PR", key: "nopr", width: 20 },
+          { header: "Kode Jenis", key: "kode_jenis", width: 10 },
+          { header: "Nama Jenis", key: "nama_jenis", width: 20 },
           { header: "Kdstn Kirim", key: "kdstn_krm", width: 10 },
-          { header: 'Satuan Kirim', key: 'nama_krm', width: 20 },
+          { header: "Satuan Kirim", key: "nama_krm", width: 20 },
           { header: "Kdstn Stok", key: "kdstn_stok", width: 10 },
           { header: "Satuann Stok", key: "nama_stok", width: 20 },
           { header: "Quantity", key: "qty", width: 15 },
@@ -538,27 +542,27 @@ export default {
 
         worksheet.getRow(1).height = 30;
 
-        const startCell = 'A1';
-        const endCell = 'N1';
-        worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
-          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+        const startCell = "A1";
+        const endCell = "N1";
+        worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+          row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
             const cellAddress = cell.address;
             if (cellAddress >= startCell && cellAddress <= endCell) {
-              console.log(rowNumber, colNumber)
+              console.log(rowNumber, colNumber);
               cell.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'F3F3F3' }
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "F3F3F3" },
               };
               cell.alignment = {
-                horizontal: 'center',
-                vertical: 'middle'
+                horizontal: "center",
+                vertical: "middle",
               };
             }
           });
         });
 
-        barang.forEach(async(data) => {
+        barang.forEach(async (data) => {
           worksheet.addRow({
             kdbar: data.kode_barang,
             nmbar: data.nama_barang,
@@ -572,71 +576,75 @@ export default {
             nama_krm: data.nm_kirim,
             qty: data.qty,
             qty_revise: data.qty,
-            revise_note: data.revise_note
+            revise_note: data.revise_note,
           });
-        });      
-        
+        });
+
         // const startColumn = 'A';
         // const endColumn = 'I';
-        worksheet.eachRow({ includeEmpty: false }, function(row, rowNumber) {
-          row.getCell(1).protection = {locked: true};
-          row.getCell(2).protection = {locked: true};
-          row.getCell(3).protection = {locked: true};
-          row.getCell(4).protection = {locked: true};
-          row.getCell(5).protection = {locked: true};
-          row.getCell(6).protection = {locked: true};
-          row.getCell(7).protection = {locked: true};
-          row.getCell(8).protection = {locked: true};
-          row.getCell(9).protection = {locked: true};
-          row.getCell(10).protection = {locked: true};
-          row.getCell(11).protection = {locked: true};
-          row.getCell(12).protection = {locked: false};
-          row.getCell(13).protection = {locked: true};
+        worksheet.eachRow({ includeEmpty: false }, function (row, rowNumber) {
+          row.getCell(1).protection = { locked: true };
+          row.getCell(2).protection = { locked: true };
+          row.getCell(3).protection = { locked: true };
+          row.getCell(4).protection = { locked: true };
+          row.getCell(5).protection = { locked: true };
+          row.getCell(6).protection = { locked: true };
+          row.getCell(7).protection = { locked: true };
+          row.getCell(8).protection = { locked: true };
+          row.getCell(9).protection = { locked: true };
+          row.getCell(10).protection = { locked: true };
+          row.getCell(11).protection = { locked: true };
+          row.getCell(12).protection = { locked: false };
+          row.getCell(13).protection = { locked: true };
 
-          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+          row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
             const startCell = `A${rowNumber}`;
             const endCell = `N${rowNumber}`;
             const cellAddress = cell.address;
-            if (cellAddress >= startCell && cellAddress <= endCell){
-              console.log(rowNumber, colNumber)
+            if (cellAddress >= startCell && cellAddress <= endCell) {
+              console.log(rowNumber, colNumber);
               cell.border = {
-                top: { style: 'thin' },
-                left: { style: 'thin' },
-                bottom: { style: 'thin' },
-                right: { style: 'thin' }
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
               };
             }
           });
         });
 
-        await worksheet.protect('faamelawai', {
+        await worksheet.protect("faamelawai", {
           selectLockedCells: true,
-          selectUnlockedCells: true,          
+          selectUnlockedCells: true,
         });
 
         const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const blob = new Blob([buffer], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
 
         a.href = url;
-        a.download = 'TemplatePR.xlsx';
-        a.style = 'opacity: 0';
+        a.download = "TemplatePR.xlsx";
+        a.style = "opacity: 0";
         document.body.appendChild(a);
 
         a.click();
 
         document.body.removeChild(a);
         this.isDownload = false;
-      } catch(error){
+      } catch (error) {
         console.log(error);
-        if(error.response.status == 401){
-          this.$store.dispatch("LOGOUT")
-          .then(() => {
-              this.$router.push({ path : '/login'});
-          }).catch(() => {
-              this.$router.push({ path : '/login'});
-          });
+        if (error.response.status == 401) {
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
         }
       }
     },
