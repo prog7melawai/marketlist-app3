@@ -16,9 +16,9 @@
           </div>
 
           <div class="confirm-wrapper" v-if="selectedContract.kontrakno">
-            <button class="export-btn">
+            <!-- <button class="export-btn">
               <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
-            </button>
+            </button> -->
 
             <button
               class="btn-success"

@@ -36,28 +36,6 @@
                   <option value="100">100</option>
                 </select>
 
-                <div class="export-wrapper">
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-left-radius: 5px;
-                      border-top-left-radius: 5px;
-                    "
-                  >
-                    CSV
-                  </button>
-                  <button class="export-btn">XLSX</button>
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-right-radius: 5px;
-                      border-top-right-radius: 5px;
-                    "
-                  >
-                    PDF
-                  </button>
-                </div>
-
                 <div class="search-container">
                   <input
                     type="text"

@@ -505,6 +505,17 @@ export default {
         return data.qty > 0
       })
 
+      if(items.length <= 0){
+        this.$toast.open({
+            message: 'Please insert at least 1 items!',
+            type: 'error',
+            duration: 3000,
+            dismissible: true,
+        });
+
+        return;
+      }
+
       const body = {
         divkd: this.selectedDivisi,
         subdivkd: this.selectedSubdiv,

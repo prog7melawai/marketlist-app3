@@ -85,8 +85,10 @@
           <div class="content" v-for="item in contract" :key="item.no_kontrak" style="margin-top: 5px;margin-bottom: 0px;">
               <a :href="`/contract-detail/${item.no_kontrak}`" class="warning-contract">
                   <div class="warning-content">
-                    <span style="font-weight: 800;">Contract  {{ item.no_kontrak }}  will end at  {{ new Date(item.end_kontrak_date).getDate() }} {{ getMonth(new Date(item.end_kontrak_date).getMonth()) }} {{ new Date(item.end_kontrak_date).getFullYear() }}</span>
-                    <span style="margin-top: 0px;font-size: 10pt;">
+                    <span style="font-weight: 800;">
+                      Contract  {{ item.no_kontrak }}  will end at  {{ new Date(item.end_kontrak_date).getDate() }} {{ getMonth(new Date(item.end_kontrak_date).getMonth()) }} {{ new Date(item.end_kontrak_date).getFullYear() }}
+                    </span>
+                    <span style="font-size: 10pt;">
                         {{ item.nm_supplier }}
                     </span>
                   </div>

@@ -702,6 +702,43 @@ export default {
     },
     async submitContract(){
         try {
+            let errCnt = 0;
+            if(!this.contract.divisi_kd) {
+                this.error.divisi_kd = 'Field Divisi is required!';
+                errCnt += 1
+            }
+            if(!this.contract.subdiv_kd) {
+                this.error.subdiv_kd = 'Field Subdivisi is required!';
+                errCnt += 1
+            }
+
+            if(!this.contract.sup_kd){
+                this.error.sup_kd = 'Field Supplier is required!';
+                errCnt += 1;
+            }
+
+            if(!this.contract.currency){
+                this.error.currency = 'Field Currency is required!';
+                errCnt += 1;
+            }
+
+            if(!this.contract.top){
+                this.error.top = 'Terms of Payment is required!';
+                errCnt += 1;
+            }
+
+            if(!this.contract.start_date){
+                this.error.start_date = 'Please enter kontrak date!';
+                errCnt += 1;
+            }
+
+            if(!this.contract.end_date){
+                this.error.end_date = 'Please enter end kontrak date!';
+                errCnt += 1;
+            }
+
+            if(errCnt > 0) return;
+
             this.contract.items = [];
             this.masbars.forEach(data =>
                 data.forEach(obj => {
@@ -711,6 +748,16 @@ export default {
                     }        
                 })
             )
+
+            if(this.contract.items.length <= 0){
+                this.$toast.open({
+                    message: 'Please insert at least 1 items!',
+                    type: 'error',
+                    duration: 3000,
+                    dismissible: true,
+                });
+                return;
+            }
             
             this.title = 'Confirmation'
             this.alertMessage = `Are you sure want to submit Transaction ?`

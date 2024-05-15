@@ -16,9 +16,9 @@
           </div>
 
           <div class="confirm-wrapper">           
-              <button class="export-btn">
+              <!-- <button class="export-btn">
                 <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
-              </button>
+              </button> -->
 
               <button class="btn-success" @click="confirmPR" v-if="isApproval && !isRevise && !selectedPR.f_mark && !isLoading && !selectedPR.f_revise">
                 <i class="ri-check-line" style="font-size: 14pt"></i>

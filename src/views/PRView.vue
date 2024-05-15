@@ -35,46 +35,6 @@
                   <option value="all">All</option>
                 </select>
 
-                <div class="export-wrapper">
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-left-radius: 5px;
-                      border-top-left-radius: 5px;
-                    "
-                  >
-                    CSV
-                  </button>
-                  <button class="export-btn">XLSX</button>
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-right-radius: 5px;
-                      border-top-right-radius: 5px;
-                    "
-                  >
-                    PDF
-                  </button>
-                </div>
-
-                <!-- 
-                <div class="filter-wrapper">
-                  <button class="export-btn" @click="showingFilter">
-                    <i class="ri-filter-3-fill"></i>
-                    Filter
-                  </button>
-
-                  <button
-                    class="export-btn"
-                    @click="showingSort"
-                    :class="{ 'bg-gradient-orange': showSort }"
-                  >
-                    <i class="ri-sort-desc"></i>
-                    Sort
-                  </button>
-                </div>
-                -->
-
                 <div class="filter-wrapper" style="top: 40px">
                   <div
                     class="filter-dialog"
