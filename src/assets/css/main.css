@@ -1547,7 +1547,7 @@ animation: fade-out-right 2s ease infinite;
 }
 
 .bounce-in {
-animation: bounce-in .8s ease;
+animation: bounce-in .5s ease;
 }
 
 .bounce-in-r {

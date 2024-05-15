@@ -80,7 +80,6 @@ export default {
         this.$emit("onResolve", response.data);
         this.loading = false
       } catch (error) {
-        console.log(error);
         this.$emit("onError", error.response.data);
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")

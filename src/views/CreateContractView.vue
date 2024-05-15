@@ -130,6 +130,9 @@
                                         :value="masbar.kdbar"
                                         @change="selectItems"
                                         :checked="masbar.checked">
+
+                                    <div style="width: 30px;height: 30px;background: beige;">
+                                    </div>
                                 </td>
                                 <td>{{ masbar.no }}</td>
                                 <td>

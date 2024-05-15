@@ -8,7 +8,7 @@
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
           <div class="content-title">
-            <h2>Kontrak {{ this.$route.params.id }}</h2>
+            <h2>Kontrak {{ this.$route.params.id }} - {{ selectedContract.sup_nm }}</h2>
             <span>{{ getMonth(new Date(selectedContract.kontrak_date).getMonth()) }},
               {{ new Date(selectedContract.kontrak_date).getDate() }}
               {{ new Date(selectedContract.kontrak_date).getFullYear() }}
@@ -257,6 +257,8 @@ export default {
         this.isLoading = true;
         const { data } = await axios.get(`/contractdetail/${this.$route.params.id}/${this.authToken}`);
         this.selectedContract = data;
+
+        console.log(this.selectedContract)
         this.getItem(this.selectedContract.items);
         this.isLoading = false;
       } catch (error) {
