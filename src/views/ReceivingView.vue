@@ -200,7 +200,6 @@
                 aria-describedby="Purchase Review Data">
                 <thead class="bg-dark">
                   <tr>
-                    <th style="width: 5%; border-top-left-radius: 5px">No</th>
                     <th style="width: 15%">No Karcis</th>
                     <th style="width: 16%">Divisi</th>
                     <th style="width: 16%">Subdivisi</th>
@@ -217,7 +216,6 @@
                     v-for="(po, idx) in purchaseOrders"
                     :key="po.pr_no"
                     :class="{ 'bg-canvas': idx % 2 == 0 }">
-                    <td>{{ idx + 1 }}</td>
                     <td>{{ po.no_karcis }}</td>
                     <td>{{ po.divisi_kd }}</td>
                     <td>{{ po.subdiv_kd }}</td>
@@ -314,7 +312,7 @@ export default {
       total_page: [],
       selectedPage: 0,
       selectedPR: {},
-      perpage: 10,
+      perpage: 3,
       pr_no: null,
       error: {
         pr_no: null,
@@ -349,11 +347,11 @@ export default {
       const groupSize = this.perpage;
       const newPO = [];
       try {
-        const response = await axios.get(
+        const { data } = await axios.get(
           `http://172.30.14.208:9642/procurement/web/receiving/${this.authToken}`
         );
-        this.purchaseOrders = response.data;
-        console.log("Purchase orders:", this.purchaseOrders);
+        this.purchaseOrders = data;
+        console.log(this.purchaseOrders);
 
         this.prs = [];
         this.total_page = [];
@@ -365,7 +363,7 @@ export default {
           j++;
         });
         console.log(newPO);
-
+        this.pagelength = this.purchaseOrders.length;
         for (let i = 0; i < newPO.length; i += groupSize) {
           this.prs.push(newPO.slice(i, i + groupSize));
         }
@@ -406,37 +404,37 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    async getPO() {
-      try {
-        const { data } = await axios.get(
-          `/prservice/approve/${this.authToken}`
-        );
-        this.pr = data;
-        console.log("oke");
+    // async getPO() {
+    //   try {
+    //     const { data } = await axios.get(
+    //       `/prservice/approve/${this.authToken}`
+    //     );
+    //     this.pr = data;
+    //     console.log("oke");
 
-        const groupSize = this.perpage;
-        const newPR = [];
-        this.prs = [];
-        this.total_page = [];
+    //     const groupSize = this.perpage;
+    //     const newPR = [];
+    //     this.prs = [];
+    //     this.total_page = [];
 
-        let j = 1;
-        this.pr.forEach((data) => {
-          data.no = j;
-          newPR.push(data);
-          j++;
-        });
+    //     let j = 1;
+    //     this.pr.forEach((data) => {
+    //       data.no = j;
+    //       newPR.push(data);
+    //       j++;
+    //     });
 
-        for (let i = 0; i < newPR.length; i += groupSize) {
-          this.prs.push(newPR.slice(i, i + groupSize));
-        }
+    //     for (let i = 0; i < newPR.length; i += groupSize) {
+    //       this.prs.push(newPR.slice(i, i + groupSize));
+    //     }
 
-        for (let i = 0; i < this.prs.length; i++) {
-          this.total_page.push(i);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    //     for (let i = 0; i < this.prs.length; i++) {
+    //       this.total_page.push(i);
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // },
     getFooImage(filename) {
       return "/images/foods/" + filename;
     },

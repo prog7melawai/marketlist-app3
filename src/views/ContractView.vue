@@ -26,8 +26,7 @@
                   class="warehouse-input"
                   style="width: 80px"
                   v-model="perpage"
-                  @change="changePerPage"
-                >
+                  @change="changePerPage">
                   <option value="10">10</option>
                   <option value="25">25</option>
                   <option value="50">50</option>
@@ -40,8 +39,7 @@
                     style="
                       border-bottom-left-radius: 5px;
                       border-top-left-radius: 5px;
-                    "
-                  >
+                    ">
                     CSV
                   </button>
                   <button class="export-btn">XLSX</button>
@@ -50,8 +48,7 @@
                     style="
                       border-bottom-right-radius: 5px;
                       border-top-right-radius: 5px;
-                    "
-                  >
+                    ">
                     PDF
                   </button>
                 </div>
@@ -78,20 +75,17 @@
                   <div
                     class="filter-dialog"
                     style="margin-right: 60px"
-                    v-if="showFilter"
-                  >
+                    v-if="showFilter">
                     <div
                       class="sort-item"
                       @click="setFilter('Pending')"
-                      :class="{ 'sort-active': selectedFilter === 'Pending' }"
-                    >
+                      :class="{ 'sort-active': selectedFilter === 'Pending' }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Pending'"
-                        >
+                          v-if="selectedFilter === 'Pending'">
                         </i>
                       </div>
 
@@ -103,15 +97,13 @@
                       @click="setFilter('Approved PR')"
                       :class="{
                         'sort-active': selectedFilter === 'Approved PR',
-                      }"
-                    >
+                      }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Approved PR'"
-                        >
+                          v-if="selectedFilter === 'Approved PR'">
                         </i>
                       </div>
 
@@ -123,15 +115,13 @@
                       @click="setFilter('Approved PO')"
                       :class="{
                         'sort-active': selectedFilter === 'Approved PO',
-                      }"
-                    >
+                      }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Approved PO'"
-                        >
+                          v-if="selectedFilter === 'Approved PO'">
                         </i>
                       </div>
 
@@ -141,15 +131,15 @@
                     <div
                       class="sort-item"
                       @click="setFilter('Completed')"
-                      :class="{ 'sort-active': selectedFilter === 'Completed' }"
-                    >
+                      :class="{
+                        'sort-active': selectedFilter === 'Completed',
+                      }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Completed'"
-                        >
+                          v-if="selectedFilter === 'Completed'">
                         </i>
                       </div>
 
@@ -161,15 +151,13 @@
                     <div
                       class="sort-item"
                       @click="setSort('date')"
-                      :class="{ 'sort-active': selectedSort === 'date' }"
-                    >
+                      :class="{ 'sort-active': selectedSort === 'date' }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedSort === 'date'"
-                        >
+                          v-if="selectedSort === 'date'">
                         </i>
                       </div>
 
@@ -179,15 +167,13 @@
                     <div
                       class="sort-item"
                       @click="setSort('status')"
-                      :class="{ 'sort-active': selectedSort === 'status' }"
-                    >
+                      :class="{ 'sort-active': selectedSort === 'status' }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
                         <i
                           class="ri-check-fill checkmark"
-                          v-if="selectedSort === 'status'"
-                        >
+                          v-if="selectedSort === 'status'">
                         </i>
                       </div>
 
@@ -198,23 +184,20 @@
 
                 <div
                   class="search-container"
-                  style="margin-right: 0px; height: 38px"
-                >
+                  style="margin-right: 0px; height: 38px">
                   <input
                     type="text"
                     class="form-input"
                     style="width: 100%"
                     placeholder="Search Contract..."
                     v-model="searchItem"
-                    @keyup.enter="searching"
-                  />
+                    @keyup.enter="searching" />
                 </div>
               </div>
 
               <table
                 class="table-responsive"
-                aria-describedby="Purchase Review Data"
-              >
+                aria-describedby="Purchase Review Data">
                 <thead class="bg-dark">
                   <tr>
                     <th style="width: 5%; border-top-left-radius: 5px">No</th>
@@ -234,8 +217,7 @@
                   <tr
                     v-for="(contract, idx) in contracts[selectedPage]"
                     :key="contract.id"
-                    :class="{ 'bg-canvas': idx % 2 == 0 }"
-                  >
+                    :class="{ 'bg-canvas': idx % 2 == 0 }">
                     <td>{{ idx + 1 }}</td>
                     <td>{{ contract.kontrakno }}</td>
                     <td>{{ contract.sup_nm }}</td>
@@ -245,12 +227,14 @@
                     <td>
                       <span
                         :class="{
-                          'capsule-warning': !contract.tglconf && !contract.tglbatal,
+                          'capsule-warning':
+                            !contract.tglconf && !contract.tglbatal,
                           'capsule-theme': contract.tglconf,
                           'capsule-danger': contract.tglbatal,
-                        }"
-                      >
-                        <span v-if="!contract.tglconf && !contract.tglbatal">Waiting</span>
+                        }">
+                        <span v-if="!contract.tglconf && !contract.tglbatal"
+                          >Waiting</span
+                        >
                         <span v-if="contract.tglconf">Approve</span>
                         <span v-if="contract.tglbatal">Decline</span>
                       </span>
@@ -263,8 +247,7 @@
                             name: 'contract-detail',
                             params: { id: contract.kontrakno },
                           })
-                        "
-                      >
+                        ">
                         Details
                       </button>
                     </td>
@@ -276,8 +259,12 @@
                 <div style="width: 50%">
                   <span style="font-size: 10pt">
                     Showing {{ contracts[selectedPage][0].no }} to
-                    {{ contracts[selectedPage][contracts[selectedPage].length - 1].no }} of
-                    {{ pagelength }} entries.
+                    {{
+                      contracts[selectedPage][
+                        contracts[selectedPage].length - 1
+                      ].no
+                    }}
+                    of {{ pagelength }} entries.
                   </span>
                 </div>
                 <div
@@ -286,13 +273,11 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: end;
-                  "
-                >
+                  ">
                   <button
                     class="page-prev"
                     @click="prevPagination"
-                    :class="{ 'paginate-active': start >= 5 }"
-                  >
+                    :class="{ 'paginate-active': start >= 5 }">
                     Previous
                   </button>
                   <div
@@ -303,15 +288,13 @@
                       'page-active': selectedPage === pg,
                       'page-unactive': selectedPage !== pg,
                     }"
-                    @click="selectedPage = pg"
-                  >
+                    @click="selectedPage = pg">
                     {{ pg + 1 }}
                   </div>
                   <button
                     :class="{ 'paginate-active': total_page.length > end }"
                     class="page-next"
-                    @click="nextPagination"
-                  >
+                    @click="nextPagination">
                     Next
                   </button>
                 </div>
@@ -368,14 +351,14 @@ export default {
     };
   },
   mounted() {
-    this.getContracts(); 
+    this.getContracts();
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
     if (!this.permission.includes("contract")) window.location.href = "/";
-    this.isCreate = this.permission.includes("create-contract")
+    this.isCreate = this.permission.includes("create-contract");
   },
   methods: {
     setWidth(value) {
@@ -392,7 +375,7 @@ export default {
         const { data } = await axios.get(`/contractsupplier/${this.authToken}`);
         this.contract = data;
 
-        console.log(this.contract)
+        console.log(this.contract);
         this.total_page = [];
         this.contract.forEach((data) => {
           newPR.push(data);
@@ -660,6 +643,4 @@ export default {
 };
 </script>
 
-<style>
-
-</style>
+<style></style>
