@@ -446,7 +446,7 @@ export default {
         this.message = null;
         this.succes = false;
         this.showNotif = false;
-        // window.location.href = `/contract-detail/${this.$route.params.id}`;
+        window.location.href = `/contract-detail/${this.$route.params.id}`;
       }, 1300);
     },
     onError(value) {
