@@ -11,95 +11,11 @@
         <pagination />
       </template>
     </carousel>
-    
-    <!-- <div class="login-wrapper">
-      <span class="login-title">Welcome Back!</span>
-
-      <div style="position: relative; width: 70%; margin-left: -15px">
-        <input
-          type="text"
-          style="
-            width: 100%;
-            height: 40px;
-            border-radius: 50px;
-            border: 1px solid #106168;
-            padding-left: 15px;
-          "
-          v-model="username"
-          placeholder="Username"
-        />
-      </div>
-      <span 
-        class="error-validation" 
-        v-if="errorUser">
-        {{ errorUser }}
-      </span>
-
-      <div style="position: relative; width: 70%; margin-left: -15px">
-        <input
-          type="password"
-          style="
-            width: 100%;
-            height: 40px;
-            border-radius: 50px;
-            border: 1px solid #106168;
-            padding-left: 15px;
-          "
-          id="password"
-          v-model="password"
-          placeholder="Password"
-          v-on:keydown.enter="login"
-        />
-        <span 
-          class="error-validation" 
-          v-if="errorPass">
-          {{ errorPass }}
-        </span>
-
-        <div 
-          style="position: absolute;
-            top: 12px;
-            right: 10px;
-            font-size: 15pt;
-            cursor: pointer;
-            color: var(--light)"
-          @click="showPass">
-            <i v-if="!showPassword" class="ri-eye-close-line"></i>
-            <i v-if="showPassword" class="ri-eye-line"></i>
-        </div>
-      </div>
-
-      <div
-        style="
-          margin-top: -10px;
-          width: 70%;
-          display: flex;
-          justify-content: end;
-          font-family: 'Ubahn', sans-serif;
-          font-size: 13pt;
-          color: var(--white);
-        "
-      >
-        <span>
-          Forgot our password ?
-          <a href="" style="text-decoration: none; color: var(--orange)"
-            >Reset</a
-          >
-        </span>
-      </div>
-
-      <button 
-        class="login-btn" 
-        @click="login">
-        <spinner v-if="is_proccess"></spinner>
-        <span v-if="!is_proccess">Log In</span>
-      </button>
-    </div> -->
-
+  
     <div class="logins">
         <div class="login-body">
             <span class="login-title" style="color: var(--dark);margin-bottom: 3svh;">Welcome Back!</span>
-            <div style="width: 80%;display: flex;flex-direction: column;gap: 5px;margin-top: -10px;">
+            <div style="width: 80%;display: flex;flex-direction: column;margin-top: -10px;">
                 <div class="form-login-group">
                   <label class="login-form-label">Userid</label>
                   <input 
@@ -112,7 +28,7 @@
                   <span class="error-input">{{ errorUser }}</span>
                 </div>
 
-                <div class="form-login-group">
+                <div class="form-login-group" style="margin-top: -1%;">
                   <label class="login-form-label">Password</label>
                   <input 
                     type="password" 
@@ -143,7 +59,7 @@
                   <div class="line-break"></div>
                 </div>
 
-                <div class="line-wrapper">
+                <div class="line-wrapper" style="margin-top: 30px;">
                   <span>Forgot your password ? 
                     <a href="" class="reset-link">Reset</a>
                   </span>

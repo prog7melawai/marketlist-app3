@@ -29,7 +29,8 @@
       style="
         position: relative;
         width: 50%;
-        min-height: 300px;
+        height: auto;
+        max-height: 600px;
         background: #fff;
         border-radius: 10px;
         z-index: 10;
@@ -50,15 +51,14 @@
         <div class="notif-content">
             <span><span style="font-weight: 800;">We would like to bring to your attention that our contract : </span><br>
                 
-                <ul style="margin-top: 20px;">
+                <ul style="margin-top: 20px;line-height: 20px;">
                     <li style="color: var(--red);" v-for="itm in items" :key="itm.no_kontrak">
                         Contract {{ itm.no_kontrak }}, dated {{ new Date(itm.end_kontrak_date).getDate() }} {{ getMonths(new Date(itm.end_kontrak_date).getMonth()) }} {{ new Date(itm.end_kontrak_date).getFullYear() }}. Is set to expire on 
                         {{ new Date(itm.end_kontrak_date).getDate() }} {{ getMonths(new Date(itm.end_kontrak_date).getMonth()) }} {{ new Date(itm.end_kontrak_date).getFullYear() }}.
                     </li>
                 </ul>
 
-                <br>
-                As the expiration date approaches, we would like to discuss the potential for renewal or any other actions that may be necessary.
+                <p style="line-height: 20px;margin-top: 20px;">As the expiration date approaches, we would like to discuss the potential for renewal or any other actions that may be necessary.</p>
             </span>
         </div>
 
@@ -138,7 +138,7 @@ export default {
 
 .notif-content{
     width: 90%;
-    height: 80%;
+    margin: 50px 0px 20px 0px;
     font-family: 'Noto Sans Lao', sans-serif;
 }
 
