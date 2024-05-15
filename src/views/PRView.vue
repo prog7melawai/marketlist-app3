@@ -18,7 +18,7 @@
                   class="warehouse-input"
                   style="width: 80px"
                   v-model="perpage"
-                  @change="getEvent"
+                  @change="getPR"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -299,7 +299,9 @@
                     justify-content: end;
                   "
                 >
-                  <button class="page-prev" @click="prevPagination"
+                  <button class="page-prev" 
+                    :disabled="start < 5"
+                    @click="prevPagination"
                     :class="{'paginate-active': start >= 5}">
                     Previous
                   </button>
@@ -315,7 +317,9 @@
                   >
                     {{ pg + 1 }}
                   </div>
-                  <button :class="{'paginate-active': total_page.length > end}"
+                  <button 
+                  :disabled="total_page.length < end "
+                  :class="{'paginate-active': total_page.length > end}"
                   class="page-next" @click="nextPagination">
                   Next
                   </button>
@@ -403,7 +407,6 @@ export default {
         const { data } = await axios.get(`/prservice/${this.status}/${this.authToken}`);
         this.pr = data;
 
-        console.log(this.pr)
         this.total_page = [];
         this.pr.forEach((data) => {
           newPR.push(data);
@@ -422,6 +425,12 @@ export default {
       } catch(error){
         console.log(error);
         if(error.response.status == 401){
+          this.$toast.open({
+              message: error.response.data.message,
+              type: 'error',
+              duration: 1000,
+          });
+
           this.$store.dispatch("LOGOUT")
           .then(() => {
               this.$router.push({ path : '/login'});

@@ -55,6 +55,10 @@
                     <img class="stamp-logo" src="/images/logo/approved.png" alt="">
                 </span>
 
+                <span class="stamp-container" v-if="selectedContract.tglbatal">
+                    <img class="stamp-logo" src="/images/logo/declined.png" alt="">
+                </span>
+
                 <div style="width: 78%; display: flex; flex-direction: column">
                   <span class="pr-supplier">{{ selectedContract.dept_kd }}</span>
                   <span class="pr-contact">{{ selectedContract.subdiv_kd }}</span>
@@ -153,12 +157,6 @@
     </div>
   </div>
 
-  <notification 
-    v-if="showNotif" 
-    :success="success" 
-    :message="message">
-  </notification>
-
   <notification-alert 
     v-if="showNotifAlert" 
     :success="success" 
@@ -186,7 +184,6 @@ import Loader from "@/components/Loader.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
-import Notification from "@/components/Notification.vue";
 import NotificationAlert from '@/components/NotificationAlert.vue';
 import axios from "axios";
 
@@ -196,7 +193,6 @@ export default {
     SidebarVue,
     NavbarVue,
     AlertConfirm,
-    Notification,
     NotificationAlert,
     Loader,
   },
@@ -261,12 +257,16 @@ export default {
         this.isLoading = true;
         const { data } = await axios.get(`/contractdetail/${this.$route.params.id}/${this.authToken}`);
         this.selectedContract = data;
-        console.log(this.selectedContract)
         this.getItem(this.selectedContract.items);
         this.isLoading = false;
       } catch (error) {
         console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+              message: 'Session expired!',
+              type: 'error',
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
@@ -429,23 +429,28 @@ export default {
     },
     submitted(value) {      
       this.showAlert = false;
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
+      this.$toast.open({
+          message: value.message,
+          type: 'info',
+          duration: 1000,
+      });
 
       setTimeout(() => {
-        this.message = null;
-        this.succes = false;
-        this.showNotif = false;
         window.location.href = `/contract-detail/${this.$route.params.id}`;
-      }, 1300);
+      }, 1000);
     },
     onError(value){
-      this.showAlert = false
-      this.message = value.message;
-      this.success = false;
-      this.showNotifAlert = true;
-      this.alertMessage = null
+      this.showAlert = false      
+      this.$toast.open({
+          message: value.message,
+          type: 'error',
+          duration: 1000,
+      });   
+
+      // this.message = value.message;
+      // this.success = false;
+      // this.showNotifAlert = true;
+      // this.alertMessage = null;
     },
     formatPrice(value) {
       let val = (value/1).toFixed(2).replace('.', ',')

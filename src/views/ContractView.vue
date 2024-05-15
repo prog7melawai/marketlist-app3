@@ -26,7 +26,7 @@
                   class="warehouse-input"
                   style="width: 80px"
                   v-model="perpage"
-                  @change="changePerPage"
+                  @change="getContracts"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -290,6 +290,7 @@
                 >
                   <button
                     class="page-prev"
+                    :disabled="start < 5"
                     @click="prevPagination"
                     :class="{ 'paginate-active': start >= 5 }"
                   >
@@ -308,6 +309,7 @@
                     {{ pg + 1 }}
                   </div>
                   <button
+                    :disabled="total_page.length < end "
                     :class="{ 'paginate-active': total_page.length > end }"
                     class="page-next"
                     @click="nextPagination"
@@ -392,7 +394,6 @@ export default {
         const { data } = await axios.get(`/contractsupplier/${this.authToken}`);
         this.contract = data;
 
-        console.log(this.contract)
         this.total_page = [];
         this.contract.forEach((data) => {
           newPR.push(data);
@@ -409,8 +410,13 @@ export default {
 
         this.isLoading = false;
       } catch (error) {
-        console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+              message: error.response.data.message,
+              type: 'error',
+              duration: 1000,
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
@@ -645,6 +651,11 @@ export default {
       } catch (error) {
         console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+              message: 'Session expired!',
+              type: 'error',
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {

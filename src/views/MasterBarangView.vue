@@ -28,7 +28,7 @@
                   class="warehouse-input"
                   style="width: 80px"
                   v-model="perpage"
-                  @change="getFood"
+                  @change="getMasterbarang"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -63,7 +63,7 @@
                     type="text"
                     class="form-input"
                     style="width: 100%"
-                    placeholder="Search marketlist item..."
+                    placeholder="Search master barang item..."
                     v-model="searchItem"
                     @keyup.enter="searching"
                   />
@@ -104,7 +104,11 @@
                       <img
                         :src="getFoodImage(items.image)"
                         :alt="items.image"
-                        style="width: 60px;height: 60px;object-fit: cover;"
+                        @click="showingPreview(items.image)"
+                        style="width: 60px;
+                        height: 60px;
+                        object-fit: cover;
+                        cursor: pointer"
                       />
                     </td>
                     <td>{{ items.kd_barang }}</td>
@@ -156,6 +160,7 @@
                 >
                   <button
                     class="page-prev"
+                    :disabled="start < 5"
                     @click="prevPagination"
                     :class="{ 'paginate-active': start >= 5 }"
                   >
@@ -174,6 +179,7 @@
                     {{ pg + 1 }}
                   </div>
                   <button
+                    :disabled="total_page.length < end "
                     :class="{ 'paginate-active': total_page.length > end }"
                     class="page-next"
                     @click="nextPagination"
@@ -223,6 +229,13 @@
     @onResolve="deleteItem"
   >
   </alert-confirm>
+
+  <preview-image
+    v-if="selectedImage"
+    :source="selectedImage"
+    @onClosed="onClosedPreview"
+  >
+  </preview-image>
 </template>
 
 <script>
@@ -232,7 +245,9 @@ import EditModal from "@/components/EditItemModal.vue";
 import CreateModal from "@/components/CreateItemModal.vue";
 import Notification from "@/components/Notification.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
+import PreviewImage from '@/components/PreviewImage.vue';
 import axios from "axios";
+
 
 export default {
   name: "MasterbarangView",
@@ -243,6 +258,7 @@ export default {
     EditModal,
     AlertConfirm,
     Notification,
+    PreviewImage,
   },
   data() {
     return {
@@ -279,6 +295,8 @@ export default {
       authToken: null,
       jenis: null,
       kdjns: 'all',
+      selectedImage: null,
+      showPreview: false,
     };
   },
   mounted() {
@@ -303,6 +321,19 @@ export default {
       this.title = false;
       this.url = null;
       this.methods = null;
+    },
+    showingPreview(src){
+      if(src === undefined){
+        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+      } else {
+        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${src}`;
+      }
+
+      this.showPreview = true;
+    },
+    onClosedPreview(value){
+      this.showPreview = value;
+      this.selectedImage = null;
     },
     showingAlert(data) {
       this.selectedID = data.kd_barang;
@@ -336,11 +367,9 @@ export default {
         this.foods = [];
         this.total_page = [];
 
-        console.log(this.kdjns)
         const { data } = await axios.get(`/holdingmasbar/${this.kdjns}/${this.authToken}`);
 
         this.food = data;
-        console.log(this.food)
         this.pagelength = this.food.length;
         for (let i = 0; i < this.food.length; i += parseInt(this.perpage)) {
           this.foods.push(this.food.slice(i, i + parseInt(this.perpage)));
@@ -350,7 +379,22 @@ export default {
           this.total_page.push(i);
         }
       } catch (error) {
-        console.log(error);
+        if (error.response.status == 401) {
+          this.$toast.open({
+              message: error.response.data.message,
+              type: 'error',
+              duration: 1000,
+          });
+
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
       }
     },
     async getJenis(){
@@ -445,9 +489,9 @@ export default {
     },
     getFoodImage(filename) {
       if(filename === undefined){
-        return `http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/default.png`;
+        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
       } else {
-        return `http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/${filename}`;
+        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
       }
     },
   },

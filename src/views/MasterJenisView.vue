@@ -72,11 +72,12 @@
                   </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in masters[selectedPage]" :key="item.no">
+                    <tr v-for="(item, idx) in masters[selectedPage]" :key="item.no"
+                        :class="{ 'bg-canvas': idx % 2 == 0 }" style="height: 50px;">
                         <td>{{ item.no }}</td>
-                        <td>{{ item.div_kd }}</td>
-                        <td>{{ item.subdiv_kd }}</td>
-                        <td>{{ item.dept_kd }}</td>
+                        <td>{{ item.div_nm }}</td>
+                        <td>{{ item.subdiv_nm }}</td>
+                        <td>{{ item.dept_nm }}</td>
                         <td>{{ item.kd_jenis }}</td>
                         <td>{{ item.nm_jenis }}</td>
                         <!-- <td>

@@ -75,6 +75,8 @@ export default {
           data: this.data,
         });
 
+        await axios.get('/receiving')
+
         this.$emit("onResolve", response.data);
         this.loading = false
       } catch (error) {

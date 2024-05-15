@@ -207,7 +207,7 @@
                     <th style="width: 15%">Divisi</th>
                     <th style="width: 15%">Subdivisi</th>
                     <th style="width: 15%">Department</th>
-                    <th style="width: 15">Status</th>
+                    <th style="width: 15">Number of PO</th>
                     <th style="width: 15%; 
                     border-top-right-radius: 5px">
                       Action
@@ -225,7 +225,7 @@
                       <td>{{ po.div_kd }}</td>
                       <td>{{ po.subdiv_kd }}</td>
                       <td>{{ po.dept_kd }}</td>
-                      <td>Waiting</td>
+                      <td>{{ po.total_po }}</td>
                       <td style="display: flex;
                         flex-direction: row;
                         justify-content: center;
@@ -333,9 +333,8 @@ export default {
     },
     async getPO() {
       try {
-        const { data } = await axios.get(`/prservice/approve/${this.authToken}`);
+        const { data } = await axios.get(`/approvedpr/${this.authToken}`);
         this.pr = data
-        console.log(this.pr)
 
         const groupSize = this.perpage;
         const newPR = [];
@@ -357,7 +356,16 @@ export default {
           this.total_page.push(i);
         }
       } catch(error){
-        console.log(error)
+        if (error.response.status == 401) {
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
       }
     },
     getFooImage(filename) {

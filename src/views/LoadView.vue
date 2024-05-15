@@ -133,9 +133,10 @@
                     <thead>
                         <th width="5%" style="text-align: center;">No</th>
                         <th width="10%" style="text-align: center;">Kode Barang</th>
-                        <th width="25%" style="text-align: left;">Nama Barang</th>
+                        <th width="20%" style="text-align: left;">Nama Barang</th>
                         <th width="15%" style="text-align: left;">NO PR</th>
-                        <th width="20%" style="text-align: left;">Jenis</th>
+                        <th width="15%" style="text-align: left;">Jenis</th>
+                        <th width="10%" style="text-align: left;">Satuan</th>
                         <th width="5%" style="text-align: center;">Qty</th>
                         <th width="5%" style="text-align: center;">Qty Revise</th>
                         <th width="15%" style="text-align: center;">Revise Note</th>
@@ -147,6 +148,7 @@
                           <td style="text-align: left;">{{ item.nama_barang }}</td>
                           <td style="text-align: left;">{{ item.no_pr }}</td>
                           <td style="text-align: left;">{{ item.nama_jenis }}</td>
+                          <td style="text-align: left;">{{ item.satuan_stock }}</td>
                           <td style="text-align: center;">{{ item.qty }}</td>
                           <td style="text-align: center;">{{ item.qty_revise }}</td>
                           <td style="text-align: center;">{{ item.revise_note }}</td>
@@ -177,12 +179,6 @@
   >
   </alert-confirm>
 
-  <notification 
-      v-if="showNotif" 
-      :success="success" 
-      :message="message">
-  </notification>
-
   <notification-alert
       v-if="showNotifAlert" 
       :success="success" 
@@ -210,7 +206,6 @@ import Spinner from '@/components/Spinner.vue';
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
-import Notification from "@/components/Notification.vue";
 import NotificationAlert from '@/components/NotificationAlert.vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -223,7 +218,6 @@ export default {
     SidebarVue,
     NavbarVue,
     AlertConfirm,
-    Notification,
     NotificationAlert,
     Loader,
     Spinner,
@@ -326,7 +320,7 @@ export default {
     },
     async getLocation(){
       try {
-        const { data } = await axios.get(`/location/${this.selectedDivisi}/${this.selectedSubdiv}/${this.selectedDept}/${this.authToken}`);
+        const { data } = await axios.get(`/getlokasi/${this.selectedDivisi}/${this.selectedSubdiv}/${this.selectedDept}/${this.authToken}`);
         this.location = data;
       } catch(error){
         console.log(error)
@@ -335,7 +329,7 @@ export default {
     async downloadTemplate(){
       try {
         this.isDownload = true;
-        const { data } = await axios.get(`/pr/${this.authToken}`);
+        const { data } = await axios.get(`/holdingmasbar/all/${this.authToken}`);
         const barang = data;
 
         const workbook = new ExcelJS.Workbook();
@@ -344,12 +338,9 @@ export default {
         worksheet.columns = [
           { header: 'Kode Barang', key: 'kdbar', width: 15 },
           { header: 'Nama Barang', key: 'nmbar', width: 30 },
-          { header: 'Nama Barang 2', key: 'nmbar2', width: 30 },
           { header: 'NO PR', key: 'nopr', width: 20 },
           { header: 'Kode Jenis', key: 'kode_jenis', width: 10 },
           { header: 'Nama Jenis', key: 'nama_jenis', width: 20 },
-          { header: "Kdstn Kirim", key: "kdstn_krm", width: 10 },
-          { header: 'Satuan Kirim', key: 'nama_krm', width: 20 },
           { header: "Kdstn Stok", key: "kdstn_stok", width: 10 },
           { header: "Satuann Stok", key: "nama_stok", width: 20 },
           { header: "Quantity", key: "qty", width: 15 },
@@ -361,11 +352,10 @@ export default {
 
         const startCell = 'A1';
         const endCell = 'N1';
-        worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
-          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+        worksheet.eachRow({ includeEmpty: true }, function(row) {
+          row.eachCell({ includeEmpty: true }, function(cell) {
             const cellAddress = cell.address;
             if (cellAddress >= startCell && cellAddress <= endCell) {
-              console.log(rowNumber, colNumber)
               cell.fill = {
                 type: 'pattern',
                 pattern: 'solid',
@@ -381,16 +371,13 @@ export default {
 
         barang.forEach(async(data) => {
           worksheet.addRow({
-            kdbar: data.kdbar,
-            nmbar: data.nmbar,
-            nmbar2: data.nmbar2,
+            kdbar: data.kd_barang,
+            nmbar: data.nm_barang,
             nopr: '',
-            kode_jenis: data.kode_jenis,
+            kode_jenis: data.kd_jenis,
             nama_jenis: data.nm_jenis,
             kdstn_stok: data.kdstn_stok,
-            nama_stok: data.nama_stok,
-            kdstn_krm: data.kdstn_krm,
-            nama_krm: data.nama_krm,
+            nama_stok: data.nmstn_stok,
             qty: 0,
             qty_revise: 0,
             revise_note: ''
@@ -407,12 +394,9 @@ export default {
           row.getCell(5).protection = {locked: true};
           row.getCell(6).protection = {locked: true};
           row.getCell(7).protection = {locked: true};
-          row.getCell(8).protection = {locked: true};
+          row.getCell(8).protection = {locked: false};
           row.getCell(9).protection = {locked: true};
           row.getCell(10).protection = {locked: true};
-          row.getCell(11).protection = {locked: false};
-          row.getCell(12).protection = {locked: true};
-          row.getCell(13).protection = {locked: true};
 
           row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
             const startCell = `A${rowNumber}`;
@@ -434,6 +418,7 @@ export default {
           selectLockedCells: true,
           selectUnlockedCells: true,          
         });
+
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = window.URL.createObjectURL(blob);
@@ -449,8 +434,14 @@ export default {
         document.body.removeChild(a);
         this.isDownload = false;
       } catch(error){
-        console.log(error);
         if(error.response.status == 401){
+          this.$toast.open({
+              message: 'Invalid Credentials!',
+              type: 'error',
+              duration: 1000,
+              dismissible: true,
+          });
+          
           this.$store.dispatch("LOGOUT")
           .then(() => {
               this.$router.push({ path : '/login'});
@@ -533,19 +524,17 @@ export default {
     },
     submitted(value){
       this.showAlert = false
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
+      this.$toast.open({
+          message: value.message,
+          type: 'info',
+          duration: 1000,
+      });
 
       setTimeout(() => {
-        this.message = null;
-        this.succes = false;
-        this.showNotif = false;
         window.location.href = '/pr'
-      }, 1300)
+      }, 1000)
     },
     onError(value){
-      console.log(value.message)
       this.showAlert = false
       this.message = value.message
       this.success = false
@@ -588,27 +577,29 @@ export default {
                         no: nou,
                         kode_barang: row.getCell(1).value,
                         nama_barang: row.getCell(2).value,
-                        nama_barang2: row.getCell(3).value,
-                        pr_no: row.getCell(4).value,
-                        kd_jenis: row.getCell(5).value,
-                        nama_jenis: row.getCell(6).value,
-                        kdstn_krm: row.getCell(7).value,
-                        satuan_kirim: row.getCell(8).value,
-                        kdstn_stock: row.getCell(9).value,
-                        satuan_stock: row.getCell(10).value,
-                        qty: row.getCell(11).value,
-                        qty_revise: row.getCell(12).value,
-                        revise_note: row.getCell(13).value,
+                        pr_no: row.getCell(3).value,
+                        kd_jenis: row.getCell(4).value,
+                        nama_jenis: row.getCell(5).value,
+                        kdstn_stock: row.getCell(6).value,
+                        satuan_stock: row.getCell(7).value,
+                        qty: row.getCell(8).value,
+                        qty_revise: row.getCell(9).value,
+                        revise_note: row.getCell(10).value,
                     };
 
-                    if(row.getCell(11).value > 0){
+                    if(row.getCell(8).value > 0){
                       this.content.push(data);
                       nou++
                     }
                 }
             });
         } catch (error) {
-            console.error("An error occurred:", error);
+            this.$toast.open({
+                message: `An error occurred: ${error}`,
+                type: 'error',
+                duration: 1000,
+                dismissible: true,
+            });
         }
     }
   },

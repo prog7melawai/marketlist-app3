@@ -258,12 +258,6 @@
     </div>
   </div>
 
-  <notification 
-      v-if="showNotif" 
-      :success="success" 
-      :message="message">
-  </notification>
-
   <notification-alert 
     v-if="showNotifAlert" 
     :success="success" 
@@ -290,7 +284,6 @@ import Loader from "@/components/Loader.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
-import Notification from "@/components/Notification.vue";
 import NotificationAlert from "@/components/NotificationAlert.vue";
 import axios from "axios";
 
@@ -300,7 +293,6 @@ export default {
     SidebarVue,
     NavbarVue,
     AlertConfirm,
-    Notification,
     NotificationAlert,
     Loader,
   },
@@ -371,7 +363,6 @@ export default {
         this.getItem(this.selectedPR.items);
         this.isLoading = false;
       } catch(error){
-        console.log(error);
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
@@ -387,7 +378,6 @@ export default {
         const { data } = await axios.get(`/jenispr/${this.$route.params.id}/${this.authToken}`)
         this.jenis = data;
       } catch(error){
-        console.log(error);
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
@@ -561,16 +551,15 @@ export default {
     },
     submitted(value){
       this.showAlert = false
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
+      this.$toast.open({
+          message: value.message,
+          type: 'info',
+          duration: 1000,
+      });
 
       setTimeout(() => {
-        this.message = null;
-        this.succes = false;
-        this.showNotif = false;
         window.location.href = '/pr'
-      }, 1300)
+      }, 1000)
     },
     onError(value){
       this.showAlert = false

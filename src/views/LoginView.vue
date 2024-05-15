@@ -12,7 +12,7 @@
       </template>
     </carousel>
     
-    <div class="login-wrapper">
+    <!-- <div class="login-wrapper">
       <span class="login-title">Welcome Back!</span>
 
       <div style="position: relative; width: 70%; margin-left: -15px">
@@ -94,6 +94,62 @@
         <spinner v-if="is_proccess"></spinner>
         <span v-if="!is_proccess">Log In</span>
       </button>
+    </div> -->
+
+    <div class="logins">
+        <div class="login-body">
+            <span class="login-title" style="color: var(--dark);margin-bottom: 3svh;">Welcome Back!</span>
+            <div style="width: 80%;display: flex;flex-direction: column;gap: 5px;margin-top: -10px;">
+                <div class="form-login-group">
+                  <label class="login-form-label">Userid</label>
+                  <input 
+                    type="text" 
+                    class="login-form" 
+                    style="margin-bottom: 21px;" 
+                    placeholder="Enter your userid" 
+                    v-model="username"
+                    @keyup.enter="login">
+                  <span class="error-input">{{ errorUser }}</span>
+                </div>
+
+                <div class="form-login-group">
+                  <label class="login-form-label">Password</label>
+                  <input 
+                    type="password" 
+                    id="password" 
+                    class="login-form" 
+                    style="margin-bottom: 21px;" 
+                    placeholder="Enter your password" 
+                    v-model="password"
+                    @keyup.enter="login">
+                  <div class="show-password" @click="showPass">
+                      <i v-if="!showPassword" class="ri-eye-close-line"></i>
+                      <i v-if="showPassword" class="ri-eye-line"></i>
+                  </div>
+                  <span class="error-input">{{ errorPass }}</span>
+                </div>
+                
+                <div style="display: flex;gap: 10px;margin-top: -10px;">
+                  <input type="checkbox" class="remember-me" v-model="remember">
+                  <span>Keep me signed in</span>
+                </div>
+
+                <button class="login-button" @click="login">
+                  <spinner v-if="is_proccess"></spinner>
+                  <span v-if="!is_proccess">Log In</span>
+                </button>
+
+                <div class="line-wrapper" style="margin-top: 20px;">
+                  <div class="line-break"></div>
+                </div>
+
+                <div class="line-wrapper">
+                  <span>Forgot your password ? 
+                    <a href="" class="reset-link">Reset</a>
+                  </span>
+                </div>
+            </div>
+        </div>
     </div>
   </div>
 </template>
@@ -115,17 +171,16 @@ export default {
     return {
       username: null,
       password: null,
+      remember: false,
       errorUser: null,
       errorPass: null,
       is_proccess: false,
       showPassword: false,
       backgrounds: [
-        {id: 1, image: '/images/background/bg-movenpick.jpg'},
         {id: 2, image: '/images/background/bg-movenpick1.jpg'},
         {id: 3, image: '/images/background/bg-movenpick2.jpg'},
         {id: 4, image: '/images/background/bg-movenpick3.jpg'},
         {id: 5, image: '/images/background/bg-movenpick4.jpg'},
-        {id: 6, image: '/images/background/bg-movenpick5.jpg'},
       ]
     }
   },
@@ -140,6 +195,7 @@ export default {
         const data = {
           username: this.username,
           password: this.password,
+          remember: this.remember,
         }
 
         if(this.username && this.password){
@@ -148,8 +204,23 @@ export default {
               this.is_proccess = false
               this.$router.push({ name : 'import'});
           }).catch((error) => {
-              console.log(error)
-              alert(error.response.data.message);
+              this.is_proccess = false
+              console.clear()
+              if(error.response.status === 401){
+                this.$toast.open({
+                    message: 'Invalid Credentials!',
+                    type: 'error',
+                    duration: 1000,
+                    dismissible: true,
+                });
+              } else {
+                this.$toast.open({
+                    message: 'Internal server error',
+                    type: 'error',
+                    duration: 1000,
+                    dismissible: true,
+                });
+              }
           });
         }
 
