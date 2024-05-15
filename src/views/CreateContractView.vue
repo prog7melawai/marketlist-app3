@@ -130,9 +130,6 @@
                                         :value="masbar.kdbar"
                                         @change="selectItems"
                                         :checked="masbar.checked">
-
-                                    <div style="width: 30px;height: 30px;background: beige;">
-                                    </div>
                                 </td>
                                 <td>{{ masbar.no }}</td>
                                 <td>
@@ -163,6 +160,7 @@
                                         @change="addKdstn(masbar.kdbar)" 
                                         :disabled="masbar.readonly"
                                         :value="`${masbar.kdstn}-${masbar.nmstn_beli}`">
+                                        <!-- <option :value="null">Satuan</option> -->
                                         <spinner
                                             style="position: absolute;top: 5px"
                                             :id="`spinner${masbar.kdbar}`"></spinner>
@@ -545,9 +543,7 @@ export default {
 
             this.isLoading = true;
             const url = `/holdingmasbar/${this.kdjns}/${this.authToken}`
-            
             const { data } = await axios.get(url)
-            console.log(data)
 
             this.masterbarang = data
             this.total_page = [];
