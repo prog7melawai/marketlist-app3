@@ -368,7 +368,6 @@ import Loader from "@/components/Loader.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
-import Notification from "@/components/Notification.vue";
 import NotificationAlert from "@/components/NotificationAlert.vue";
 import axios from "axios";
 
@@ -378,7 +377,6 @@ export default {
     SidebarVue,
     NavbarVue,
     AlertConfirm,
-    Notification,
     NotificationAlert,
     Loader,
   },

@@ -4,6 +4,10 @@ export const auth = {
     state: {
         auth_status: false,
         auth_token: null,
+        contract: {
+            is_open: false,
+            count: 0,
+        },
         sidebar: {
             sidebarwidth: "18%",
             bgsidebar: "18%",
@@ -148,6 +152,11 @@ export const auth = {
 
         SET_AUTH_TOKEN(state, token) {
             state.auth_token = token;
+        },
+
+        SET_CONTRACT_NOTIF(state, payload) {
+            state.contract.is_open = payload.is_open;
+            state.contract.count = payload.count;
         },
 
         SET_AUTH_INFO(state, info) {

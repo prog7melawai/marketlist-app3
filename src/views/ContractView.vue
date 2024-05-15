@@ -276,6 +276,7 @@
                   ">
                   <button
                     class="page-prev"
+                    :disabled="start < 5"
                     @click="prevPagination"
                     :class="{ 'paginate-active': start >= 5 }">
                     Previous
@@ -292,6 +293,7 @@
                     {{ pg + 1 }}
                   </div>
                   <button
+                    :disabled="total_page.length < end"
                     :class="{ 'paginate-active': total_page.length > end }"
                     class="page-next"
                     @click="nextPagination">
@@ -392,8 +394,13 @@ export default {
 
         this.isLoading = false;
       } catch (error) {
-        console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+            message: error.response.data.message,
+            type: "error",
+            duration: 1000,
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
@@ -628,6 +635,11 @@ export default {
       } catch (error) {
         console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+            message: "Session expired!",
+            type: "error",
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {

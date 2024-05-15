@@ -302,7 +302,6 @@ export default {
     SidebarVue,
     NavbarVue,
     AlertConfirm,
-    Notification,
     NotificationAlert,
     Loader,
     Spinner,
@@ -420,7 +419,9 @@ export default {
     async downloadTemplate() {
       try {
         this.isDownload = true;
-        const { data } = await axios.get(`/pr/${this.authToken}`);
+        const { data } = await axios.get(
+          `/holdingmasbar/all/${this.authToken}`
+        );
         const barang = data;
 
         const workbook = new ExcelJS.Workbook();
@@ -473,9 +474,7 @@ export default {
             kode_jenis: data.kode_jenis,
             nama_jenis: data.nm_jenis,
             kdstn_stok: data.kdstn_stok,
-            nama_stok: data.nama_stok,
-            kdstn_krm: data.kdstn_krm,
-            nama_krm: data.nama_krm,
+            nama_stok: data.nmstn_stok,
             qty: 0,
             qty_revise: 0,
             revise_note: "",
@@ -519,6 +518,7 @@ export default {
           selectLockedCells: true,
           selectUnlockedCells: true,
         });
+
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

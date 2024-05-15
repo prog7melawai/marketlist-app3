@@ -60,6 +60,7 @@
                         <VueDatePicker 
                             v-model="contract.end_date" 
                             placeholder="End Contract Date" 
+                            :min-date="new Date()"
                             :enable-time-picker="false" 
                             :format="format"/>
                         <span>{{ error.end_date }}</span>
@@ -94,6 +95,7 @@
                             <tr>
                                 <th width="5%">Select</th>
                                 <th width="5%">No</th>
+                                <th width="5%">Image</th>
                                 <th width="10%">KD Product</th>
                                 <th style="width: 15%;text-align: left">
                                     <select class="select-jenis" v-model="kdjns" @change="getProduct">
@@ -103,7 +105,7 @@
                                 </th>
                                 <th style="width: 20%;text-align: left">Product Name</th>
                                 <th width="5%">Stock Units</th>
-                                <th width="10%">Purchase Units</th>
+                                <th width="5%">Purchase Units</th>
                                 <th width="10%">Price</th>
                                 <th width="5%">Disc%</th>
                             </tr>
@@ -130,6 +132,17 @@
                                         :checked="masbar.checked">
                                 </td>
                                 <td>{{ masbar.no }}</td>
+                                <td>
+                                    <img
+                                        :src="getFoodImage(masbar.image)"
+                                        :alt="masbar.image"
+                                        @click="showingPreview(masbar.image)"
+                                        style="width: 60px;
+                                        height: 60px;
+                                        object-fit: cover;
+                                        cursor: pointer"
+                                    />
+                                </td>
                                 <td>{{ masbar.kdbar }}</td>
                                 <td style="text-align: left;">
                                     {{ masbar.nm_jenis }}
@@ -138,7 +151,7 @@
                                     {{ masbar.nmbar }}
                                 </td>
                                 <td>{{ masbar.nm_stok }}</td>
-                                <td>
+                                <td style="position: relative;">
                                     <select 
                                         style="width: 99%;
                                         height: 40px;
@@ -146,7 +159,7 @@
                                         :id="`satuan${masbar.kdbar}`"
                                         @change="addKdstn(masbar.kdbar)" 
                                         :disabled="masbar.readonly"
-                                        :value="masbar.kdstn">
+                                        :value="`${masbar.kdstn}-${masbar.nmstn_beli}`">
                                         <spinner
                                             style="position: absolute;top: 5px"
                                             :id="`spinner${masbar.kdbar}`"></spinner>
@@ -160,6 +173,7 @@
                                         :id="'price' + masbar.kdbar"
                                         :readonly="masbar.readonly"
                                         v-on:keydown.enter="addPrice(masbar.kdbar)"
+                                        v-on:keydown.tab="addPrice(masbar.kdbar)"
                                         :value="masbar.price">
                                 </td>
                                 <td>
@@ -170,6 +184,7 @@
                                         :id="'disc' + masbar.kdbar"
                                         :readonly="masbar.readonly"
                                         v-on:keydown.enter="addDisc(masbar.kdbar)"
+                                        v-on:keydown.tab="addDisc(masbar.kdbar)"
                                         :value="masbar.disc">
                                 </td>
                             </tr>
@@ -208,7 +223,7 @@
                         'page-active': selectedPage === pg,
                         'page-unactive': selectedPage !== pg,
                         }"
-                        @click="selectedPage = pg"
+                        @click="selectPages(pg)"
                     >
                         {{ pg + 1 }}
                     </div>
@@ -234,12 +249,6 @@
     </div>
   </div>
 
-  <notification 
-      v-if="showNotif" 
-      :success="success" 
-      :message="message">
-  </notification>
-
   <notification-alert 
       v-if="showNotifAlert" 
       :success="success" 
@@ -259,11 +268,17 @@
       @onResolve="submitted"
       @onError="onError">
   </alert-confirm>
+
+  <preview-image
+    v-if="selectedImage"
+    :source="selectedImage"
+    @onClosed="onClosedPreview"
+  >
+  </preview-image>
 </template>
 
 <script>
 import Spinner from "@/components/Spinner.vue";
-import Notification from "@/components/Notification.vue";
 import NotificationAlert from "@/components/NotificationAlert.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
 import Loader from "@/components/Loader.vue";
@@ -271,6 +286,7 @@ import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import PreviewImage from "@/components/PreviewImage.vue";
 import axios from 'axios';
 
 export default {
@@ -280,10 +296,10 @@ export default {
     NavbarVue,
     VueDatePicker,
     Loader,
-    Notification,
     NotificationAlert,
     AlertConfirm,
     Spinner,
+    PreviewImage,
   },
   data(){
     return {
@@ -340,6 +356,8 @@ export default {
         dept: null,
         kdjns: 'all',
         jenis: null,
+        selectedImage: null,
+        showPreview: false,
     }
   },
   mounted(){
@@ -357,10 +375,24 @@ export default {
   methods: {
     async getJenis(){
       try {
-        const { data } = await axios.get(`/alljenis/${this.authToken}`);
+        const { data } = await axios.get(`/jenismasbar/${this.authToken}`);
         this.jenis = data
       } catch(error){
-        console.log(error)
+        if (error.response.status == 401) {
+            this.$toast.open({
+              message: 'Session expired!',
+              type: 'error',
+            });
+
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
       }
     },
     async getDivisi(){
@@ -368,7 +400,21 @@ export default {
         const { data } = await axios.get(`/divisi/${this.authToken}`);
         this.divisi = data
       } catch(error){
-        console.log(error)
+        if (error.response.status == 401) {
+         this.$toast.open({
+              message: 'Session expired!',
+              type: 'error',
+          });
+
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
       }
     },
     async getSubdiv(){
@@ -376,7 +422,21 @@ export default {
         const { data } = await axios.get(`/subdivisi/${this.contract.divisi_kd}/${this.authToken}`);
         this.subdivisi = data
       } catch(error){
-        console.log(error)
+        if (error.response.status == 401) {
+          this.$toast.open({
+              message: 'Session expired!',
+              type: 'error',
+          });
+
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
       }
     },
     async getDept(){
@@ -384,7 +444,21 @@ export default {
         const { data } = await axios.get(`/department/${this.contract.divisi_kd}/${this.contract.subdiv_kd}/${this.authToken}`);
         this.dept = data
       } catch(error){
-        console.log(error)
+        if (error.response.status == 401) {
+            this.$toast.open({
+              message: 'Session expired!',
+              type: 'error',
+            });
+
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
       }
     },
     format(date) {
@@ -403,8 +477,12 @@ export default {
             const { data } = await axios.get(`/satuan/${this.authToken}`)
             this.satuan = data
         } catch(error){
-            console.log(error);
             if(error.response.status == 401){
+                this.$toast.open({
+                    message: 'Session expired!',
+                    type: 'error',
+                });
+
                 this.$store.dispatch("LOGOUT")
                 .then(() => {
                     this.$router.push({ path : '/login'});
@@ -420,8 +498,12 @@ export default {
             this.vat = data.tarif
             this.getProduct()
         } catch(error){
-            console.log(error);
             if(error.response.status == 401){
+                this.$toast.open({
+                    message: 'Session expired!',
+                    type: 'error',
+                });
+
                 this.$store.dispatch("LOGOUT")
                 .then(() => {
                     this.$router.push({ path : '/login'});
@@ -436,8 +518,12 @@ export default {
             const { data } = await axios.get(`/supplier/${this.contract.divisi_kd}/${this.contract.subdiv_kd}/${this.authToken}`)
             this.suppliers = data
         } catch(error){
-            console.log(error);
             if(error.response.status == 401){
+                this.$toast.open({
+                    message: 'Session expired!',
+                    type: 'error',
+                });
+
                 this.$store.dispatch("LOGOUT")
                 .then(() => {
                     this.$router.push({ path : '/login'});
@@ -455,10 +541,11 @@ export default {
             this.total_page = []
 
             this.isLoading = true;
-            const url = `/masterbarang/${this.kdjns}/${this.authToken}`
-            console.log(url)
+            const url = `/holdingmasbar/${this.kdjns}/${this.authToken}`
             
             const { data } = await axios.get(url)
+            console.log(data)
+
             this.masterbarang = data
             this.total_page = [];
             const groupSize = this.perpage;
@@ -466,12 +553,16 @@ export default {
             let urut = 1
             this.masterbarang.forEach((data) => {
                 data.no = urut
+                data.kdbar = data.kd_barang
+                data.nmbar = data.nm_barang
+                data.nm_stok = data.nmstn_stok                
                 data.checked = false
                 data.readonly = true
                 data.price = null
                 data.disc = null
                 data.ppn = this.vat
                 data.kdstn = null
+                data.nmstn_beli = null
                 newMasbars.push(data);
                 urut++
             });
@@ -487,8 +578,12 @@ export default {
 
             this.isLoading = false;
         } catch(error){
-            console.log(error);
             if(error.response.status == 401){
+                this.$toast.open({
+                    message: 'Session expired!',
+                    type: 'error',
+                });
+
                 this.$store.dispatch("LOGOUT")
                 .then(() => {
                     this.$router.push({ path : '/login'});
@@ -529,7 +624,7 @@ export default {
                             msatuan.forEach((data) => {    
                                 var option = document.createElement("option");
                                 option.text = data.nm_stn;
-                                option.value = data.kdstn;
+                                option.value = `${data.kdstn}-${data.nm_stn}`;
                                 select.appendChild(option);
                             })
                         }
@@ -568,15 +663,12 @@ export default {
                 if(obj.kdbar === id) {
                     obj.price = parseFloat(document.getElementById(`price${id}`).value);
                     obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
-                    this.success = true;
-                    this.message = `Price added for items ${id}`
-                    this.showNotif = true;
 
-                    setTimeout(() => {
-                        this.showNotif = false;
-                        this.success = false;
-                        this.message = null
-                    }, 1300)
+                    this.$toast.open({
+                        message: `Price added for items ${id}`,
+                        type: 'info',
+                        duration: 1000,
+                    });
                 }
             })
         )
@@ -587,15 +679,12 @@ export default {
                 if(obj.kdbar === id) {
                     obj.price = parseFloat(document.getElementById(`price${id}`).value);
                     obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
-                    this.success = true;
-                    this.message = `Disc added for items ${id}`
-                    this.showNotif = true;
 
-                    setTimeout(() => {
-                        this.showNotif = false;
-                        this.success = false;
-                        this.message = null
-                    }, 1300)
+                    this.$toast.open({
+                        message: `Disc added for items ${id}`,
+                        type: 'info',
+                        duration: 1000,
+                    });
                 }
             })
         )
@@ -604,7 +693,9 @@ export default {
         this.masbars.filter(data =>
             data.filter(obj => {
                 if(obj.kdbar === id) {
-                    obj.kdstn = document.getElementById(`satuan${id}`).value;
+                    const selected = document.getElementById(`satuan${id}`).value;
+                    obj.kdstn = selected.split("-")[0]
+                    obj.nmstn_beli = selected.split("-")[1]
                 }
             })
         )
@@ -629,21 +720,53 @@ export default {
             this.item = this.contract
             this.showAlert = true            
         } catch(error){
-            console.log(error)
+            if(error.response.status == 401){
+                this.$toast.open({
+                    message: 'Session expired!',
+                    type: 'error',
+                });
+
+                this.$store.dispatch("LOGOUT")
+                .then(() => {
+                    this.$router.push({ path : '/login'});
+                }).catch(() => {
+                    this.$router.push({ path : '/login'});
+                });
+            }
         }
+    },
+    selectPages(pg){
+        this.selectedPage = pg
+        this.masbars[pg].forEach(async(msb) => {
+            if(msb.checked){
+                setTimeout(async() => {
+                    const select = document.getElementById(`satuan${msb.kdbar}`);
+                    const { data } = await axios.get(`/satuanbeli/${msb.kdbar}/${this.authToken}`)
+                    const msatuan = data
+                    msatuan.forEach((item) => {    
+                        var option = document.createElement("option");
+                        option.text = item.nm_stn;
+                        option.value = `${item.kdstn}-${item.nmstn_beli}`;
+                        select.appendChild(option);
+                        if(item.kdstn === msb.kdstn){
+                            option.selected = true;
+                        }
+                    })
+                }, 1000);
+            }
+        })
     },
     submitted(value){
       this.showAlert = false
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
+      this.$toast.open({
+          message: value.message,
+          type: 'info',
+          duration: 1000,
+      });
 
       setTimeout(() => {
-        this.message = null;
-        this.succes = false;
-        this.showNotif = false;
         window.location.href = '/contract'
-      }, 1300)
+      }, 1000)
     },
     onError(value){
       this.showAlert = false
@@ -690,10 +813,56 @@ export default {
         this.total_page.push(a);
       }
     },
+    getFoodImage(filename) {
+      if(filename === undefined){
+        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+      } else {
+        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
+      }
+    },
+    showingPreview(src){
+      if(src === undefined){
+        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+      } else {
+        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${src}`;
+      }
+
+      this.showPreview = true;
+    },
+    onClosedPreview(value){
+      this.showPreview = value;
+      this.selectedImage = null;
+    },
   }
 }
 </script>
 
 <style>
+.addstn-btn{
+    position: absolute;
+    top: 21px;
+    right: 6px;
+    width: 30px;
+    height: 30px;
+    background: #f3f3f3;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    cursor: pointer;
+}
 
+.addstn-btn:hover{
+    color: white;
+    background: var(--themecolor);
+}
+
+.add-stn{
+    font-size: 17pt;
+}
+
+.add-stn:hover{
+    animation: hithere .7s ease;
+}
 </style>

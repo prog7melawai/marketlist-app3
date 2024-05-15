@@ -66,6 +66,13 @@
                     alt="" />
                 </span>
 
+                <span class="stamp-container" v-if="selectedContract.tglbatal">
+                  <img
+                    class="stamp-logo"
+                    src="/images/logo/declined.png"
+                    alt="" />
+                </span>
+
                 <div style="width: 78%; display: flex; flex-direction: column">
                   <span class="pr-supplier">{{
                     selectedContract.dept_kd
@@ -203,7 +210,6 @@ export default {
     SidebarVue,
     NavbarVue,
     AlertConfirm,
-    Notification,
     NotificationAlert,
     Loader,
   },
@@ -276,6 +282,11 @@ export default {
       } catch (error) {
         console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+            message: "Session expired!",
+            type: "error",
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
@@ -438,16 +449,15 @@ export default {
     },
     submitted(value) {
       this.showAlert = false;
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
+      this.$toast.open({
+        message: value.message,
+        type: "info",
+        duration: 1000,
+      });
 
       setTimeout(() => {
-        this.message = null;
-        this.succes = false;
-        this.showNotif = false;
         window.location.href = `/contract-detail/${this.$route.params.id}`;
-      }, 1300);
+      }, 1000);
     },
     onError(value) {
       this.showAlert = false;

@@ -5,6 +5,7 @@
 @import url('https://fonts.cdnfonts.com/css/black-freeday');
 @import url('https://fonts.cdnfonts.com/css/lexend');
 @import url('https://fonts.cdnfonts.com/css/fonarto');
+@import url('https://fonts.cdnfonts.com/css/noto-sans-lao');
 
 *{
     margin: 0px;
@@ -1074,6 +1075,110 @@ thead {
     overflow: hidden;
 }
 
+.form-login-group{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px
+}
+
+.logins{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100svw;
+    height: 100svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.login-body{
+    width: 35%;
+    max-width: 650px;
+    height: 70%;
+    max-height: 450px;
+    background: #fff;
+    margin-left: 33%;
+    box-shadow: 13px 13px 8px 0px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0px;
+    border-left: 5px solid var(--orange);
+}
+
+.login-form {
+    width: 96%;
+    height: 50px;
+    border: 1px solid var(--light);
+    font-size: 12pt;
+    padding: 0px 10px;
+}
+
+.login-form::placeholder{
+    color: var(--canvas);
+    font-size: 12pt;
+}
+
+.error-input{
+    position: absolute;
+    color: red;
+    bottom: 0;
+    font-size: 11pt;
+}
+
+.line-wrapper{
+    position: relative;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.line-break{
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: var(--canvas);
+    z-index: 1;
+}
+
+.line-wrapper span{
+    position: absolute;
+    right: 0;
+    font-size: 22pt;
+    background: #fff;
+    z-index: 10;
+    text-align: center;
+    font-family: 'Arumdalu', sans-serif;
+}
+
+.reset-link{
+    font-size: 12pt;
+    font-family: Arial, Helvetica, sans-serif;
+    color: blue;
+    text-decoration: underline;
+}
+
+.login-button{
+    width: 100%;
+    height: 60px;
+    background: var(--dark);
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    margin-top: 30px;
+    font-family: 'Noto Sans Lao', sans-serif;
+    font-size: 16pt;
+}
+
+.login-button:hover{
+    background: #000000;
+}
+
 .login-container .login-logo{
     position: absolute;
     width: 210px;
@@ -1108,12 +1213,12 @@ thead {
     gap: 20px;
 }
 
-.login-container .login-wrapper .login-title{
+.login-title{
     font-family: 'Arumdalu', sans-serif;
-    font-size: 60pt;
+    font-size: 50pt;
     color: var(--white);
-    margin-top: -50px;
-    margin-bottom: 50px;
+    margin-top: -5%;
+    margin-bottom: 5%;
 }
 
 .login-btn{
@@ -1127,6 +1232,27 @@ thead {
     color: var(--white);
     font-family: 'Ubahn', sans-serif;
     font-size: 18pt;
+}
+
+.remember-me{
+    width: 18px;
+    height: 18px;
+}
+
+.show-password{
+    position: absolute;
+    top: 43px;
+    right: 3%;
+    font-size: 18pt;
+    cursor: pointer;
+    color: var(--light)
+}
+
+.login-form-label{
+    font-weight: 600;
+    margin-bottom: -5px;
+    font-family: 'Noto Sans Lao', sans-serif;
+    font-size: 12pt;
 }
 
 .login-btn:hover{
@@ -1352,10 +1478,10 @@ animation: wobble 2s ease infinite;
 
 @keyframes wobble {
 0% { transform: translateX(0%); }
-15% { transform: translateX(-25%) rotate(-5deg); }
-30% { transform: translateX(20%) rotate(3deg); }
+15% { transform: translateX(-15%) rotate(-5deg); }
+30% { transform: translateX(5%) rotate(3deg); }
 45% { transform: translateX(-15%) rotate(-3deg); }
-60% { transform: translateX(10%) rotate(2deg); }
+60% { transform: translateX(5%) rotate(2deg); }
 75% { transform: translateX(-5%) rotate(-1deg); }
 100% { transform: translateX(0%); }
 }
@@ -1421,7 +1547,7 @@ animation: fade-out-right 2s ease infinite;
 }
 
 .bounce-in {
-animation: bounce-in 1s ease;
+animation: bounce-in .8s ease;
 }
 
 .bounce-in-r {
@@ -2009,4 +2135,32 @@ animation: roll-out 2s ease infinite;
 .stamp-logo{
     object-fit: contain;
     width: 200px;
+}
+
+.warning-contract{
+    width: 100%;
+    height: 70px;
+    border: 1px solid var(--red);    
+    cursor: pointer;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--dark);
+    text-decoration: none;
+    line-height: 25px;
+}
+
+.warning-contract:hover{
+    background: var(--orangelight);
+}
+
+.warning-content{
+    width:96%;
+    height: 80%;
+    font-weight: 400;
+    font-family: 'Noto Sans Lao', sans-serif;
+    display: flex;
+    flex-direction: column;
 }

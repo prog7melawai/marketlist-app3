@@ -30,7 +30,7 @@
 
     <div class="sidebar-menu">
       <div style="margin-top: 80px"></div>
-      <!-- <div class="menu-link" style="margin-top: 80px">
+      <div class="menu-link">
         <router-link
           :to="{ name: 'home' }"
           class="nav-link"
@@ -41,7 +41,7 @@
           <i class="ri-home-smile-fill"></i>
           <h3 v-if="!isHide">Dashboard</h3>
         </router-link>
-      </div> -->
+      </div>
       <div class="menu-link" v-if="permission.includes('import')">
         <router-link
           :to="{ name: 'import' }"
@@ -89,7 +89,7 @@
             'link-unactive': this.$route.name !== 'jenis',
           }">
           <i class="ri-box-3-fill"></i>
-          <h3 v-if="!isHide">Product Types</h3>
+          <h3 v-if="!isHide">Master Jenis</h3>
         </router-link>
       </div>
       <!--

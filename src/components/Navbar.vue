@@ -5,14 +5,14 @@
       class="content-spacer slide-transition"
     ></div>
     <div :style="{ width: cwidth }" class="navbar-right slide-transition">
-      <div class="navbar-search">
+      <!-- <div class="navbar-search">
         <div class="search-box">
           <input type="text" class="search" placeholder="Search Item" />
           <button class="search-btn">
             <i class="ri-search-line"></i>
           </button>
         </div>
-      </div>
+      </div> -->
       <div class="navbar-content">
         <div class="navbar-link" style="position: relative" @click="showNotif">
           <div class="notif">4</div>
@@ -95,8 +95,10 @@ export default {
     logout(){
       this.$store.dispatch("LOGOUT")
       .then(() => {
+          this.$store.commit('SET_CONTRACT_NOTIF', {is_open: false, count: 0})
           this.$router.push({ path : '/login'});
       }).catch(() => {
+          this.$store.commit('SET_CONTRACT_NOTIF', {is_open: false, count: 0})
           this.$router.push({ path : '/login'});
       });
     }

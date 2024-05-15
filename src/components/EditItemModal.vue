@@ -254,18 +254,6 @@ export default {
         return;
       }
 
-      // this.filename = this.filelist[0].name;
-      // const lastDot = this.filename.lastIndexOf('.');
-      // const ext = this.filename.substring(lastDot + 1);            
-
-      // var blob = this.images.slice(0, this.images.size, this.images.type); 
-      // const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
-      //     type: this.images.type
-      // });
-
-      // this.filelist = []
-      // this.filelist.push(newFile)
-
       this.selectedfile = this.filelist[0].name;
       this.selectedfile = this.selectedfile.substring(0, 25);
     },
@@ -292,19 +280,6 @@ export default {
         };
         reader.readAsDataURL(f);
       });
-
-      // this.filename = this.filelist[0].name;
-      // const lastDot = this.filename.lastIndexOf('.');
-      // const ext = this.filename.substring(lastDot + 1);            
-
-      // var blob = this.images.slice(0, this.images.size, this.images.type); 
-      // const newFile = new File([blob], this.food.kd_barang + '.' + ext, {
-      //     type: this.images.type
-      // });
-
-      // this.filelist = []
-      // this.filelist.push(newFile)
-      // console.log(this.filelist)
     },
     removeFile() {
       this.filelist = [];
@@ -316,7 +291,7 @@ export default {
       document.getElementById("image-input").classList.add("bg-gradient-gray");
     },
     getImage(filename) {
-      return `http://172.30.14.206:8810/procurement/web/masbarimages/${this.authToken}/${filename}`;
+      return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
     },
     async submitItem(){
       try {
@@ -332,7 +307,7 @@ export default {
         const formData = new FormData();
         formData.append('filename', myFile, `${this.food.kd_barang}.${ext}`);
 
-        const {data} = await axios.post(`http://172.30.14.206:8810/procurement/web/postimage/${this.food.div_kd}/${this.food.subdiv_kd}/${this.food.dept_kd}/${this.authToken}`, formData, {
+        const {data} = await axios.post(`/postimage/${this.food.div_kd}/${this.food.subdiv_kd}/${this.food.dept_kd}/${this.authToken}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             }
@@ -342,7 +317,21 @@ export default {
         this.loading = false
       } catch(error){
         this.loading = false
-        console.log(error)
+        if (error.response.status == 401) {
+            this.$toast.open({
+              message: 'Session expired!',
+              type: 'error',
+            });
+
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
       }
     }
   },
