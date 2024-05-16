@@ -504,7 +504,6 @@ export default {
         }
       }
 
-
       const items = this.content.filter((data) => {
         return data.qty > 0
       })
@@ -521,6 +520,7 @@ export default {
       }
 
       const body = {
+        userid: this.$store.getters.GET_AUTH_INFO.id,
         divkd: this.selectedDivisi,
         subdivkd: this.selectedSubdiv,
         deptkd: this.selectedDept,
@@ -528,7 +528,6 @@ export default {
         items: items,
       }
 
-      console.log(body)
       this.title = 'Confirmation'
       this.deleteMessage = `Are you sure want to submit Transaction ?`
       this.methods = 'post'

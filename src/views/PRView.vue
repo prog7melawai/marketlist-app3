@@ -232,11 +232,11 @@
                       </button>
                       <button
                         class="btn-success" 
-                        style="width: 80px;overflow: hidden"
+                        style="width: 80px;overflow: hidden;display: flex;justify-content: center; align-items: center;"
                         @click="downloadPR(pr.pr_no)"
                         v-if="pr.f_revise && isDownloader">
-                        <spinner v-if="isDownload"></spinner>
-                        <span v-if="!isDownload">Download</span>
+                        <spinner :id="`spinner${pr.pr_no}`" style="display: none;"></spinner>
+                        <span :id="`download${pr.pr_no}`">Download</span>
                       </button>
                     </td>
                   </tr>
@@ -482,6 +482,10 @@ export default {
       try {
         if(this.isDownload) return;
         this.isDownload = true;
+
+        document.getElementById(`spinner${prno}`).style.display = "inline";
+        document.getElementById(`download${prno}`).style.display = "none";
+
         const { data } = await axios.get(`/prdetail2/all/${prno}/${this.authToken}`);
         const barang = data.items;
 
@@ -579,13 +583,16 @@ export default {
         const a = document.createElement('a');
 
         a.href = url;
-        a.download = 'TemplatePR.xlsx';
+        a.download = `PR_Revise-${prno}.xlsx`;
         a.style = 'opacity: 0';
         document.body.appendChild(a);
 
         a.click();
 
         document.body.removeChild(a);
+
+        document.getElementById(`spinner${prno}`).style.display = "none";
+        document.getElementById(`download${prno}`).style.display = "inline";
         this.isDownload = false;
       } catch(error){
         if(error.response.status == 401){
