@@ -75,7 +75,7 @@
                   <tr
                     v-for="(items, idx) in foods[selectedPage]"
                     :key="items.kd_barang"
-                    :class="{ 'bg-canvas': items.no % 2 == 0 }"
+                    :class="{ 'bg-canvas': idx % 2 == 0 }"
                   >
                     <td>{{ idx + 1 }}</td>
                     <td>
@@ -302,9 +302,9 @@ export default {
     },
     showingPreview(src){
       if(src === undefined){
-        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+        this.selectedImage = `${this.base_url}/masbarimages/${this.authToken}/default.png`;
       } else {
-        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${src}`;
+        this.selectedImage = `${this.base_url}/masbarimages/${this.authToken}/${src}`;
       }
 
       this.showPreview = true;
@@ -467,9 +467,9 @@ export default {
     },
     getFoodImage(filename) {
       if(filename === undefined){
-        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+        return `${this.base_url}/masbarimages/${this.authToken}/default.png`;
       } else {
-        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
+        return `${this.base_url}/masbarimages/${this.authToken}/${filename}`;
       }
     },
   },

@@ -492,12 +492,9 @@ export default {
         worksheet.columns = [
           { header: 'Kode Barang', key: 'kdbar', width: 15 },
           { header: 'Nama Barang', key: 'nmbar', width: 30 },
-          { header: 'Nama Barang 2', key: 'nmbar2', width: 30 },
           { header: 'NO PR', key: 'nopr', width: 20 },
           { header: 'Kode Jenis', key: 'kode_jenis', width: 10 },
           { header: 'Nama Jenis', key: 'nama_jenis', width: 20 },
-          { header: "Kdstn Kirim", key: "kdstn_krm", width: 10 },
-          { header: 'Satuan Kirim', key: 'nama_krm', width: 20 },
           { header: "Kdstn Stok", key: "kdstn_stok", width: 10 },
           { header: "Satuann Stok", key: "nama_stok", width: 20 },
           { header: "Quantity", key: "qty", width: 15 },
@@ -531,14 +528,11 @@ export default {
           worksheet.addRow({
             kdbar: data.kode_barang,
             nmbar: data.nama_barang,
-            nmbar2: data.nama_barang2,
             nopr: prno,
             kode_jenis: data.kd_jenis,
             nama_jenis: data.nm_jenis,
             kdstn_stok: data.kdstn_stok,
             nama_stok: data.nm_stok,
-            kdstn_krm: data.kdstn_kirim,
-            nama_krm: data.nm_kirim,
             qty: data.qty,
             qty_revise: data.qty,
             revise_note: data.revise_note
@@ -556,18 +550,14 @@ export default {
           row.getCell(6).protection = {locked: true};
           row.getCell(7).protection = {locked: true};
           row.getCell(8).protection = {locked: true};
-          row.getCell(9).protection = {locked: true};
+          row.getCell(9).protection = {locked: false};
           row.getCell(10).protection = {locked: true};
-          row.getCell(11).protection = {locked: true};
-          row.getCell(12).protection = {locked: false};
-          row.getCell(13).protection = {locked: true};
 
-          row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+          row.eachCell({ includeEmpty: true }, function(cell) {
             const startCell = `A${rowNumber}`;
             const endCell = `N${rowNumber}`;
             const cellAddress = cell.address;
             if (cellAddress >= startCell && cellAddress <= endCell){
-              console.log(rowNumber, colNumber)
               cell.border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
@@ -598,7 +588,6 @@ export default {
         document.body.removeChild(a);
         this.isDownload = false;
       } catch(error){
-        console.log(error);
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {

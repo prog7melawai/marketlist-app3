@@ -118,10 +118,10 @@ export default {
           this.$store.dispatch("LOGIN", data)
           .then(() => {
               this.is_proccess = false
-              this.$router.push({ name : 'import'});
+              this.$router.push({ name : 'home'});
           }).catch((error) => {
               this.is_proccess = false
-              console.clear()
+              console.log(error)
               if(error.response.status === 401){
                 this.$toast.open({
                     message: 'Invalid Credentials!',

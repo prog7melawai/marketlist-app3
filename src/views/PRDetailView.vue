@@ -185,8 +185,7 @@
                         style="
                           position: relative;
                           margin-left: 10px;
-                        "
-                      >
+                        ">
                         {{ pr.nama_barang }}
                       </span>
                     </td>
@@ -205,7 +204,7 @@
                           wrap=physical
                           :value="pr.revise_note"
                           v-on:keyup="onTypeNote(pr.kode_barang)"
-                          :readonly="selectedPR.f_revise || selectedPR.f_approve || selectedPR.f_batal">
+                          :readonly="selectedPR.f_revise || selectedPR.f_approve || selectedPR.f_batal || !isRevise">
                         </textarea>
                     </td>
                   </tr>
@@ -361,6 +360,8 @@ export default {
         const { data } = await axios.get(`/prdetail2/${this.jenisitems}/${this.$route.params.id}/${this.authToken}`)
         this.selectedPR = data
         this.getItem(this.selectedPR.items);
+
+        console.log(this.selectedPR)
         this.isLoading = false;
       } catch(error){
         if(error.response.status == 401){

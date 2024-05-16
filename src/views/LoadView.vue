@@ -36,7 +36,7 @@
             <loader v-if="loading"></loader>
 
             <div class="load-wrapper">
-                <div style="width: 100%;display: flex;flex-direction: row;flex-wrap: wrap;justify-content: space-between;">
+                <div style="width: 100%;display: flex;flex-direction: row;flex-wrap: wrap;justify-content: space-between;" v-if="!isRevisedPR">
                     <div class="form-group">
                         <label class="form-label" :class="{ 'color-orange': selectedDivisi }">Division<span class="text-danger">*</span></label>
                        <select style="width: 99%;height: 40px;border-radius: 5px;" v-model="selectedDivisi" @change="getSubdiv">
@@ -260,6 +260,7 @@ export default {
       location: null,
       errorDivisi: null,
       jenis: 'marketlist',
+      isRevisedPR: false,
       error: {
           divisi: null,
           subdivisi: null,
@@ -486,18 +487,21 @@ export default {
       this.selectedfile = null;
       document.getElementById("drop-box").classList.remove("bg-orange");
       document.getElementById("drop-box").classList.add("bg-canvas");
+      this.isRevisedPR = false;
     },
     async submitFile() {
       this.errorDivisi = null;
 
-      if(!this.selectedDivisi) this.error.divisi = 'Please select division!';
-      if(!this.selectedSubdiv)this.error.subdivisi = 'Please select subdivision!';
-      if(!this.selectedDept) this.error.department = 'Please select Department';
-      if(!this.selectedLocation) this.error.lokasi = 'Please select Location!';
-      if(!this.expected_date) this.error.expected_date = 'Please select Expected Date';
+      if(!this.isRevisedPR){
+        if(!this.selectedDivisi) this.error.divisi = 'Please select division!';
+        if(!this.selectedSubdiv)this.error.subdivisi = 'Please select subdivision!';
+        if(!this.selectedDept) this.error.department = 'Please select Department';
+        if(!this.selectedLocation) this.error.lokasi = 'Please select Location!';
+        if(!this.expected_date) this.error.expected_date = 'Please select Expected Date';
 
-      if(!this.selectedDivisi || !this.selectedSubdiv || !this.selectedDept || !this.selectedLocation || !this.expected_date){
-        return;
+        if(!this.selectedDivisi || !this.selectedSubdiv || !this.selectedDept || !this.selectedLocation || !this.expected_date){
+          return;
+        }
       }
 
 
@@ -535,6 +539,7 @@ export default {
     },
     submitted(value){
       this.showAlert = false
+      this.isRevisedPR = false;
       this.$toast.open({
           message: value.message,
           type: 'info',
@@ -597,6 +602,10 @@ export default {
                         qty_revise: row.getCell(9).value,
                         revise_note: row.getCell(10).value,
                     };
+
+                    if(data.revise_note !== ""){
+                      this.isRevisedPR = true;
+                    }
 
                     if(row.getCell(8).value > 0){
                       this.content.push(data);

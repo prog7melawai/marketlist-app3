@@ -273,8 +273,7 @@
   <preview-image
     v-if="selectedImage"
     :source="selectedImage"
-    @onClosed="onClosedPreview"
-  >
+    @onClosed="onClosedPreview">
   </preview-image>
 </template>
 
@@ -311,6 +310,7 @@ export default {
         showNotif: false,
         showAlert: false,
         showNotifAlert: false,
+        showMasbar: false,
         title: null,
         alertMessage: null,
         methods: null,
@@ -861,16 +861,16 @@ export default {
     },
     getFoodImage(filename) {
       if(filename === undefined){
-        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+        return `${this.base_url}/masbarimages/${this.authToken}/default.png`;
       } else {
-        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
+        return `${this.base_url}/masbarimages/${this.authToken}/${filename}`;
       }
     },
     showingPreview(src){
       if(src === undefined){
-        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+        this.selectedImage = `${this.base_url}/masbarimages/${this.authToken}/default.png`;
       } else {
-        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${src}`;
+        this.selectedImage = `${this.base_url}/masbarimages/${this.authToken}/${src}`;
       }
 
       this.showPreview = true;

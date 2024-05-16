@@ -29,7 +29,7 @@
             </div>
           </router-link>
 
-          <router-link :to="{name: 'po'}" class="summary-box" style="text-decoration: none;">
+          <a class="summary-box" style="text-decoration: none;">
             <img
               src="/images/icons/event.svg"
               alt="eventlogo"
@@ -51,9 +51,9 @@
                 <span id="countPO"></span>
               </span>
             </div>
-          </router-link>
+          </a>
 
-          <router-link :to="{name: 'receiving'}" class="summary-box" style="text-decoration: none;">
+          <a class="summary-box" style="text-decoration: none;">
             <img
               src="/images/icons/mail-open.svg"
               alt="maillogo"
@@ -73,7 +73,7 @@
                 <span id="countReceive"></span>
               </span>
             </div>
-          </router-link>
+          </a>
         </div>
 
         <div class="content-wrapper">
@@ -101,7 +101,7 @@
   </div>
 
   <notification-contract
-    v-if="contractNotif"
+    v-if="contractNotif && notifikasiContract"
     :items="contract"
     @onClosed="onClosedContract">
   </notification-contract>
@@ -137,13 +137,21 @@ export default {
       countNotif: 0,
       isLoading: false,
       summary: null,
+      perm: null,
+      permission: null,
+      notifikasiContract: null,
     };
   },
   created(){
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
     this.contractNotif = this.$store.getters.GET_CONTRACT_NOTIF.is_open;
     this.countNotif = this.$store.getters.GET_CONTRACT_NOTIF.count;
-    this.getContract()
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission;
+    this.permission = this.perm.split(",");
+    this.notifikasiContract = this.permission.includes("notifikasi-contract");
+    if(this.notifikasiContract){
+      this.getContract()
+    }
   },
   mounted(){
     this.sidebarWidth = this.$store.getters.GET_SIDEBAR_WIDTH.sidebarwidth
