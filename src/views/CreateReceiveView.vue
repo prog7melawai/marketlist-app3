@@ -12,191 +12,52 @@
           </div>
 
           <div class="content">
-            <div
+            <div class="form-group">
+              <label class="form-label">NO PO</label>
+              <select
+                v-model="poNoCall"
+                style="width: 99%; height: 40px; border-radius: 5px"
+                @change="getPoDetail">
+                <option
+                  v-for="poDrop in purchaseOrders"
+                  :key="poDrop.po_no"
+                  :selected="poDrop.po_no"
+                  :value="poDrop.po_no">
+                  {{ poDrop.po_no }}
+                </option>
+              </select>
+              <!-- <span>{{ error.divisi_kd }}</span> -->
+            </div>
+            <!-- search ga dipake -->
+            <!-- <div
+              class="search-container"
               style="
-                width: 100%;
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: space-between;
+                margin-right: 0px;
+                width: 50%;
+                height: 44px;
+                position: relative;
               ">
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.divisi_kd }"
-                  >Divisi</label
-                >
-                <select
-                  style="width: 99%; height: 40px; border-radius: 5px"
-                  v-model="contract.divisi_kd"
-                  @change="getSubdiv">
-                  <option
-                    v-for="div in divisi"
-                    :key="div.divkd"
-                    :value="div.divkd">
-                    {{ div.divnm }}
-                  </option>
-                </select>
-                <span>{{ error.divisi_kd }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.subdiv_kd }"
-                  >Subdivisi</label
-                >
-                <select
-                  style="width: 99%; height: 40px; border-radius: 5px"
-                  v-model="contract.subdiv_kd"
-                  @change="getSuppliers">
-                  <option
-                    v-for="subdiv in subdivisi"
-                    :key="subdiv.subdiv_kd"
-                    :value="subdiv.subdiv_kd">
-                    {{ subdiv.subdiv_nm }}
-                  </option>
-                </select>
-                <span>{{ error.subdiv_kd }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.sup_kd }"
-                  >Supplier</label
-                >
-                <select
-                  style="width: 99%; height: 40px; border-radius: 5px"
-                  v-model="contract.sup_kd">
-                  <option
-                    v-for="supp in suppliers"
-                    :key="supp.sup_kd"
-                    :value="supp.sup_kd">
-                    {{ supp.sup_nm }}
-                  </option>
-                </select>
-                <span>{{ error.sup_kd }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.currency }"
-                  >Currency</label
-                >
-                <input
-                  type="text"
-                  style="width: 99%; padding: 0"
-                  class="form-input"
-                  v-model="contract.currency" />
-                <span>{{ error.sup_kd }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.top }"
-                  >Terms Of Payment</label
-                >
-                <input
-                  type="number"
-                  style="width: 99%; padding: 0"
-                  class="form-input"
-                  v-model="contract.top" />
-                <span>{{ error.top }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.start_date }"
-                  >Start Date</label
-                >
-                <VueDatePicker
-                  style="width: 99%"
-                  v-model="contract.start_date"
-                  placeholder="Start Contract Date"
-                  :min-date="new Date()"
-                  :enable-time-picker="false"
-                  :format="format" />
-                <span>{{ error.start_date }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.end_date }"
-                  >End Date</label
-                >
-                <VueDatePicker
-                  v-model="contract.end_date"
-                  placeholder="End Contract Date"
-                  :enable-time-picker="false"
-                  :format="format" />
-                <span>{{ error.end_date }}</span>
-              </div>
-            </div>
-
-            <div style="width: 100%; margin: 0 auto">
-              <div class="form-group" style="width: 100%">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.note }"
-                  >Notes</label
-                >
-                <textarea
-                  style="width: 100%; border: 1px solid gray"
-                  rows="7"
-                  v-model="contract.note"></textarea>
-              </div>
-            </div>
-
-            <div
-              style="
-                width: 100%;
-                display: flex;
-                justify-content: end;
-                margin-bottom: -10px;
-                margin-top: 30px;
-              ">
-              <div style="width: 300px">
-                <input
-                  type="text"
-                  class="form-input"
-                  style="width: 93%"
-                  placeholder="Search items..."
-                  v-model="searchItem"
-                  @keyup.enter="searching" />
-              </div>
-            </div>
+              <input
+                type="text"
+                class="form-input"
+                style="width: 99%; height: 46px; border-radius: 5px"
+                placeholder="Search Nomor PO....."
+                v-model="searchItem"
+                @keyup.enter="searching" />
+            </div> -->
             <div
               style="
                 position: relative;
                 width: 100%;
                 margin-top: 20px;
-                overflow-x: scroll;
+                /* overflow-x: scroll; */
               ">
-              <table class="table-responsive" style="width: 120%">
+              <table class="table-responsive" style="width: 100%">
                 <thead class="bg-dark">
                   <tr>
-                    <th width="5%">Select</th>
-                    <th width="5%">No</th>
-                    <th width="10%">KD Product</th>
-                    <th style="width: 15%; text-align: left">
-                      <select
-                        class="select-jenis"
-                        v-model="kdjns"
-                        @change="getProduct">
-                        <option value="all">Jenis</option>
-                        <option
-                          v-for="jns in jenis"
-                          :key="jns.kdjns"
-                          :value="jns.kdjns">
-                          {{ jns.nm_jenis }}
-                        </option>
-                      </select>
-                    </th>
-                    <th style="width: 20%; text-align: left">Product Name</th>
-                    <th width="5%">Stock Units</th>
-                    <th width="10%">Purchase Units</th>
-                    <th width="10%">Price</th>
-                    <th width="5%">Disc%</th>
-                    <th width="5%">Ppn%</th>
+                    <th width="25%">NO PO</th>
+                    <th width="40%">KD Product</th>
+                    <th width="35%">Qty</th>
                   </tr>
                 </thead>
 
@@ -210,77 +71,46 @@
 
                 <tbody v-if="!isLoading">
                   <tr
-                    v-for="(masbar, index) in masbars[selectedPage]"
-                    :key="masbar.kdbar"
+                    v-for="(el, index) in poDetail.items"
+                    :key="index"
                     :class="{ 'bg-canvas': index % 2 == 0 }">
-                    <td>
+                    <!-- {{
+                      el
+                    }} -->
+                    <td>{{ el.po_no }}</td>
+                    <td>{{ el.kdbar }}</td>
+                    <td style="text-align: left">
+                      <input
+                        class="form-input"
+                        type="number"
+                        style="width: 85%"
+                        :id="'qtyInput' + poDetail.po_no"
+                        :readonly="poDetail.readonly"
+                        v-on:keydown.enter="addQty(poDetail.po_no)"
+                        v-on:keydown.tab="addQty(poDetail.po_no)"
+                        :value="poDetail.items.qty" />
+                    </td>
+                    <!-- <td>
                       <input
                         type="checkbox"
-                        :id="'select' + masbar.kdbar"
-                        :value="masbar.kdbar"
+                        :id="'select' + el.kdbar"
+                        :value="el.kdbar"
                         @change="selectItems"
-                        :checked="masbar.checked" />
-                    </td>
-                    <td>{{ masbar.no }}</td>
-                    <td>{{ masbar.kdbar }}</td>
-                    <td style="text-align: left">
-                      {{ masbar.nm_jenis }}
-                    </td>
-                    <td style="text-align: left">
-                      {{ masbar.nmbar }}
-                    </td>
-                    <td>{{ masbar.nm_stok }}</td>
-                    <td>
-                      <select
-                        style="width: 99%; height: 40px; border-radius: 5px"
-                        v-model="masbar.kdstn"
-                        :id="`satuan${masbar.kdbar}`"
-                        @change="addKdstn(masbar.kdbar)"
-                        :disabled="masbar.readonly">
-                        <spinner
-                          style="position: absolute; top: 5px"
-                          :id="`spinner${masbar.kdbar}`"></spinner>
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        class="form-input"
-                        type="number"
-                        style="width: 80%"
-                        :id="'price' + masbar.kdbar"
-                        :readonly="masbar.readonly"
-                        v-on:keydown.enter="addPrice(masbar.kdbar)"
-                        :value="masbar.price" />
-                    </td>
-                    <td>
-                      <input
-                        class="form-input"
-                        type="number"
-                        style="width: 70%"
-                        :id="'disc' + masbar.kdbar"
-                        :readonly="masbar.readonly"
-                        v-on:keydown.enter="addDisc(masbar.kdbar)"
-                        :value="masbar.disc" />
-                    </td>
-                    <td>
-                      <input
-                        class="form-input"
-                        type="number"
-                        style="width: 70%"
-                        :id="'ppn' + masbar.kdbar"
-                        v-model="vat" />
-                    </td>
+                        :checked="el.checked" />
+                    </td> -->
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div class="page-wrapper" v-if="total_page.length > 0">
+            <!-- <div class="page-wrapper" v-if="total_page.length > 0">
               <div style="width: 50%">
                 <span style="font-size: 10pt">
-                  Showing {{ masbars[selectedPage][0].no }} to
+                  Showing {{ purchaseOrderss[selectedPage][0].no }} to
                   {{
-                    masbars[selectedPage][masbars[selectedPage].length - 1].no
+                    purchaseOrderss[selectedPage][
+                      purchaseOrderss[selectedPage].length - 1
+                    ].no
                   }}
                   of {{ pagelength }} entries.
                 </span>
@@ -316,12 +146,12 @@
                   Next
                 </button>
               </div>
-            </div>
+            </div> -->
 
             <button
               class="btn-block btn-success"
-              style="margin-top: 20px"
-              @click="submitContract">
+              style="margin-top: 20px; width: 100%"
+              @click="submitReceiving">
               Submit
             </button>
           </div>
@@ -355,454 +185,203 @@
 </template>
 
 <script>
-import Spinner from "@/components/Spinner.vue";
+// import Spinner from "@/components/Spinner.vue";
 import Notification from "@/components/Notification.vue";
 import NotificationAlert from "@/components/NotificationAlert.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
 import Loader from "@/components/Loader.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
-import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import axios from "axios";
 
 export default {
-  name: "CreateContractView",
+  name: "CreateReceiveView",
   components: {
     SidebarVue,
     NavbarVue,
-    VueDatePicker,
     Loader,
     Notification,
     NotificationAlert,
     AlertConfirm,
-    Spinner,
+    // Spinner,
   },
   data() {
     return {
       sidebarWidth: 0,
       contentwidth: 0,
-      success: false,
-      message: null,
-      showNotif: false,
-      showAlert: false,
-      showNotifAlert: false,
-      title: null,
-      alertMessage: null,
-      methods: null,
+      poNoCall: null,
       sheaders: null,
-      url: null,
       item: null,
-      contract: {
-        sup_kd: null,
-        currency: null,
-        divisi_kd: null,
-        subdiv_kd: null,
-        rate: null,
-        top: null,
-        start_date: null,
-        end_date: null,
-        note: null,
+      showAlert: false,
+      // po_h: {
+      //   po_no: null,
+      //   po_date: null,
+      // pr_no: null,
+      // pr_date: null,
+      // sup_kd: null,
+      // netto: null,
+      // disc: null,
+      // disc_type: null,
+      // disc_rp: null,
+      // tppn_rp: null,
+      // grand_total: null,
+      // crdate: null,
+      // crtime: null,
+      // cruser: null,
+      // upddate: null,
+      // upduser: null,
+      // f_status: null,
+      // user_batal: null,
+      // tgl_batal: null,
+      // expired_date: null,
+      // expected_date: null,
+      // dept_kd: null,
+      // divisi_kd: null,
+      // subdiv_kd: null,
+      // kontrakno: null,
+      // kontrak_date: null,
+      // f_complete: null,
+      //   items: [],
+      // },
+      receivingPost: {
         items: [],
       },
+      // no_po: null,
       error: {
-        sup_kd: null,
-        currency: null,
-        divisi_kd: null,
-        subdiv_kd: null,
-        rate: null,
-        top: null,
-        start_date: null,
-        end_date: null,
+        po_no: null,
+        po_date: null,
       },
-      authToken: null,
-      masterbarang: null,
-      suppliers: null,
-      masbars: [],
-      pagelength: 0,
-      perpage: 15,
-      total_page: [],
-      selectedPage: 0,
-      start: 0,
-      end: 8,
-      isLoading: false,
-      vat: 0,
-      satuan: null,
-      divisi: null,
-      subdivisi: null,
-      dept: null,
-      kdjns: "all",
-      jenis: null,
+      purchaseOrders: null,
+      poDetail: {},
+      // poDetails: [],
     };
   },
-  mounted() {
-    this.getJenis();
-    this.getVat();
-    this.getDivisi();
-  },
+  mounted() {},
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("create-contract"))
-      window.location.href = "/";
+    // if (!this.permission.includes("create-receive")) window.location.href = "/";
+    this.getPurchaseOrders();
+    // this.getPoDetail();
   },
   methods: {
-    async getJenis() {
+    async getPoDetail() {
       try {
-        const { data } = await axios.get(`/alljenis/${this.authToken}`);
-        this.jenis = data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getDivisi() {
-      try {
-        const { data } = await axios.get(`/divisi/${this.authToken}`);
-        this.divisi = data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getSubdiv() {
-      try {
-        const { data } = await axios.get(
-          `/subdivisi/${this.contract.divisi_kd}/${this.authToken}`
+        this.poDetail = {};
+
+        const { data: poDetailData } = await axios.get(
+          `/getpodetail/${this.poNoCall}/${this.authToken}`
         );
-        this.subdivisi = data;
+        this.poDetail = poDetailData;
+        console.log(poDetailData);
       } catch (error) {
-        console.log(error);
+        if (error.response.status == 401) {
+          this.$toast.open({ message: "sesh exp", type: "err" });
+        }
       }
     },
-    async getDept() {
+
+    async getPurchaseOrders() {
       try {
-        const { data } = await axios.get(
-          `/department/${this.contract.divisi_kd}/${this.contract.subdiv_kd}/${this.authToken}`
-        );
-        this.dept = data;
+        const { data } = await axios.get(`/getpo/${this.authToken}`);
+        this.purchaseOrders = data;
       } catch (error) {
-        console.log(error);
+        if (error.response.status == 401) {
+          this.$toast.open({
+            message: "sesh exp",
+            type: "err",
+          });
+        }
       }
     },
-    format(date) {
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      return `${month}/${day}/${year}`;
+
+    async submitReceiving() {
+      try {
+        this.receivingPost.items = [];
+        // this.no_po = po_no;
+        this.poDetail.items.forEach((data) => {
+          if (data.kdbar && data.qty) {
+            data.vat = 0;
+            this.receivingPost.items.push(data);
+          }
+        });
+        //
+        this.receivingPost.items.map(function (obj) {
+          obj["no_po"] = obj["po_no"];
+          delete obj["po_no"];
+
+          obj["kd_barang"] = obj["kdbar"];
+          delete obj["kdbar"];
+
+          obj["nm_barang"] = obj["nmbar"];
+          delete obj["nmbar"];
+        });
+
+        //
+
+        this.title = "CONFIRMATION";
+        this.alertMessage = `Are you sure want to submit Transaction ?`;
+        this.methods = "post";
+        this.url = `/receiving/${this.authToken}`;
+        this.sheaders = null;
+        this.item = this.receivingPost;
+        this.showAlert = true;
+      } catch (error) {
+        console.log(error);
+        if (error.response.status == 401) {
+          this.$toast.open({
+            message: "Session expired!",
+            type: "error",
+          });
+
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ path: "/login" });
+            })
+            .catch(() => {
+              this.$router.push({ path: "/login" });
+            });
+        }
+      }
     },
+
     setWidth(value) {
       this.sidebarWidth = value;
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    async getSatuan() {
-      try {
-        const { data } = await axios.get(`/satuan/${this.authToken}`);
-        this.satuan = data;
-      } catch (error) {
-        console.log(error);
-        if (error.response.status == 401) {
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ path: "/login" });
-            })
-            .catch(() => {
-              this.$router.push({ path: "/login" });
-            });
+
+    addQty(id) {
+      this.poDetail.items.filter((item) => {
+        if (item.po_no === id) {
+          item.qty = parseFloat(document.getElementById(`qtyInput${id}`).value);
+          this.$toast.open({
+            message: `Qty added for Item in PO ${id}`,
+            type: "info",
+            duration: 1000,
+          });
         }
-      }
-    },
-    async getVat() {
-      try {
-        const { data } = await axios.get(`/tarif/${this.authToken}`);
-        this.vat = data.tarif;
-        this.getProduct();
-      } catch (error) {
-        console.log(error);
-        if (error.response.status == 401) {
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ path: "/login" });
-            })
-            .catch(() => {
-              this.$router.push({ path: "/login" });
-            });
-        }
-      }
-    },
-    async getSuppliers() {
-      try {
-        const { data } = await axios.get(
-          `/supplier/${this.contract.divisi_kd}/${this.contract.subdiv_kd}/${this.authToken}`
-        );
-        this.suppliers = data;
-      } catch (error) {
-        console.log(error);
-        if (error.response.status == 401) {
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ path: "/login" });
-            })
-            .catch(() => {
-              this.$router.push({ path: "/login" });
-            });
-        }
-      }
-    },
-    async getProduct() {
-      try {
-        this.masterbarang = [];
-        const newMasbars = [];
-        this.masbars = [];
-        this.total_page = [];
-
-        this.isLoading = true;
-        const url = `/masterbarang/${this.kdjns}/${this.authToken}`;
-        console.log(url);
-
-        const { data } = await axios.get(url);
-        this.masterbarang = data;
-        this.total_page = [];
-        const groupSize = this.perpage;
-
-        let urut = 1;
-        this.masterbarang.forEach((data) => {
-          data.no = urut;
-          data.checked = false;
-          data.readonly = true;
-          data.price = null;
-          data.disc = null;
-          data.ppn = this.vat;
-          data.kdstn = null;
-          newMasbars.push(data);
-          urut++;
-        });
-
-        this.pagelength = this.masterbarang.length;
-        for (let i = 0; i < newMasbars.length; i += groupSize) {
-          this.masbars.push(newMasbars.slice(i, i + groupSize));
-        }
-
-        for (let i = 0; i < this.masbars.length; i++) {
-          this.total_page.push(i);
-        }
-
-        this.isLoading = false;
-      } catch (error) {
-        console.log(error);
-        if (error.response.status == 401) {
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ path: "/login" });
-            })
-            .catch(() => {
-              this.$router.push({ path: "/login" });
-            });
-        }
-      }
-    },
-    prevPagination() {
-      if (this.start <= 0) return;
-      this.start -= 5;
-      this.end -= 5;
-    },
-    nextPagination() {
-      if (this.end > this.total_page.length) {
-        this.start = this.total_page.length - 5;
-        this.end = this.total_page.length;
-        return;
-      }
-
-      this.start += 5;
-      this.end += 5;
-    },
-    async selectItems(e) {
-      if (e.target.checked === true) {
-        this.masbars.filter((data) =>
-          data.filter(async (obj) => {
-            if (obj.kdbar === e.target._value) {
-              obj.readonly = false;
-              obj.checked = true;
-
-              document.getElementById(`spinner${obj.kdbar}`).style.display =
-                "block";
-              var select = document.getElementById(`satuan${obj.kdbar}`);
-              if (select.length <= 0) {
-                const { data } = await axios.get(
-                  `/satuanbeli/${obj.kdbar}/${this.authToken}`
-                );
-                const msatuan = data;
-                msatuan.forEach((data) => {
-                  var option = document.createElement("option");
-                  option.text = data.nm_stn;
-                  option.value = data.kdstn;
-                  select.appendChild(option);
-                });
-              }
-
-              document.getElementById(`spinner${obj.kdbar}`).style.display =
-                "none";
-            }
-          })
-        );
-      }
-
-      if (e.target.checked === false) {
-        this.masbars.filter((data) =>
-          data.filter((obj) => {
-            if (obj.kdbar === e.target._value) {
-              obj.readonly = true;
-              obj.price = null;
-              obj.disc = null;
-              obj.kdstn = null;
-              obj.checked = false;
-
-              // var select = document.getElementById(`satuan${obj.kdbar}`);
-              // var options = select.options;
-              // console.log(options)
-              // for (var i = 0; i <= select.length; i++) {
-              //     options.remove(i);
-              //     // select.removeChild(options[i]);
-              // }
-            }
-          })
-        );
-      }
-    },
-    addPrice(id) {
-      this.masbars.filter((data) =>
-        data.filter((obj) => {
-          if (obj.kdbar === id) {
-            obj.price = parseFloat(document.getElementById(`price${id}`).value);
-            obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
-            this.success = true;
-            this.message = `Price added for items ${id}`;
-            this.showNotif = true;
-
-            setTimeout(() => {
-              this.showNotif = false;
-              this.success = false;
-              this.message = null;
-            }, 1300);
-          }
-        })
-      );
-    },
-    addDisc(id) {
-      this.masbars.filter((data) =>
-        data.filter((obj) => {
-          if (obj.kdbar === id) {
-            obj.price = parseFloat(document.getElementById(`price${id}`).value);
-            obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
-            this.success = true;
-            this.message = `Disc added for items ${id}`;
-            this.showNotif = true;
-
-            setTimeout(() => {
-              this.showNotif = false;
-              this.success = false;
-              this.message = null;
-            }, 1300);
-          }
-        })
-      );
-    },
-    addKdstn(id) {
-      this.masbars.filter((data) =>
-        data.filter((obj) => {
-          if (obj.kdbar === id) {
-            console.log(obj.kdstn);
-          }
-        })
-      );
-    },
-    async submitContract() {
-      try {
-        this.contract.items = [];
-        this.masbars.forEach((data) =>
-          data.forEach((obj) => {
-            if (obj.price && obj.kdstn) {
-              this.contract.items.push(obj);
-            }
-          })
-        );
-
-        this.title = "Confirmation";
-        this.alertMessage = `Are you sure want to submit Transaction ?`;
-        this.methods = "post";
-        this.url = `/contractsupplier/${this.authToken}`;
-        this.sheaders = null;
-        this.item = this.contract;
-        this.showAlert = true;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    submitted(value) {
-      this.showAlert = false;
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
-
-      setTimeout(() => {
-        this.message = null;
-        this.succes = false;
-        this.showNotif = false;
-        window.location.href = "/contract";
-      }, 1300);
-    },
-    onError(value) {
-      this.showAlert = false;
-      this.message = value.message;
-      this.success = false;
-      this.showNotifAlert = true;
-      this.alertMessage = null;
-    },
-    onClosed(value) {
-      this.showAlert = value;
-    },
-    onClosedNotif(value) {
-      this.showNotifAlert = value;
-    },
-    searching() {
-      this.masbars = [];
-      this.total_page = [];
-      this.start = 0;
-      this.end = 8;
-      this.perpage = 10;
-
-      const searchTerm = "*" + this.searchItem + "*";
-      const wildcardRegex = new RegExp(
-        "^" + searchTerm.replace(/\*/g, ".*") + "$",
-        "i"
-      );
-      const matchingObjects = this.masterbarang.filter((obj) =>
-        Object.values(obj).some(
-          (value) => typeof value === "string" && wildcardRegex.test(value)
-        )
-      );
-
-      let j = 1;
-      const newMasbars = [];
-      this.pagelength = matchingObjects.length;
-      matchingObjects.forEach((data) => {
-        data.no = j;
-        newMasbars.push(data);
-        j++;
       });
 
-      for (let i = 0; i < newMasbars.length; i += parseInt(this.perpage)) {
-        this.masbars.push(newMasbars.slice(i, i + parseInt(this.perpage)));
-      }
+      // this.poDetail.items.filter((item) =>
+      //   item.filter((obj) => {
+      //     if (obj.po_no === id) {
+      //       obj.qty = parseFloat(
+      //         document.getElementById(`qtyInput${id}`).value
+      //       );
 
-      for (let a = 0; a < this.masbars.length; a++) {
-        this.total_page.push(a);
-      }
+      //       this.$toast.open({
+      //         message: `Qty added for Item in PO ${id}`,
+      //         type: "info",
+      //         duration: 1000,
+      //       });
+      //     }
+      //   })
+      // );
     },
   },
 };

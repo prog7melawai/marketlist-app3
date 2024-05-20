@@ -259,9 +259,6 @@
     @onClosed="onClosed">
   </alert-confirm>
 
-  <notification v-if="showNotif" :success="success" :message="message">
-  </notification>
-
   <notification-alert
     v-if="showNotifAlert"
     :success="success"
@@ -289,7 +286,6 @@ import Spinner from "@/components/Spinner.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
-import Notification from "@/components/Notification.vue";
 import NotificationAlert from "@/components/NotificationAlert.vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";

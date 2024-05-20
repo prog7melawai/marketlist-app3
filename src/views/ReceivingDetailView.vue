@@ -19,35 +19,6 @@
         </div>
         <!-- export file btn kanan atas -->
 
-        <div class="confirm-wrapper" v-if="selectedReceive.no_karcis">
-          <button class="export-btn">
-            <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
-          </button>
-
-          <button
-            class="btn-success"
-            @click="confirmReceive"
-            v-if="
-              isApproval &&
-              !selectedReceive.tglconf &&
-              !selectedReceive.tglbatal
-            ">
-            <i class="ri-check-line" style="font-size: 14pt"></i>
-            <span style="position: relative; top: -2px"> Approve </span>
-          </button>
-
-          <button
-            class="btn-danger"
-            @click="declineReceive"
-            v-if="
-              isDecliner &&
-              !selectedReceive.tglbatal &&
-              !selectedReceive.tglconf
-            ">
-            <i class="ri-check-line" style="font-size: 14pt"></i>
-            <span style="position: relative; top: -2px"> Decline </span>
-          </button>
-        </div>
         <!-- content -->
         <div class="content">
           <loader v-if="isLoading"></loader>
@@ -59,12 +30,24 @@
                   :alt="selectedReceive.logo"
                   style="width: 100%; height: 100%; object-fit: contain" />
               </div>
-              <span class="stamp-container" v-if="selectedReceive.statusacc">
+
+              <span
+                class="stamp-container"
+                v-if="selectedReceive.statusacc == 'APPROVED'">
                 <img
                   class="stamp-logo"
                   src="/images/logo/approved.png"
                   alt="" />
               </span>
+              <span
+                class="stamp-container"
+                v-else-if="selectedReceive.statusacc == 'REJECTED'">
+                <img
+                  class="stamp-logo"
+                  src="/images/logo/declined.png"
+                  alt="" />
+              </span>
+
               <!-- user view siapa -->
               <div style="width: 78%; display: flex; flex-direction: column">
                 <span class="pr-supplier">{{ selectedReceive.dept_kd }}</span>
@@ -86,13 +69,12 @@
             <table class="table-responsive" aria-describedby="PR-items Data">
               <thead class="bg-dark">
                 <tr>
-                  <th style="width: 5%">No</th>
-                  <th style="width: 5%">Kode Barang</th>
-                  <th style="width: 5%">Nama Barang</th>
-                  <th style="width: 5%">Qty Rcv</th>
-                  <th style="width: 5%">No PO</th>
-                  <th style="width: 5%">Gtotal</th>
-                  <th style="width: 5%">Crc Code</th>
+                  <th style="width: 15%">No PO</th>
+                  <th style="width: 15%">Kode Barang</th>
+                  <th style="width: 25%">Nama Barang</th>
+                  <th style="width: 12.5%">Qty</th>
+                  <th style="width: 12.5%">Qty Bonus</th>
+                  <th style="width: 20%">Satuan</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,11 +82,12 @@
                   v-for="(po, idx) in purchaseOrders.items"
                   :key="po.no_po"
                   :class="{ 'bg-canvas': idx % 2 == 0 }">
-                  <td>{{ po.idx }}</td>
+                  <td>{{ po.no_po }}</td>
                   <td>{{ po.kd_barang }}</td>
                   <td>{{ po.nm_barang }}</td>
                   <td>{{ po.qty }}</td>
-                  <td>{{ po.no_po }}</td>
+                  <td>{{ po.qty_bonus }}</td>
+                  <td>{{ po.satuan }}</td>
                 </tr>
               </tbody>
             </table>
@@ -122,6 +105,7 @@ import NavbarVue from "@/components/Navbar.vue";
 // import AlertConfirm from "@/components/AlertConfirm.vue";
 import axios from "axios";
 import Loader from "@/components/Loader.vue";
+// import { stringifyQuery } from "vue-router";
 export default {
   name: "ReceivingDetailVue",
   components: {
@@ -159,7 +143,7 @@ export default {
       const newPO = [];
       try {
         const { data } = await axios.get(
-          `http://172.30.14.208:9642/procurement/web/receiving/${this.$route.params.no_karcis}/${this.authToken}`
+          `/receiving/${this.$route.params.no_karcis}/${this.authToken}`
         );
 
         this.purchaseOrders = data;
@@ -191,7 +175,7 @@ export default {
       // Post the fetched data to another endpoint
       axios
         .post(
-          `http://172.30.14.208:9642/procurement/web/receiving/${this.$route.params.no_karcis}/${this.authToken}`,
+          `/receiving/${this.$route.params.no_karcis}/${this.authToken}`,
           purchaseOrders
         )
         .then((response) => {
@@ -211,7 +195,7 @@ export default {
         // );
         this.isLoading = true;
         const { data } = await axios.get(
-          `http://172.30.14.208:9642/procurement/web/receiving/${this.$route.params.no_karcis}/${this.authToken}`
+          `/receiving/${this.$route.params.no_karcis}/${this.authToken}`
         );
         this.selectedReceive = data;
         this.isLoading = false;
@@ -234,20 +218,20 @@ export default {
       this.item = body;
       this.showAlert = true;
     },
-    declineReceive() {
-      const body = {
-        no_karcis: this.selectedReceive.no_karcis,
-      };
+    // declineReceive() {
+    //   const body = {
+    //     no_karcis: this.selectedReceive.no_karcis,
+    //   };
 
-      console.log(body);
-      this.title = "Confirmation";
-      this.deleteMessage = `Are you sure want to Decline this Transaction ?`;
-      this.methods = "delete";
-      this.url = `/contractsupplier/${this.authToken}`;
-      this.sheaders = null;
-      this.item = body;
-      this.showAlert = true;
-    },
+    //   console.log(body);
+    //   this.title = "Confirmation";
+    //   this.deleteMessage = `Are you sure want to Decline this Transaction ?`;
+    //   this.methods = "delete";
+    //   this.url = `/contractsupplier/${this.authToken}`;
+    //   this.sheaders = null;
+    //   this.item = body;
+    //   this.showAlert = true;
+    // },
   },
 };
 </script>

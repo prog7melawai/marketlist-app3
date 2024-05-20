@@ -33,26 +33,6 @@
                   <option value="100">100</option>
                 </select>
 
-                <div class="export-wrapper">
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-left-radius: 5px;
-                      border-top-left-radius: 5px;
-                    ">
-                    CSV
-                  </button>
-                  <button class="export-btn">XLSX</button>
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-right-radius: 5px;
-                      border-top-right-radius: 5px;
-                    ">
-                    PDF
-                  </button>
-                </div>
-
                 <!-- 
                   <div class="filter-wrapper">
                     <button class="export-btn" @click="showingFilter">
@@ -213,7 +193,7 @@
                 <loader v-if="isloading"></loader>
                 <tbody v-if="!isLoading">
                   <tr
-                    v-for="(po, idx) in purchaseOrders"
+                    v-for="(po, idx) in purchaseOrderss[selectedPage]"
                     :key="po.pr_no"
                     :class="{ 'bg-canvas': idx % 2 == 0 }">
                     <td>{{ po.no_karcis }}</td>
@@ -241,11 +221,17 @@
               <div class="page-wrapper" v-if="total_page.length > 0">
                 <div style="width: 50%">
                   <span style="font-size: 10pt">
-                    Showing {{ prs[selectedPage]?.[0].no }} to
-                    {{ prs[selectedPage][prs[selectedPage].length - 1].no }}
+                    Showing {{ purchaseOrderss[selectedPage]?.[0].no }} to
+                    {{
+                      purchaseOrderss[selectedPage][
+                        purchaseOrderss[selectedPage].length - 1
+                      ].no
+                    }}
                     of {{ pagelength }} entries.
                   </span>
                 </div>
+
+                <!-- button next prev -->
                 <div
                   style="
                     width: 50%;
@@ -255,6 +241,7 @@
                   ">
                   <button
                     class="page-prev"
+                    :disabled="start < 5"
                     @click="prevPagination"
                     :class="{ 'paginate-active': start >= 5 }">
                     Previous
@@ -271,6 +258,7 @@
                     {{ pg + 1 }}
                   </div>
                   <button
+                    :disabled="total_page.length < end"
                     :class="{ 'paginate-active': total_page.length > end }"
                     class="page-next"
                     @click="nextPagination">
@@ -301,25 +289,26 @@ export default {
   },
   data() {
     return {
+      purchaseOrderss: [],
       purchaseOrders: [],
       sidebarWidth: "18%",
       contentWidth: "78%",
       allselected: false,
       showCreate: false,
       showEdit: false,
-      pr: [],
-      prs: [],
       total_page: [],
       selectedPage: 0,
       selectedPR: {},
-      perpage: 3,
+      perpage: 10,
       pr_no: null,
       error: {
         pr_no: null,
       },
       authToken: null,
       searchFood: null,
+      searchItem: null,
       isCreate: false,
+      pagelength: 0,
     };
   },
   mounted() {
@@ -328,6 +317,46 @@ export default {
     this.fetchPurchaseOrders();
   },
   methods: {
+    searching() {
+      this.purchaseOrderss = [];
+      this.total_page = [];
+      this.start = 0;
+      this.end = 8;
+
+      const searchTerm = "*" + this.searchItem + "*";
+      const wildcardRegex = new RegExp(
+        "^" + searchTerm.replace(/\*/g, ".*") + "$",
+        "i"
+      );
+      const matchingObjects = this.purchaseOrders.filter((obj) =>
+        Object.values(obj).some(
+          (value) => typeof value === "string" && wildcardRegex.test(value)
+        )
+      );
+
+      let j = 1;
+      const newPurchaseOrders = [];
+      this.pagelength = matchingObjects.length;
+      matchingObjects.forEach((data) => {
+        data.no = j;
+        newPurchaseOrders.push(data);
+        j++;
+      });
+
+      for (
+        let i = 0;
+        i < newPurchaseOrders.length;
+        i += parseInt(this.perpage)
+      ) {
+        this.purchaseOrderss.push(
+          newPurchaseOrders.slice(i, i + parseInt(this.perpage))
+        );
+      }
+
+      for (let a = 0; a < this.purchaseOrderss.length; a++) {
+        this.total_page.push(a);
+      }
+    },
     prevPagination() {
       if (this.start <= 0) return;
       this.start -= 5;
@@ -347,30 +376,31 @@ export default {
       const groupSize = this.perpage;
       const newPO = [];
       try {
-        const { data } = await axios.get(
-          `http://172.30.14.208:9642/procurement/web/receiving/${this.authToken}`
-        );
+        const { data } = await axios.get(`/receiving/${this.authToken}`);
         this.purchaseOrders = data;
-        console.log(this.purchaseOrders);
 
-        this.prs = [];
         this.total_page = [];
-
-        let j = 1;
         this.purchaseOrders.forEach((data) => {
-          data.no = j;
           newPO.push(data);
-          j++;
         });
-        console.log(newPO);
+
+        // let j = 1;
+        // this.purchaseOrders.forEach((data) => {
+        //   data.no = j;
+        //   newPO.push(data);
+        //   j++;
+        // });
         this.pagelength = this.purchaseOrders.length;
         for (let i = 0; i < newPO.length; i += groupSize) {
-          this.prs.push(newPO.slice(i, i + groupSize));
+          this.purchaseOrderss.push(newPO.slice(i, i + groupSize));
         }
 
-        for (let i = 0; i < this.prs.length; i++) {
-          this.total_page?.push(i);
+        for (let i = 0; i < this.purchaseOrderss.length; i++) {
+          this.total_page.push(i);
         }
+        this.isLoading = false;
+
+        console.log(this.purchaseOrderss);
       } catch (error) {
         console.error("Error fetching purchase orders:", error);
       }
@@ -378,10 +408,7 @@ export default {
     async postPurchaseOrders(purchaseOrders) {
       // Post the fetched data to another endpoint
       axios
-        .post(
-          `http://172.30.14.208:9642/procurement/web/receiving/${this.authToken}`,
-          purchaseOrders
-        )
+        .post(`/receiving/${this.authToken}`, purchaseOrders)
         .then((response) => {
           console.log("Data posted successfully:", response.data);
           // Handle response if needed
@@ -435,6 +462,36 @@ export default {
     //     console.log(error);
     //   }
     // },
+    changePerPage() {
+      this.purchaseOrderss = [];
+      this.total_page = [];
+      this.start = 0;
+      this.end = 8;
+
+      let j = 1;
+      const newPurchaseOrders = [];
+      this.pagelength = this.purchaseOrders.length;
+      this.purchaseOrders.forEach((data) => {
+        data.no = j;
+        newPurchaseOrders.push(data);
+        j++;
+      });
+
+      for (
+        let i = 0;
+        i < newPurchaseOrders.length;
+        i += parseInt(this.perpage)
+      ) {
+        this.purchaseOrderss.push(
+          newPurchaseOrders.slice(i, i + parseInt(this.perpage))
+        );
+      }
+
+      for (let a = 0; a < this.purchaseOrderss.length; a++) {
+        this.total_page.push(a);
+      }
+    },
+
     getFooImage(filename) {
       return "/images/foods/" + filename;
     },

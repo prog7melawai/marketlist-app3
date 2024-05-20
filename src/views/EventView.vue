@@ -26,8 +26,7 @@
                   class="warehouse-input"
                   style="width: 80px"
                   v-model="perpage"
-                  @change="getEvent"
-                >
+                  @change="getEvent">
                   <option value="10">10</option>
                   <option value="25">25</option>
                   <option value="50">50</option>
@@ -40,8 +39,7 @@
                     style="
                       border-bottom-left-radius: 5px;
                       border-top-left-radius: 5px;
-                    "
-                  >
+                    ">
                     CSV
                   </button>
                   <button class="export-btn">XLSX</button>
@@ -50,38 +48,34 @@
                     style="
                       border-bottom-right-radius: 5px;
                       border-top-right-radius: 5px;
-                    "
-                  >
+                    ">
                     PDF
                   </button>
                 </div>
 
                 <div class="search-container">
-                      <input 
-                          type="text" 
-                          class="form-input"
-                          style="width: 100%"
-                          placeholder="Search event..."
-                          v-model="searchItem"
-                          @keyup.enter="searching">
+                  <input
+                    type="text"
+                    class="form-input"
+                    style="width: 100%"
+                    placeholder="Search event..."
+                    v-model="searchItem"
+                    @keyup.enter="searching" />
                 </div>
               </div>
 
               <table
                 class="table-responsive"
-                aria-describedby="Upcoming Event data"
-              >
+                aria-describedby="Upcoming Event data">
                 <thead class="bg-theme">
                   <tr>
-                    <th style="width: 5%; 
-                    border-top-left-radius: 5px">No</th>
+                    <th style="width: 5%; border-top-left-radius: 5px">No</th>
                     <th style="width: 30%">Event Name</th>
                     <th style="width: 10%">Event Date</th>
                     <th style="width: 20%">Customer</th>
                     <th style="width: 10%">Person</th>
                     <th style="width: 10">Status</th>
-                    <th style="width: 15%; 
-                    border-top-right-radius: 5px">
+                    <th style="width: 15%; border-top-right-radius: 5px">
                       Action
                     </th>
                   </tr>
@@ -90,8 +84,7 @@
                   <tr
                     v-for="ev in events[selectedPage]"
                     :key="ev.id"
-                    :class="{ 'bg-canvas': ev.no % 2 == 0 }"
-                  >
+                    :class="{ 'bg-canvas': ev.no % 2 == 0 }">
                     <td>{{ ev.no }}</td>
                     <td>{{ ev.name }}</td>
                     <td>{{ ev.date }}</td>
@@ -106,8 +99,7 @@
                             name: 'event-detail',
                             params: { id: ev.id },
                           })
-                        "
-                      >
+                        ">
                         Details
                       </button>
                     </td>
@@ -131,10 +123,11 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: end;
-                  "
-                >
-                  <button class="page-prev" @click="prevPagination"
-                    :class="{'paginate-active': start >= 5}">
+                  ">
+                  <button
+                    class="page-prev"
+                    @click="prevPagination"
+                    :class="{ 'paginate-active': start >= 5 }">
                     Previous
                   </button>
                   <div
@@ -145,13 +138,14 @@
                       'page-active': selectedPage === pg,
                       'page-unactive': selectedPage !== pg,
                     }"
-                    @click="selectedPage = pg"
-                  >
+                    @click="selectedPage = pg">
                     {{ pg + 1 }}
                   </div>
-                  <button :class="{'paginate-active': total_page.length > end}"
-                  class="page-next" @click="nextPagination">
-                  Next
+                  <button
+                    :class="{ 'paginate-active': total_page.length > end }"
+                    class="page-next"
+                    @click="nextPagination">
+                    Next
                   </button>
                 </div>
               </div>
@@ -213,7 +207,7 @@ export default {
         j++;
       });
 
-      this.pagelength = this.event.length
+      this.pagelength = this.event.length;
       for (let i = 0; i < newEvent.length; i += parseInt(this.perpage)) {
         this.events.push(newEvent.slice(i, i + parseInt(this.perpage)));
       }
@@ -237,44 +231,47 @@ export default {
       this.showEdit = true;
       this.selectedFood = item;
     },
-    prevPagination(){
-        if(this.start <= 0) return;
-        this.start -= 5
-        this.end -= 5
+    prevPagination() {
+      if (this.start <= 0) return;
+      this.start -= 5;
+      this.end -= 5;
     },
-    nextPagination(){
-        if(this.end > this.total_page.length) {
-            this.start = this.total_page.length - 5
-            this.end = this.total_page.length
-            return;
-        }
+    nextPagination() {
+      if (this.end > this.total_page.length) {
+        this.start = this.total_page.length - 5;
+        this.end = this.total_page.length;
+        return;
+      }
 
-        this.start += 5
-        this.end += 5
+      this.start += 5;
+      this.end += 5;
     },
-    searching(){
-      this.events = []
-      this.total_page = []
-      this.start = 0
-      this.end = 8
-      this.perpage = 10
+    searching() {
+      this.events = [];
+      this.total_page = [];
+      this.start = 0;
+      this.end = 8;
+      this.perpage = 10;
 
-      const searchTerm = '*' + this.searchItem + '*';
-      const wildcardRegex = new RegExp('^' + searchTerm.replace(/\*/g, '.*') + '$', 'i');
-      const matchingObjects = this.event.filter(obj =>
-        Object.values(obj).some(value =>
-          typeof value === 'string' && wildcardRegex.test(value)
+      const searchTerm = "*" + this.searchItem + "*";
+      const wildcardRegex = new RegExp(
+        "^" + searchTerm.replace(/\*/g, ".*") + "$",
+        "i"
+      );
+      const matchingObjects = this.event.filter((obj) =>
+        Object.values(obj).some(
+          (value) => typeof value === "string" && wildcardRegex.test(value)
         )
-      )
+      );
 
-      let j = 1
-      const newEvent = []
+      let j = 1;
+      const newEvent = [];
       this.pagelength = matchingObjects.length;
       matchingObjects.forEach((data) => {
         data.no = j;
         newEvent.push(data);
         j++;
-      })
+      });
 
       for (let i = 0; i < newEvent.length; i += parseInt(this.perpage)) {
         this.events.push(newEvent.slice(i, i + parseInt(this.perpage)));
@@ -283,7 +280,7 @@ export default {
       for (let a = 0; a < this.events.length; a++) {
         this.total_page.push(a);
       }
-    }
+    },
   },
 };
 </script>

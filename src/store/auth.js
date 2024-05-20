@@ -54,6 +54,10 @@ export const auth = {
         GET_SIDEBAR_WIDTH(state) {
             return state.sidebar;
         },
+
+        GET_CONTRACT_NOTIF(state) {
+            return state.contract;
+        },
     },
 
     actions: {
