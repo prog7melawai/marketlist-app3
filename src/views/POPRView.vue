@@ -7,7 +7,8 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
+          <div class="content-title pl-30">
+            <i @click="$router.back()" class="ri-arrow-left-circle-fill" back-btn></i>
             <h2>Data PO from PR Number {{ this.$route.params.id }}</h2>
           </div>
 
@@ -19,6 +20,32 @@
           </button>
 
           <div class="content">
+            <div class="po-header">
+              <div class="po-logo">
+                <img
+                  src="/images/logo/movenpick.png"
+                  :alt="selectedPR.logo"
+                  style="width: 100%; height: 100%; object-fit: contain;"
+                />
+              </div>
+
+              <div style="width: 78%; display: flex; flex-direction: column">
+                <span class="pr-supplier">{{ selectedPR.dept_kd }}</span>
+                <span class="pr-contact">{{ selectedPR.subdiv_kd }}</span>
+                <span class="pr-address">{{ selectedPR.div_kd }}</span>
+
+                <span class="pr-deliver">User Created:</span>
+                <span class="pr-company">
+                  <img
+                    src="/images/user/user.png"
+                    alt="logo"
+                    style="width: 25px"
+                  />
+                  <span class="pr-department">{{ selectedPR.cruser }}</span>
+                </span>
+              </div>
+            </div>
+
             <div style="width: 100%; margin-top: 20px">
               <div class="table-navigation">
                 <select
@@ -202,7 +229,7 @@
                   <tr
                     v-for="(po, idx) in prs[selectedPage]"
                     :key="po.pr_no"
-                    :class="{ 'bg-canvas': idx % 2 == 0 }"
+                    :class="{ 'bg-canvas': idx % 2 == 0}"
                     style="height: 50px"
                   >
                     <td>{{ po.no }}</td>
@@ -345,6 +372,7 @@ export default {
     },
     async getPO() {
       try {
+        this.isLoading = true;
         const { data } = await axios.get(
           `/find-po/${this.$route.params.id}/${this.authToken}`
         );
@@ -369,8 +397,26 @@ export default {
         for (let i = 0; i < this.prs.length; i++) {
           this.total_page.push(i);
         }
+
+        this.getPR();
       } catch (error) {
         console.log(error);
+      }
+    },
+    async getPR() {
+      try {
+        const { data } = await axios.get(`/prdetail2/all/${this.$route.params.id}/${this.authToken}`)
+        this.selectedPR = data
+        this.isLoading = false;
+      } catch(error){
+        if(error.response.status == 401){
+          this.$store.dispatch("LOGOUT")
+          .then(() => {
+              this.$router.push({ path : '/login'});
+          }).catch(() => {
+              this.$router.push({ path : '/login'});
+          });
+        }
       }
     },
     getFooImage(filename) {

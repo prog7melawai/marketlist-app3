@@ -6,8 +6,9 @@
     <div class="container">
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
-        <div class="content-wrapper">
+        <div class="content-wrapper pl-30">
           <div class="content-title">
+            <i @click="$router.back()" class="ri-arrow-left-circle-fill back-btn"></i>
             <h2>Create New Contract</h2>
           </div>
 

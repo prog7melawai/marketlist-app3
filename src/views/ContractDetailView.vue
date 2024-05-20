@@ -7,8 +7,9 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
-            <h2>Kontrak {{ this.$route.params.id }} - {{ selectedContract.sup_nm }}</h2>
+          <div class="content-title pl-30">
+            <i @click="$router.back()" class="ri-arrow-left-circle-fill" back-btn></i>
+            <h2>Contract {{ this.$route.params.id }} - {{ selectedContract.sup_nm }}</h2>
             <span>{{ getMonth(new Date(selectedContract.kontrak_date).getMonth()) }},
               {{ new Date(selectedContract.kontrak_date).getDate() }}
               {{ new Date(selectedContract.kontrak_date).getFullYear() }}

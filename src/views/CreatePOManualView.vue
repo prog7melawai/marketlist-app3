@@ -7,7 +7,8 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
+          <div class="content-title pl-30">
+            <i @click="$router.back()" class="ri-arrow-left-circle-fill back-btn"></i>
             <h2>Re-Create New PO</h2>
           </div>
 
@@ -82,6 +83,49 @@
             >
               Submit
             </button>
+          </div>
+        </div>
+
+        <div class="content-wrapper" 
+          style="margin-top: -50px;
+          background: var(--canvas);
+          height: 300px;">
+          <div class="content-title">
+            <h2>Create from PO #{{ this.$route.params.id }}</h2>
+            <span>
+              {{ selectedPO.po_date }}
+            </span>
+          </div>
+
+          <div class="content">
+            <div class="po-header">
+                <div class="po-logo">
+                  <img
+                    src="/images/logo/movenpick.png"
+                    style="width: 100%; height: 100%; object-fit: contain"
+                  />
+                </div>
+
+                <span class="stamp-container">
+                  <img
+                    v-if="selectedPO.user_batal !== ''"
+                    class="stamp-logo"
+                    src="/images/logo/declined.png"
+                    alt=""
+                  />
+                </span>
+
+                <div style="width: 78%; display: flex; flex-direction: column">
+                  <span class="pr-supplier">{{ selectedPO.sup_kd }}</span>
+                  <span class="pr-contact">{{ selectedPO.sup_alamat }}</span>
+                  <span class="pr-address">{{ selectedPO.sup_email }}</span>
+
+                  <span class="pr-deliver">Deliver to:</span>
+                  <span class="pr-company" style="display: flex;align-items: center;">
+                    <span class="pr-department">{{ selectedPO.subdiv_nm }}</span>
+                  </span>
+                </div>
+              </div>
           </div>
         </div>
       </div>
@@ -173,15 +217,13 @@ export default {
       subdivisi: null,
       dept: null,
       prs: null,
-      selectedPO: null,
+      selectedPO: {},
       supplier: null,
     };
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.po.pr_no = this.$route.params.id;
-  },
-  mounted(){
     this.getPODetail();
   },
   methods: {
@@ -190,6 +232,7 @@ export default {
             const {data} = await axios.get(`/getpodetail/${this.$route.params.id}/${this.authToken}`)
             this.selectedPO = data;
 
+            console.log(this.selectedPO)
             this.po.sup_kd = data.sup_kd
             this.po.pr_no = data.pr_no
             this.po.po_no = data.po_no

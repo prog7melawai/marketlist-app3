@@ -219,14 +219,15 @@
                     v-for="(po, idx) in prs[selectedPage]" :key="po.pr_no"
                     :class="{ 'bg-canvas' : idx % 2 == 0}"
                     style="height: 50px;">
-                      <td>{{ po.no }}</td>
-                      <td>{{ po.pr_no }}</td>
-                      <td>{{ po.pr_date }}</td>
-                      <td>{{ po.div_kd }}</td>
-                      <td>{{ po.subdiv_kd }}</td>
-                      <td>{{ po.dept_kd }}</td>
-                      <td>{{ po.total_po }}</td>
-                      <td style="display: flex;
+                      <td :class="{'bg-warning' : po.total_po === 0 }">{{ po.no }}</td>
+                      <td :class="{'bg-warning' : po.total_po === 0 }">{{ po.pr_no }}</td>
+                      <td :class="{'bg-warning' : po.total_po === 0 }">{{ po.pr_date }}</td>
+                      <td :class="{'bg-warning' : po.total_po === 0 }">{{ po.div_kd }}</td>
+                      <td :class="{'bg-warning' : po.total_po === 0 }">{{ po.subdiv_kd }}</td>
+                      <td :class="{'bg-warning' : po.total_po === 0 }">{{ po.dept_kd }}</td>
+                      <td :class="{'bg-warning' : po.total_po === 0 }">{{ po.total_po }}</td>
+                      <td :class="{'bg-warning' : po.total_po === 0 }"
+                      style="display: flex;
                         flex-direction: row;
                         justify-content: center;
                         flex-wrap: wrap;
@@ -341,6 +342,7 @@ export default {
         const { data } = await axios.get(`/approvedpr/${this.authToken}`);
         this.pr = data
 
+        console.log(this.pr)
         const groupSize = this.perpage;
         const newPR = [];
         this.prs = [];
@@ -426,6 +428,6 @@ export default {
 
 <style>
 .bg-warning{
-  background: var(--yellow);
+  background: #fff8e2;
 }
 </style>

@@ -260,6 +260,30 @@ select{
     margin-left: 20px;
     color: var(--light);
     font-family: 'Lexend', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px
+}
+
+.pl-30{
+    padding-left: 30px;
+}
+
+.content-wrapper .content-title i{
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    font-size: 23pt;
+    color: var(--red);
+    margin-top: 3px;
+    transition: all .5s ease;
+    cursor: pointer;
+}
+
+.content-wrapper .content-title i:hover{
+    transform: scale(1.2);
+    color: var(--redhover);
 }
 
 .content-wrapper .content{

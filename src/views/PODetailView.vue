@@ -7,7 +7,8 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
+          <div class="content-title pl-30">
+            <i @click="$router.back()" class="ri-arrow-left-circle-fill back-btn"></i>
             <h2>Detail for PO #{{ this.$route.params.id }}</h2>
             <span>
               {{ selectedPO.po_date }}
@@ -78,7 +79,7 @@
 
                   <span class="pr-deliver">Deliver to:</span>
                   <span class="pr-company" style="display: flex;align-items: center;">
-                    <span class="pr-department">{{ selectedPO.subdiv_kd }}</span>
+                    <span class="pr-department">{{ selectedPO.subdiv_nm }}</span>
                   </span>
                 </div>
               </div>

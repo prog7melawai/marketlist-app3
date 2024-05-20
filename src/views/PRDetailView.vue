@@ -7,7 +7,8 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
+          <div class="content-title pl-30">
+            <i @click="$router.back()" class="ri-arrow-left-circle-fill" back-btn></i>
             <h2>Detail for #{{ this.$route.params.id }}</h2>
             <span>{{ getMonth(new Date(selectedPR.pr_date).getMonth()) }},
               {{ new Date(selectedPR.pr_date).getDate() }}
