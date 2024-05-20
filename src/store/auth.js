@@ -65,7 +65,6 @@ export const auth = {
             return new Promise ((resolve, reject) => {
                 axios.post('/login', loginData)
                      .then((response) => {
-                        console.log(response)
                         context.commit('SET_AUTH_TOKEN', response.data.token);
                         context.commit('SET_AUTH_INFO', response.data);
                         resolve(response);

@@ -217,7 +217,7 @@
                 <tbody>
                   <tr 
                     v-for="(po, idx) in prs[selectedPage]" :key="po.pr_no"
-                    :class="{ 'bg-canvas': idx % 2 == 0 }"
+                    :class="{ 'bg-canvas' : idx % 2 == 0}"
                     style="height: 50px;">
                       <td>{{ po.no }}</td>
                       <td>{{ po.pr_no }}</td>
@@ -236,7 +236,7 @@
                           style="width: 80px"
                           @click="
                             this.$router.push({
-                              name: 'pr-po',
+                              name: 'po',
                               params: { id: po.pr_no },
                             })
                           ">
@@ -317,10 +317,15 @@ export default {
       },
       authToken: null,
       searchFood: null,
+      perm: null,
+      permission: [],
     };
   },
   created(){
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
+    // this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    // this.permission = this.perm.split(",")
+    // if(!this.permission.includes('po')) window.location.href = '/'
   },
   mounted() {
     this.getPO();
@@ -418,3 +423,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.bg-warning{
+  background: var(--yellow);
+}
+</style>

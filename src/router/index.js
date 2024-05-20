@@ -22,6 +22,8 @@ import CreatePOView from '@/views/CreatePOView.vue'
 import POPRView from '@/views/POPRView.vue'
 import MasterBarangView from '@/views/MasterBarangView.vue'
 import ReceivingView from '@/views/ReceivingView.vue'
+import PODetailView from '@/views/PODetailView'
+import CreatePOManualView from '@/views/CreatePOManualView'
 import store from '../store'
 
 const routes = [
@@ -42,11 +44,13 @@ const routes = [
   {path: '/stockfinance', name: 'stockfinance', component: StockFinanceView, meta: {login: true}},
   {path: '/event', name: 'event', component: EventView, meta: {login: true}},
   {path: '/event-detail/:id', name: 'event-detail', component: EventDetailView, meta: {login: true}},
-  {path: '/po', name: 'po', component: POView, meta: {login: true}},
+  {path: '/approved-pr', name: 'approved-pr', component: POView, meta: {login: true}},
   {path: '/profile', name: 'profile', component: ProfileView, meta: {login: true}},
   {path: '/manage-warehouse', name: 'manage-warehouse', component: ManageGudangView, meta: {login: true}},
-  {path: '/create-po', name: 'create-po', component: CreatePOView, meta: {login: true}},
-  {path: '/pr-po/:id', name: 'pr-po', component: POPRView, meta: {login: true}},
+  {path: '/create-po/:id', name: 'create-po', component: CreatePOView, meta: {login: true}},
+  {path: '/create-po-manual/:id', name: 'create-po-manual', component: CreatePOManualView, meta: {login: true}},
+  {path: '/po/:id', name: 'po', component: POPRView, meta: {login: true}},
+  {path: '/po-detail/:id', name: 'po-detail', component: PODetailView, meta: {login: true}},
   {path: '/receiving', name: 'receiving', component: ReceivingView, meta: {login: true}},
 ]
 

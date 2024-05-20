@@ -8,7 +8,7 @@
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
           <div class="content-title">
-            <h2>Create New PO</h2>
+            <h2>Re-Create New PO</h2>
           </div>
 
           <div class="content">
@@ -22,12 +22,16 @@
               "
             >
               <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{'color-orange': po.pr_no }">
+                <label class="form-label" :class="{ 'color-orange': po.pr_no }">
                   PR NUMBER
                 </label>
-                <input style="margin-top: -3px;" type="text" class="form-input" v-model="po.pr_no" readonly>
+                <input
+                  style="margin-top: -3px"
+                  type="text"
+                  class="form-input"
+                  v-model="po.pr_no"
+                  readonly
+                />
                 <span>{{ error.sup_kd }}</span>
               </div>
 
@@ -62,6 +66,13 @@
                 />
                 <span>{{ error.expired_date }}</span>
               </div>
+              <div class="form-group">
+                    <label class="form-label" :class="{ 'color-orange': po.sup_kd }">Supplier</label>
+                    <select style="width: 99%;height: 40px;border-radius: 5px;" v-model="po.sup_kd">
+                        <option v-for="supp in suppliers" :key="supp.sup_kd" :value="supp.sup_kd">{{ supp.sup_nm }}</option>
+                    </select>
+                    <span>{{ error.sup_kd }}</span>
+              </div>
             </div>
 
             <button
@@ -77,11 +88,12 @@
     </div>
   </div>
 
-  <notification 
-    v-if="showNotif" 
-    :success="success" 
-    :message="message">
-  </notification>
+  <notification-alert
+      v-if="showNotifAlert" 
+      :success="success" 
+      :message="message"
+      @onClosed="onClosedNotif">
+  </notification-alert>
 
   <alert-confirm
     v-if="showAlert"
@@ -93,26 +105,28 @@
     :data="item"
     @onClosed="onClosed"
     @onResolve="submitted"
-    @onError="onError">
+    @onError="onError"
+  >
   </alert-confirm>
 </template>
 
 <script>
-import Notification from "@/components/Notification.vue";
+import NotificationAlert from '@/components/NotificationAlert.vue';
 import AlertConfirm from "@/components/AlertConfirm.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import axios from "axios";
 
 export default {
-  name: "CreatePOView",
+  name: "CreatePOManualView",
   components: {
     SidebarVue,
     NavbarVue,
     VueDatePicker,
-    Notification,
     AlertConfirm,
+    NotificationAlert,
   },
   data() {
     return {
@@ -121,6 +135,7 @@ export default {
       success: false,
       message: null,
       showNotif: false,
+      showNotifAlert: false,
       showAlert: false,
       title: null,
       alertMessage: null,
@@ -132,11 +147,14 @@ export default {
         pr_no: null,
         expired_date: null,
         expected_date: null,
+        sup_kd: null,
+        po_no: null,
       },
       error: {
         pr_no: null,
         expired_date: null,
         expected_date: null,
+        sup_kd: null,
       },
       authToken: null,
       masterbarang: null,
@@ -155,13 +173,53 @@ export default {
       subdivisi: null,
       dept: null,
       prs: null,
+      selectedPO: null,
+      supplier: null,
     };
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
-    this.po.pr_no = this.$route.params.id
+    this.po.pr_no = this.$route.params.id;
+  },
+  mounted(){
+    this.getPODetail();
   },
   methods: {
+    async getPODetail(){
+        try {
+            const {data} = await axios.get(`/getpodetail/${this.$route.params.id}/${this.authToken}`)
+            this.selectedPO = data;
+
+            this.po.sup_kd = data.sup_kd
+            this.po.pr_no = data.pr_no
+            this.po.po_no = data.po_no
+            this.po.expected_date = `${String(data.expected_date).substring(6, 10)}-${String(data.expected_date).substring(3, 5)}-${String(data.expected_date).substring(0, 2)}`
+            this.po.expired_date = `${String(data.expired_date).substring(6, 10)}-${String(data.expired_date).substring(3, 5)}-${String(data.expired_date).substring(0, 2)}`
+            this.getSuppliers();
+        } catch(error){
+            console.log(error)
+        }
+    },
+    async getSuppliers(){
+        try {
+            const { data } = await axios.get(`/getsuppliercontract/${this.authToken}`)
+            this.suppliers = data
+        } catch(error){
+            if(error.response.status == 401){
+                this.$toast.open({
+                    message: 'Session expired!',
+                    type: 'error',
+                });
+
+                this.$store.dispatch("LOGOUT")
+                .then(() => {
+                    this.$router.push({ path : '/login'});
+                }).catch(() => {
+                    this.$router.push({ path : '/login'});
+                });
+            }
+        }
+    },
     format(date) {
       const day = date.getDate();
       const month = date.getMonth() + 1;
@@ -175,24 +233,29 @@ export default {
     },
     async submitPO() {
       let counter = 0;
-      if(!this.po.expected_date) {
-        this.error.expected_date = 'Please enter expected date!'
+      if (!this.po.expected_date) {
+        this.error.expected_date = "Please enter expected date!";
+        counter += 1;
+      }
+
+      if (!this.po.expired_date) {
+        this.error.expired_date = "Please enter expired date!";
+        counter += 1;
+      }
+
+      if(!this.po.sup_kd){
+        this.error.sup_kd = 'Please select supplier!'
         counter += 1
       }
 
-      if(!this.po.expired_date){
-        this.error.expired_date = 'Please enter expired date!'
-        counter += 1
-      }
-
-      if(counter > 0){
+      if (counter > 0) {
         return;
       }
 
       this.title = "Confirmation";
       this.alertMessage = `Are you sure want to submit Transaction ?`;
       this.methods = "post";
-      this.url = `/pobarang/${this.authToken}`;
+      this.url = `/pofindsupplier/${this.authToken}`;
       this.sheaders = null;
       this.item = this.po;
       this.showAlert = true;
@@ -200,25 +263,28 @@ export default {
     submitted(value) {
       this.showAlert = false;
       this.$toast.open({
-          message: value.message,
-          type: 'info',
-          duration: 1000,
+        message: value.message,
+        type: "info",
+        duration: 1000,
       });
 
       setTimeout(() => {
-        window.location.href = `/po/${this.$route.params.id}`;
+        window.location.href = `/po/${this.selectedPO.pr_no}`;
       }, 1000);
     },
-    onError(value){
-      this.showAlert = false      
-      this.$toast.open({
-          message: value.message,
-          type: 'error',
-          duration: 1000,
-      });   
+    onError(value) {
+      console.log(value)
+      this.showAlert = false
+      this.message = value.message
+      this.success = false
+      this.showNotifAlert = true
+      this.alertMessage = null
     },
     onClosed(value) {
       this.showAlert = value;
+    },
+    onClosedNotif(value) {
+      this.showNotifAlert = value;
     },
   },
 };

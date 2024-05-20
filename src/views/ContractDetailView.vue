@@ -448,11 +448,6 @@ export default {
           type: 'error',
           duration: 1000,
       });   
-
-      // this.message = value.message;
-      // this.success = false;
-      // this.showNotifAlert = true;
-      // this.alertMessage = null;
     },
     formatPrice(value) {
       let val = (value/1).toFixed(2).replace('.', ',')

@@ -196,7 +196,7 @@
                     :key="contract.id"
                     :class="{ 'bg-canvas': idx % 2 == 0 }"
                   >
-                    <td>{{ idx + 1 }}</td>
+                    <td>{{ contract.no }}</td>
                     <td>{{ contract.kontrakno }}</td>
                     <td>{{ contract.sup_nm }}</td>
                     <td>{{ contract.div_nm }}</td>
@@ -355,8 +355,12 @@ export default {
 
         console.log(this.contract)
         this.total_page = [];
+      
+        let nou = 1;
         this.contract.forEach((data) => {
+          data.no = nou
           newPR.push(data);
+          nou++
         });
 
         this.pagelength = this.contract.length;

@@ -181,11 +181,11 @@
       </div>
       <div class="menu-link" v-if="permission.includes('po')">
         <router-link
-          :to="{ name: 'po' }"
+          :to="{ name: 'approved-pr' }"
           class="nav-link"
           :class="{
-            'link-active': this.$route.name === 'po',
-            'link-unactive': this.$route.name !== 'po',
+            'link-active': this.$route.name === 'approved-pr',
+            'link-unactive': this.$route.name !== 'approved-pr',
           }">
           <i class="ri-luggage-cart-fill"></i>
           <h3 v-if="!isHide">Purchase Order</h3>

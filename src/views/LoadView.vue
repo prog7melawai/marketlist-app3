@@ -146,7 +146,7 @@
                           <td style="text-align: center;">{{ item.no }}</td>
                           <td style="text-align: center;">{{ item.kode_barang }}</td>
                           <td style="text-align: left;">{{ item.nama_barang }}</td>
-                          <td style="text-align: left;">{{ item.no_pr }}</td>
+                          <td style="text-align: left;">{{ item.pr_no }}</td>
                           <td style="text-align: left;">{{ item.nama_jenis }}</td>
                           <td style="text-align: left;">{{ item.satuan_stock }}</td>
                           <td style="text-align: center;">{{ item.qty }}</td>
@@ -528,6 +528,7 @@ export default {
         items: items,
       }
 
+      console.log(body)
       this.title = 'Confirmation'
       this.deleteMessage = `Are you sure want to submit Transaction ?`
       this.methods = 'post'

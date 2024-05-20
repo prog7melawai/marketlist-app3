@@ -8,14 +8,13 @@
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
           <div class="content-title">
-            <h2>PO Details</h2>
+            <h2>Data PO from PR Number {{ this.$route.params.id }}</h2>
           </div>
 
           <button
             class="btn-theme"
             style="position: absolute; top: 20px; right: 20px"
-            @click="this.$router.push('/create-po')"
-          >
+            @click="this.$router.push(`/create-po/${this.$route.params.id}`)">
             Add New PO
           </button>
 
@@ -34,28 +33,6 @@
                   <option value="100">100</option>
                 </select>
 
-                <div class="export-wrapper">
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-left-radius: 5px;
-                      border-top-left-radius: 5px;
-                    "
-                  >
-                    CSV
-                  </button>
-                  <button class="export-btn">XLSX</button>
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-right-radius: 5px;
-                      border-top-right-radius: 5px;
-                    "
-                  >
-                    PDF
-                  </button>
-                </div>
-
                 <!-- <div class="filter-wrapper">
                   <button class="export-btn">
                     <i class="ri-filter-3-fill"></i>
@@ -72,13 +49,11 @@
                   <div
                     class="filter-dialog"
                     style="margin-right: 60px"
-                    v-if="showFilter"
-                  >
+                    v-if="showFilter">
                     <div
                       class="sort-item"
                       @click="setFilter('Pending')"
-                      :class="{ 'sort-active': selectedFilter === 'Pending' }"
-                    >
+                      :class="{ 'sort-active': selectedFilter === 'Pending' }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
@@ -97,8 +72,7 @@
                       @click="setFilter('Approved PR')"
                       :class="{
                         'sort-active': selectedFilter === 'Approved PR',
-                      }"
-                    >
+                      }">
                       <input type="radio" hidden />
 
                       <div style="width: 20px">
@@ -212,11 +186,12 @@
                 <thead class="bg-dark">
                   <tr>
                     <th style="width: 5%; border-top-left-radius: 5px">No</th>
-                    <th style="width: 15%">PR Number</th>
-                    <th style="width: 10%">PR Date</th>
-                    <th style="width: 15%">Divisi</th>
-                    <th style="width: 15%">Subdivisi</th>
+                    <th style="width: 15%">PO Number</th>
+                    <th style="width: 10%">PO Date</th>
+                    <th style="width: 10%">Divisi</th>
+                    <th style="width: 10%">Subdivisi</th>
                     <th style="width: 15%">Department</th>
+                    <th style="width: 15%">Supplier</th>
                     <th style="width: 15">Status</th>
                     <th style="width: 15%; border-top-right-radius: 5px">
                       Action
@@ -231,18 +206,32 @@
                     style="height: 50px"
                   >
                     <td>{{ po.no }}</td>
-                    <td>{{ po.pr_no }}</td>
-                    <td>{{ po.pr_date }}</td>
-                    <td>{{ po.div_kd }}</td>
-                    <td>{{ po.subdiv_kd }}</td>
-                    <td>{{ po.dept_kd }}</td>
-                    <td>Waiting</td>
+                    <td>{{ po.po_no }}</td>
+                    <td>{{ po.po_date }}</td>
+                    <td>{{ po.divisi_nm }}</td>
+                    <td>{{ po.subdiv_nm }}</td>
+                    <td>{{ po.dept_nm }}</td>
+                    <td>{{ po.sup_nm }}</td>
+                    <td>
+                        <span
+                          :class="{
+                            'capsule-theme': po.user_conf,
+                            'capsule-warning': !po.user_batal && !po.user_conf === true,
+                            'capsule-danger': po.user_batal,
+                          }"
+                        >
+                          <span v-if="po.user_conf">Approved</span>
+                          <span v-if="!po.user_conf && !po.user_batal">Waiting</span>
+                          <span v-if="po.user_batal">Decline</span>
+                        </span>
+                    </td>
                     <td
                       style="
                         display: flex;
                         flex-direction: row;
-                        justify-content: center;
+                        justify-content: start;
                         flex-wrap: wrap;
+                        padding-left: 20px;
                         gap: 5px;
                       "
                     >
@@ -251,12 +240,20 @@
                         style="width: 80px"
                         @click="
                           this.$router.push({
-                            name: 'pr-detail',
-                            params: { id: pr.pr_no },
+                            name: 'po-detail',
+                            params: { id: po.po_no },
                           })
                         "
                       >
                         Details
+                      </button>
+
+                      <button 
+                        class="btn-success"
+                        style="width: 80px"
+                        v-if="po.user_batal"
+                        @click="this.$router.push(`/create-po-manual/${po.po_no}`)">
+                        Create New
                       </button>
                     </td>
                   </tr>
@@ -349,10 +346,9 @@ export default {
     async getPO() {
       try {
         const { data } = await axios.get(
-          `/prservice/approve/${this.authToken}`
+          `/find-po/${this.$route.params.id}/${this.authToken}`
         );
         this.pr = data;
-        console.log(this.pr);
 
         const groupSize = this.perpage;
         const newPR = [];
