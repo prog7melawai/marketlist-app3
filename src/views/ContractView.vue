@@ -189,7 +189,7 @@
                     </th>
                   </tr>
                 </thead>
-                <loader v-if="isloading"></loader>
+                <loader v-if="isLoading"></loader>
                 <tbody v-if="!isLoading">
                   <tr
                     v-for="(contract, idx) in contracts[selectedPage]"
@@ -353,7 +353,6 @@ export default {
         const { data } = await axios.get(`/contractsupplier/${this.authToken}`);
         this.contract = data;
 
-        console.log(this.contract)
         this.total_page = [];
       
         let nou = 1;

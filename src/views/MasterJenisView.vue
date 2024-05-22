@@ -272,8 +272,6 @@ export default {
       const { data } = await axios.get(`/masbarjenis/${this.authToken}`)
 
       this.master = data
-
-      console.log(this.master)
       this.arrlength = this.master.length
       this.master.forEach((data, index) => {
           data['no'] = index + 1
