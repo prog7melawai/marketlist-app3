@@ -29,7 +29,7 @@
             </div>
           </router-link>
 
-          <a class="summary-box" style="text-decoration: none;">
+          <router-link :to="{name: 'approved-pr'}" class="summary-box" style="text-decoration: none;">
             <img
               src="/images/icons/event.svg"
               alt="eventlogo"
@@ -51,7 +51,7 @@
                 <span id="countPO"></span>
               </span>
             </div>
-          </a>
+          </router-link>
 
           <a class="summary-box" style="text-decoration: none;">
             <img
@@ -197,10 +197,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             });
         }
       }

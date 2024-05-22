@@ -335,7 +335,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("contract")) window.location.href = "/";
+    if (!this.permission.includes("contract")) this.$router.back()
     this.isCreate = this.permission.includes("create-contract")
   },
   methods: {
@@ -384,10 +384,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             });
         }
       }

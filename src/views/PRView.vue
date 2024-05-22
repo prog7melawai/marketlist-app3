@@ -343,7 +343,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
     this.perm = this.$store.getters.GET_AUTH_INFO.permission
     this.permission = this.perm.split(",")
-    if(!this.permission.includes('pr')) window.location.href = '/'
+    if(!this.permission.includes('pr')) this.$router.back()
     this.isDownloader = this.permission.includes('download-pr')
   },
   mounted() {
@@ -393,9 +393,9 @@ export default {
 
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           });
         }
       }
@@ -598,9 +598,9 @@ export default {
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           });
         }
       }
@@ -608,53 +608,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.filter-wrapper {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-}
-
-.sort-item {
-  position: relative;
-  width: 100%;
-  height: 50px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  cursor: pointer;
-  background: var(--canvas);
-  gap: 5px;
-}
-
-.sort-item:hover {
-  background: var(--orangelight);
-}
-
-.sort-active {
-  background: var(--orangelight);
-}
-
-.filter-dialog {
-  position: relative;
-  width: 150px;
-  height: auto;
-  box-shadow: 0.5px 0.3px 0.3px rgba(0, 0, 0, 0.024),
-    1.6px 1.1px 0.9px rgba(0, 0, 0, 0.032), 7px 5px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  font-size: 10pt;
-}
-
-.filter-dialog .checkmark {
-  font-size: 13pt;
-  font-weight: bold;
-  margin-left: 5px;
-  margin-top: -3px;
-}
-</style>

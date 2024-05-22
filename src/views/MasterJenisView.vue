@@ -213,10 +213,15 @@ export default {
       sheaders: {},
       item: {},
       authToken: null,
+      perm: null,
+      permission: []
     };
   },
   created(){
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission;
+    this.permission = this.perm.split(",");
+    if (!this.permission.includes("master-jenis")) this.$router.back()
   },
   mounted() {
     this.getMaster();

@@ -324,9 +324,9 @@ export default {
   },
   created(){
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
-    // this.perm = this.$store.getters.GET_AUTH_INFO.permission
-    // this.permission = this.perm.split(",")
-    // if(!this.permission.includes('po')) window.location.href = '/'
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('po')) this.$router.back()
   },
   mounted() {
     this.getPO();
@@ -342,7 +342,6 @@ export default {
         const { data } = await axios.get(`/approvedpr/${this.authToken}`);
         this.pr = data
 
-        console.log(this.pr)
         const groupSize = this.perpage;
         const newPR = [];
         this.prs = [];
@@ -367,10 +366,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             });
         }
       }

@@ -275,7 +275,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
     this.perm = this.$store.getters.GET_AUTH_INFO.permission
     this.permission = this.perm.split(",")
-    if(!this.permission.includes('loadpr')) window.location.href = '/'
+    if(!this.permission.includes('loadpr')) this.$router.back()
     this.getDivisi();
   },
   methods: {
@@ -445,9 +445,9 @@ export default {
           
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ path : 'login'});
           });
         }
       }

@@ -26,7 +26,7 @@
             <img class="profile-image" src="/images/user/user.png" alt="user" />
           </div>
           <div class="username" @click="showUsrDrp">
-            <h4>{{ username }}</h4>
+            <h4>{{ username.charAt(0).toUpperCase() + username.slice(1) }}</h4>
             <h5>
               {{ deptkd }}
               <i class="ri-arrow-down-s-fill"></i>
@@ -96,10 +96,10 @@ export default {
       this.$store.dispatch("LOGOUT")
       .then(() => {
           this.$store.commit('SET_CONTRACT_NOTIF', {is_open: false, count: 0})
-          this.$router.push({ path : '/login'});
+          this.$router.push({ name : 'login'});
       }).catch(() => {
           this.$store.commit('SET_CONTRACT_NOTIF', {is_open: false, count: 0})
-          this.$router.push({ path : '/login'});
+          this.$router.push({ name : 'login'});
       });
     }
   },

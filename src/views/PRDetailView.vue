@@ -344,7 +344,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
     this.perm = this.$store.getters.GET_AUTH_INFO.permission
     this.permission = this.perm.split(",")
-    if(!this.permission.includes('pr-detail')) window.location.href = '/'
+    if(!this.permission.includes('pr-detail')) this.$router.back()
     this.isApproval = this.permission.includes('approve-pr')
     this.isRejector = this.permission.includes('reject-pr')
     this.isRevisor  = this.permission.includes('revise-pr')
@@ -368,9 +368,9 @@ export default {
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           });
         }
       }
@@ -383,9 +383,9 @@ export default {
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           });
         }
       }

@@ -42,6 +42,7 @@
           <h3 v-if="!isHide">Dashboard</h3>
         </router-link>
       </div>
+      <!-- 
       <div class="menu-link" v-if="permission.includes('import')">
         <router-link
           :to="{ name: 'import' }"
@@ -54,7 +55,6 @@
           <h3 v-if="!isHide">Import Data</h3>
         </router-link>
       </div>
-      <!-- 
       <div class="menu-link">
         <router-link
           :to="{ name: 'transfer' }"

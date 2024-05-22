@@ -121,19 +121,18 @@ export default {
               this.$router.push({ name : 'home'});
           }).catch((error) => {
               this.is_proccess = false
-              console.log(error)
               if(error.response.status === 401){
                 this.$toast.open({
                     message: 'Invalid Credentials!',
                     type: 'error',
-                    duration: 1000,
+                    duration: 2000,
                     dismissible: true,
                 });
               } else {
                 this.$toast.open({
                     message: 'Internal server error',
                     type: 'error',
-                    duration: 1000,
+                    duration: 2000,
                     dismissible: true,
                 });
               }

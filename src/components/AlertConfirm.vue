@@ -84,9 +84,9 @@ export default {
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           });
         }
       }

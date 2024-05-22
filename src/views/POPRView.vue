@@ -14,6 +14,7 @@
 
           <button
             class="btn-theme"
+            v-if="isCreator"
             style="position: absolute; top: 20px; right: 20px"
             @click="this.$router.push(`/create-po/${this.$route.params.id}`)">
             Add New PO
@@ -59,151 +60,6 @@
                   <option value="50">50</option>
                   <option value="100">100</option>
                 </select>
-
-                <!-- <div class="filter-wrapper">
-                  <button class="export-btn">
-                    <i class="ri-filter-3-fill"></i>
-                    Filter
-                  </button>
-
-                  <button class="export-btn">
-                    <i class="ri-sort-desc"></i>
-                    Sort
-                  </button>
-                </div> -->
-
-                <div class="filter-wrapper" style="top: 40px">
-                  <div
-                    class="filter-dialog"
-                    style="margin-right: 60px"
-                    v-if="showFilter">
-                    <div
-                      class="sort-item"
-                      @click="setFilter('Pending')"
-                      :class="{ 'sort-active': selectedFilter === 'Pending' }">
-                      <input type="radio" hidden />
-
-                      <div style="width: 20px">
-                        <i
-                          class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Pending'"
-                        >
-                        </i>
-                      </div>
-
-                      <span style="margin-top: -3px">Pending</span>
-                    </div>
-
-                    <div
-                      class="sort-item"
-                      @click="setFilter('Approved PR')"
-                      :class="{
-                        'sort-active': selectedFilter === 'Approved PR',
-                      }">
-                      <input type="radio" hidden />
-
-                      <div style="width: 20px">
-                        <i
-                          class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Approved PR'"
-                        >
-                        </i>
-                      </div>
-
-                      <span style="margin-top: -3px">Approved PR</span>
-                    </div>
-
-                    <div
-                      class="sort-item"
-                      @click="setFilter('Approved PO')"
-                      :class="{
-                        'sort-active': selectedFilter === 'Approved PO',
-                      }"
-                    >
-                      <input type="radio" hidden />
-
-                      <div style="width: 20px">
-                        <i
-                          class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Approved PO'"
-                        >
-                        </i>
-                      </div>
-
-                      <span style="margin-top: -3px">Approved PO</span>
-                    </div>
-
-                    <div
-                      class="sort-item"
-                      @click="setFilter('Completed')"
-                      :class="{ 'sort-active': selectedFilter === 'Completed' }"
-                    >
-                      <input type="radio" hidden />
-
-                      <div style="width: 20px">
-                        <i
-                          class="ri-check-fill checkmark"
-                          v-if="selectedFilter === 'Completed'"
-                        >
-                        </i>
-                      </div>
-
-                      <span style="margin-top: -3px">Completed</span>
-                    </div>
-                  </div>
-
-                  <div class="filter-dialog" v-if="showSort">
-                    <div
-                      class="sort-item"
-                      @click="setSort('date')"
-                      :class="{ 'sort-active': selectedSort === 'date' }"
-                    >
-                      <input type="radio" hidden />
-
-                      <div style="width: 20px">
-                        <i
-                          class="ri-check-fill checkmark"
-                          v-if="selectedSort === 'date'"
-                        >
-                        </i>
-                      </div>
-
-                      <span style="margin-top: -3px">Sort by Date</span>
-                    </div>
-
-                    <div
-                      class="sort-item"
-                      @click="setSort('status')"
-                      :class="{ 'sort-active': selectedSort === 'status' }"
-                    >
-                      <input type="radio" hidden />
-
-                      <div style="width: 20px">
-                        <i
-                          class="ri-check-fill checkmark"
-                          v-if="selectedSort === 'status'"
-                        >
-                        </i>
-                      </div>
-
-                      <span style="margin-top: -3px">Sort by Status</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="search-container"
-                  style="height: 38px"
-                >
-                  <input
-                    type="text"
-                    class="form-input"
-                    style="width: 100%"
-                    placeholder="Search PO..."
-                    v-model="searchFood"
-                    @keyup.enter="searching"
-                  />
-                </div>
               </div>
 
               <table
@@ -278,7 +134,7 @@
                       <button 
                         class="btn-success"
                         style="width: 80px"
-                        v-if="po.user_batal"
+                        v-if="po.user_batal && isCreator"
                         @click="this.$router.push(`/create-po-manual/${po.po_no}`)">
                         Create New
                       </button>
@@ -356,10 +212,15 @@ export default {
         pr_no: null,
       },
       authToken: null,
+      isCreator: false,
     };
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('pobypr')) this.$router.back()
+    this.isCreator = this.permission.includes('create-po')
   },
   mounted() {
     this.getPO();
@@ -376,6 +237,7 @@ export default {
         const { data } = await axios.get(
           `/find-po/${this.$route.params.id}/${this.authToken}`
         );
+
         this.pr = data;
 
         const groupSize = this.perpage;
@@ -412,9 +274,9 @@ export default {
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           });
         }
       }

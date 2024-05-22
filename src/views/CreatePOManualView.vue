@@ -219,12 +219,16 @@ export default {
       prs: null,
       selectedPO: {},
       supplier: null,
+      permission: [],
     };
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.po.pr_no = this.$route.params.id;
-    this.getPODetail();
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('create-po')) this.$router.back()
+    this.getPODetail()
   },
   methods: {
     async getPODetail(){
@@ -256,9 +260,9 @@ export default {
 
                 this.$store.dispatch("LOGOUT")
                 .then(() => {
-                    this.$router.push({ path : '/login'});
+                    this.$router.push({ name: 'login'});
                 }).catch(() => {
-                    this.$router.push({ path : '/login'});
+                    this.$router.push({ name: 'login'});
                 });
             }
         }

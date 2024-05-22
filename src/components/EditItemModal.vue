@@ -264,11 +264,11 @@ export default {
         this.selectedfile = this.selectedfile.substring(0, 25);
       }
 
-      document.getElementById("image-input").classList.add("bg-orange");
+      document.getElementById("image-edit").classList.add("bg-orange");
       let files = Array.prototype.slice.call(e.target.files);
       files.forEach((f) => {
         if (!f.type.match("image.*")) {
-          document.getElementById("image-input").classList.add("bg-gradient-gray");
+          document.getElementById("image-edit").classList.add("bg-gradient-gray");
           return;
         }
 
@@ -287,8 +287,8 @@ export default {
       this.headers = [];
       this.images = [];
       this.selectedfile = null;      
-      document.getElementById("image-input").classList.remove("bg-orange");
-      document.getElementById("image-input").classList.add("bg-gradient-gray");
+      document.getElementById("image-edit").classList.remove("bg-orange");
+      document.getElementById("image-edit").classList.add("bg-gradient-gray");
     },
     getImage(filename) {
       return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
@@ -326,10 +326,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name : 'login' });
             });
         }
       }

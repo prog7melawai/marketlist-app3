@@ -156,11 +156,16 @@ export default {
       subdivisi: null,
       dept: null,
       prs: null,
+      perm: null,
+      permission: []
     };
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.po.pr_no = this.$route.params.id
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission
+    this.permission = this.perm.split(",")
+    if(!this.permission.includes('create-po')) this.$router.back()
   },
   methods: {
     format(date) {
