@@ -4,9 +4,7 @@
     <div
       class="modal-dialog theme-scroll fade-in-down"
       id="modal-edit"
-      style="max-height: 500px;
-      overflow: hidden;"
-    >
+      style="max-height: 500px; overflow: hidden">
       <div class="btn-close" @click="closeModal">
         <i class="ri-close-fill"></i>
       </div>
@@ -19,8 +17,7 @@
             <div class="image-input bg-gradient-gray" id="image-edit">
               <i
                 class="ri-image-add-fill"
-                v-if="!selectedfile && !food.image"
-              ></i>
+                v-if="!selectedfile && !food.image"></i>
               <div v-if="selectedfile" style="width: 100%">
                 <div v-for="img in images" :key="img">
                   <img :src="img" class="preview" alt="item" />
@@ -28,23 +25,25 @@
               </div>
 
               <div v-if="!selectedfile && food.image">
-                <div style="position: absolute;
-                  top: 40%;
-                  left: 50%;
-                  -webkit-transform: translateX(-50%);
-                  transform: translateX(-50%);
-                  font-size: 50pt;
-                  color: var(--red);">
+                <div
+                  style="
+                    position: absolute;
+                    top: 40%;
+                    left: 50%;
+                    -webkit-transform: translateX(-50%);
+                    transform: translateX(-50%);
+                    font-size: 50pt;
+                    color: var(--red);
+                  ">
                   <i class="ri-restart-line"></i>
                 </div>
-                
+
                 <img :src="getImage(food.image)" class="preview" alt="item" />
               </div>
 
               <span
                 class="image-select-title"
-                v-if="!selectedfile && !food.image"
-              >
+                v-if="!selectedfile && !food.image">
                 Select or Drop File Here
               </span>
 
@@ -55,14 +54,12 @@
                 @dragover="dragover"
                 @dragleave="dragleave"
                 @drop="drop"
-                @change="onChange"
-              />
+                @change="onChange" />
 
               <button
                 class="btn-danger btn-remove"
                 v-if="selectedfile !== null"
-                @click="removeFile"
-              >
+                @click="removeFile">
                 Remove
               </button>
 
@@ -72,8 +69,12 @@
             </div>
           </div>
           <div
-            style="width: 50%; display: flex; flex-direction: column; gap: 15px"
-          >
+            style="
+              width: 50%;
+              display: flex;
+              flex-direction: column;
+              gap: 15px;
+            ">
             <div style="position: relative">
               <label
                 class="input-placeholder"
@@ -86,8 +87,7 @@
                 placeholder="Product Name"
                 id="food-name"
                 :value="food.kd_barang"
-                readonly
-              />
+                readonly />
             </div>
             <div style="position: relative">
               <label
@@ -101,8 +101,7 @@
                 placeholder="Product Name"
                 id="food-name"
                 :value="food.nm_barang"
-                readonly
-              />
+                readonly />
             </div>
             <div style="position: relative">
               <label
@@ -116,8 +115,7 @@
                 placeholder="Quantity Stock"
                 id="food-stock"
                 :value="food.nm_jenis"
-                readonly
-              />
+                readonly />
             </div>
 
             <div style="position: relative">
@@ -132,8 +130,7 @@
                 placeholder="Stock Unit"
                 id="stock-unit"
                 :value="food.nmstn_stok"
-                readonly
-              />
+                readonly />
             </div>
 
             <div style="position: relative">
@@ -148,8 +145,7 @@
                 placeholder="Purchase Unit"
                 id="purchase-unit"
                 :value="food.f_prod"
-                readonly
-              />
+                readonly />
             </div>
 
             <div style="position: relative">
@@ -164,8 +160,7 @@
                 placeholder="Conversion"
                 id="conversion"
                 :value="food.lok_kd"
-                readonly
-              />
+                readonly />
             </div>
           </div>
         </div>
@@ -174,7 +169,7 @@
 
         <button
           class="btn-block btn-primary"
-          style="margin-top: 10px;margin-bottom: 20px"
+          style="margin-top: 10px; margin-bottom: 20px"
           @click="submitItem">
           <spinner v-if="loading"></spinner>
           <span v-if="!loading">Save</span>
@@ -187,8 +182,8 @@
 </template>
 
 <script>
-import Spinner from '@/components/Spinner.vue'
-import axios from 'axios'
+import Spinner from "@/components/Spinner.vue";
+import axios from "axios";
 
 export default {
   name: "EditItemModal",
@@ -268,7 +263,9 @@ export default {
       let files = Array.prototype.slice.call(e.target.files);
       files.forEach((f) => {
         if (!f.type.match("image.*")) {
-          document.getElementById("image-input").classList.add("bg-gradient-gray");
+          document
+            .getElementById("image-input")
+            .classList.add("bg-gradient-gray");
           return;
         }
 
@@ -286,42 +283,46 @@ export default {
       this.content = [];
       this.headers = [];
       this.images = [];
-      this.selectedfile = null;      
+      this.selectedfile = null;
       document.getElementById("image-input").classList.remove("bg-orange");
       document.getElementById("image-input").classList.add("bg-gradient-gray");
     },
     getImage(filename) {
       return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
     },
-    async submitItem(){
+    async submitItem() {
       try {
-        this.loading = true
+        this.loading = true;
 
         const file = this.filelist[0];
         const myblob = new Blob([file], { type: file.type });
         const myFile = new File([myblob], file.name, { type: file.type });
 
         const filename = file.name;
-        const lastDot = filename.lastIndexOf('.');
+        const lastDot = filename.lastIndexOf(".");
         const ext = filename.substring(lastDot + 1);
         const formData = new FormData();
-        formData.append('filename', myFile, `${this.food.kd_barang}.${ext}`);
+        formData.append("filename", myFile, `${this.food.kd_barang}.${ext}`);
 
-        const {data} = await axios.post(`/postimage/${this.food.div_kd}/${this.food.subdiv_kd}/${this.food.dept_kd}/${this.authToken}`, formData, {
+        const { data } = await axios.post(
+          `/postimage/${this.food.div_kd}/${this.food.subdiv_kd}/${this.food.dept_kd}/${this.authToken}`,
+          formData,
+          {
             headers: {
-                'Content-Type': 'multipart/form-data',
-            }
-        });
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-        this.$emit('onResolve', data)
-        this.loading = false
-      } catch(error){
-        this.loading = false
+        this.$emit("onResolve", data);
+        this.loading = false;
+      } catch (error) {
+        this.loading = false;
         if (error.response.status == 401) {
-            this.$toast.open({
-              message: 'Session expired!',
-              type: 'error',
-            });
+          this.$toast.open({
+            message: "Session expired!",
+            type: "error",
+          });
 
           this.$store
             .dispatch("LOGOUT")
@@ -333,7 +334,7 @@ export default {
             });
         }
       }
-    }
+    },
   },
 };
 </script>

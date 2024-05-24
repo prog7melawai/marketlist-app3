@@ -99,21 +99,18 @@
 </template>
 
 <script>
-// import Loader from "@/components/Loader.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
-// import AlertConfirm from "@/components/AlertConfirm.vue";
+
 import axios from "axios";
 import Loader from "@/components/Loader.vue";
-// import { stringifyQuery } from "vue-router";
+
 export default {
   name: "ReceivingDetailVue",
   components: {
     NavbarVue,
     SidebarVue,
     Loader,
-    // Loader,
-    // AlertConfirm,
   },
   data() {
     return {
@@ -137,8 +134,14 @@ export default {
     this.fetchPurchaseOrders();
   },
   methods: {
+    setWidth(value) {
+      this.sidebarWidth = value;
+      if (value === "18%") this.contentWidth = "78%";
+      else this.contentWidth = "92%";
+    },
     //jenis pr untuk table
     async fetchPurchaseOrders() {
+      this.isLoading = true;
       const groupSize = this.perpage;
       const newPO = [];
       try {
@@ -147,18 +150,17 @@ export default {
         );
 
         this.purchaseOrders = data;
-        console.log(data);
 
         this.prs = [];
         this.total_page = [];
 
         let j = 1;
-        this.purchaseOrders.forEach((data) => {
+        this.purchaseOrders.items.forEach((data) => {
           data.no = j;
           newPO.push(data);
           j++;
         });
-        console.log(newPO);
+
         this.pagelength = this.purchaseOrders.length;
         for (let i = 0; i < newPO.length; i += groupSize) {
           this.prs.push(newPO.slice(i, i + groupSize));
@@ -190,16 +192,12 @@ export default {
     // get receive api untuk data detail
     async getReceive() {
       try {
-        // const response = await axios.get(
-        //   "http://172.30.14.208:9342/procurement/web/receiving/UV3aTZlbJAWZVASo3epau3BBr53nYhgLVlP33ircZg8xlPKpmrnCnB4Cs5NGiH8lm3dPlatRlD4bRwgiBHqmxGOnLUQTAWYy38d2"
-        // );
         this.isLoading = true;
         const { data } = await axios.get(
           `/receiving/${this.$route.params.no_karcis}/${this.authToken}`
         );
         this.selectedReceive = data;
         this.isLoading = false;
-        console.log(this.selectedReceive);
       } catch (error) {
         console.error("Error fetching receive orders:", error);
       }
@@ -209,7 +207,6 @@ export default {
         no_karcis: this.selectedReceive.no_karcis,
       };
 
-      console.log(body);
       this.title = "Confirmation";
       this.deleteMessage = `Are you sure want to Approve this Transaction ?`;
       this.methods = "put";
@@ -218,33 +215,6 @@ export default {
       this.item = body;
       this.showAlert = true;
     },
-    // declineReceive() {
-    //   const body = {
-    //     no_karcis: this.selectedReceive.no_karcis,
-    //   };
-
-    //   console.log(body);
-    //   this.title = "Confirmation";
-    //   this.deleteMessage = `Are you sure want to Decline this Transaction ?`;
-    //   this.methods = "delete";
-    //   this.url = `/contractsupplier/${this.authToken}`;
-    //   this.sheaders = null;
-    //   this.item = body;
-    //   this.showAlert = true;
-    // },
   },
 };
 </script>
-
-<!-- <script setup>
-import { defineProps } from "vue";
-
-const props = defineProps({
-  purchaseOrders: [
-    {
-      type: Object,
-      required: true,
-    },
-  ],
-});
-</script> -->

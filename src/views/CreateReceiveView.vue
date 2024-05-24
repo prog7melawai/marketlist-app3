@@ -13,10 +13,10 @@
 
           <div class="content">
             <div class="form-group">
-              <label class="form-label">NO PO</label>
+              <label class="form-label">Nomor PO</label>
               <select
-                v-model="poNoCall"
                 style="width: 99%; height: 40px; border-radius: 5px"
+                v-model="poNoCall"
                 @change="getPoDetail">
                 <option
                   v-for="poDrop in purchaseOrders"
@@ -26,38 +26,17 @@
                   {{ poDrop.po_no }}
                 </option>
               </select>
-              <!-- <span>{{ error.divisi_kd }}</span> -->
+              <span>{{ error.po_no }}</span>
             </div>
-            <!-- search ga dipake -->
-            <!-- <div
-              class="search-container"
-              style="
-                margin-right: 0px;
-                width: 50%;
-                height: 44px;
-                position: relative;
-              ">
-              <input
-                type="text"
-                class="form-input"
-                style="width: 99%; height: 46px; border-radius: 5px"
-                placeholder="Search Nomor PO....."
-                v-model="searchItem"
-                @keyup.enter="searching" />
-            </div> -->
-            <div
-              style="
-                position: relative;
-                width: 100%;
-                margin-top: 20px;
-                /* overflow-x: scroll; */
-              ">
+
+            <div style="position: relative; width: 100%; margin-top: 20px">
               <table class="table-responsive" style="width: 100%">
                 <thead class="bg-dark">
                   <tr>
-                    <th width="25%">NO PO</th>
-                    <th width="40%">KD Product</th>
-                    <th width="35%">Qty</th>
+                    <th width="15%">NO PO</th>
+                    <th width="30%">KD Product</th>
+                    <th width="20%">Sisa PO Qty</th>
+                    <th width="20%">Insert Qty Receiving</th>
                   </tr>
                 </thead>
 
@@ -71,87 +50,47 @@
 
                 <tbody v-if="!isLoading">
                   <tr
-                    v-for="(el, index) in poDetail.items"
+                    v-for="(item, index) in poDetail.items"
                     :key="index"
                     :class="{ 'bg-canvas': index % 2 == 0 }">
-                    <!-- {{
-                      el
-                    }} -->
-                    <td>{{ el.po_no }}</td>
-                    <td>{{ el.kdbar }}</td>
+                    <td>{{ item.po_no }}</td>
+                    <td>{{ item.kdbar }}</td>
+                    <td>{{ item.qty - item.qty_terima }}</td>
                     <td style="text-align: left">
                       <input
                         class="form-input"
                         type="number"
                         style="width: 85%"
-                        :id="'qtyInput' + poDetail.po_no"
+                        :id="'qtyInput' + item.po_no"
                         :readonly="poDetail.readonly"
-                        v-on:keydown.enter="addQty(poDetail.po_no)"
-                        v-on:keydown.tab="addQty(poDetail.po_no)"
-                        :value="poDetail.items.qty" />
+                        :value="items[index]?.qty"
+                        @keydown.enter="
+                          updateQty(
+                            index,
+                            $event.target.value,
+                            item.po_no,
+                            item.kdbar
+                          )
+                        "
+                        @keydown.tab="
+                          updateQty(
+                            index,
+                            $event.target.value,
+                            item.po_no,
+                            item.kdbar
+                          )
+                        " />
                     </td>
-                    <!-- <td>
-                      <input
-                        type="checkbox"
-                        :id="'select' + el.kdbar"
-                        :value="el.kdbar"
-                        @change="selectItems"
-                        :checked="el.checked" />
-                    </td> -->
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <!-- <div class="page-wrapper" v-if="total_page.length > 0">
-              <div style="width: 50%">
-                <span style="font-size: 10pt">
-                  Showing {{ purchaseOrderss[selectedPage][0].no }} to
-                  {{
-                    purchaseOrderss[selectedPage][
-                      purchaseOrderss[selectedPage].length - 1
-                    ].no
-                  }}
-                  of {{ pagelength }} entries.
-                </span>
-              </div>
-              <div
-                style="
-                  width: 50%;
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: end;
-                ">
-                <button
-                  class="page-prev"
-                  @click="prevPagination"
-                  :class="{ 'paginate-active': start >= 5 }">
-                  Previous
-                </button>
-                <div
-                  class="page"
-                  v-for="pg in total_page.slice(start, end)"
-                  :key="pg"
-                  :class="{
-                    'page-active': selectedPage === pg,
-                    'page-unactive': selectedPage !== pg,
-                  }"
-                  @click="selectedPage = pg">
-                  {{ pg + 1 }}
-                </div>
-                <button
-                  :class="{ 'paginate-active': total_page.length > end }"
-                  class="page-next"
-                  @click="nextPagination">
-                  Next
-                </button>
-              </div>
-            </div> -->
-
             <button
+              :disabled="!isSubmit"
               class="btn-block btn-success"
               style="margin-top: 20px; width: 100%"
-              @click="submitReceiving">
+              @click="validateSubmit">
               Submit
             </button>
           </div>
@@ -208,56 +147,44 @@ export default {
   },
   data() {
     return {
+      formSubmit: {
+        no_po: "",
+        qty: 0,
+        kd_barang: "",
+      },
+      items: [],
+      indexPoDtl: 0,
+      qtyInput: 0,
+      qtyValidator: 0,
+      indexPO: 0,
       sidebarWidth: 0,
       contentwidth: 0,
       poNoCall: null,
       sheaders: null,
       item: null,
       showAlert: false,
-      // po_h: {
-      //   po_no: null,
-      //   po_date: null,
-      // pr_no: null,
-      // pr_date: null,
-      // sup_kd: null,
-      // netto: null,
-      // disc: null,
-      // disc_type: null,
-      // disc_rp: null,
-      // tppn_rp: null,
-      // grand_total: null,
-      // crdate: null,
-      // crtime: null,
-      // cruser: null,
-      // upddate: null,
-      // upduser: null,
-      // f_status: null,
-      // user_batal: null,
-      // tgl_batal: null,
-      // expired_date: null,
-      // expected_date: null,
-      // dept_kd: null,
-      // divisi_kd: null,
-      // subdiv_kd: null,
-      // kontrakno: null,
-      // kontrak_date: null,
-      // f_complete: null,
-      //   items: [],
-      // },
-      receivingPost: {
-        items: [],
-      },
-      // no_po: null,
+      showNotif: false,
+      contentWidth: 0,
+      showNotifAlert: false,
+      success: false,
+      message: null,
+      title: null,
+      alertMessage: null,
+      methods: null,
+      url: null,
+      isLoading: false,
+      isSubmit: false,
+
       error: {
         po_no: null,
         po_date: null,
       },
       purchaseOrders: null,
       poDetail: {},
-      // poDetails: [],
     };
   },
   mounted() {},
+
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
@@ -267,16 +194,29 @@ export default {
     this.getPurchaseOrders();
     // this.getPoDetail();
   },
+  computed: {
+    sisaQty() {
+      return (
+        this.poDetail.items[this.indexPO].qty -
+        this.poDetail.items[this.indexPO].qty_terima
+      );
+    },
+  },
+  watch: {},
   methods: {
     async getPoDetail() {
+      // this.qty = {};
+      this.isLoading = true;
       try {
         this.poDetail = {};
-
         const { data: poDetailData } = await axios.get(
           `/getpodetail/${this.poNoCall}/${this.authToken}`
         );
         this.poDetail = poDetailData;
-        console.log(poDetailData);
+        this.poDetail.items.forEach((data) => {
+          this.qty = data.qty;
+        });
+        this.isLoading = false;
       } catch (error) {
         if (error.response.status == 401) {
           this.$toast.open({ message: "sesh exp", type: "err" });
@@ -300,37 +240,17 @@ export default {
 
     async submitReceiving() {
       try {
-        this.receivingPost.items = [];
-        // this.no_po = po_no;
-        this.poDetail.items.forEach((data) => {
-          if (data.kdbar && data.qty) {
-            data.vat = 0;
-            this.receivingPost.items.push(data);
-          }
-        });
-        //
-        this.receivingPost.items.map(function (obj) {
-          obj["no_po"] = obj["po_no"];
-          delete obj["po_no"];
-
-          obj["kd_barang"] = obj["kdbar"];
-          delete obj["kdbar"];
-
-          obj["nm_barang"] = obj["nmbar"];
-          delete obj["nmbar"];
-        });
-
-        //
-
+        const wrapped = {
+          items: this.items,
+        };
         this.title = "CONFIRMATION";
-        this.alertMessage = `Are you sure want to submit Transaction ?`;
+        this.alertMessage = `Are you sure want to submit Transaction?`;
         this.methods = "post";
         this.url = `/receiving/${this.authToken}`;
         this.sheaders = null;
-        this.item = this.receivingPost;
+        this.item = wrapped;
         this.showAlert = true;
       } catch (error) {
-        console.log(error);
         if (error.response.status == 401) {
           this.$toast.open({
             message: "Session expired!",
@@ -346,6 +266,13 @@ export default {
               this.$router.push({ path: "/login" });
             });
         }
+        console.log(error);
+      }
+    },
+
+    validateSubmit() {
+      if (this.isSubmit) {
+        this.submitReceiving();
       }
     },
 
@@ -354,34 +281,75 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-
-    addQty(id) {
-      this.poDetail.items.filter((item) => {
-        if (item.po_no === id) {
-          item.qty = parseFloat(document.getElementById(`qtyInput${id}`).value);
+    updateQty(index, value, po_no, kdbar) {
+      this.indexPO = index;
+      this.isSubmit = false;
+      if (value <= 0 || value > this.sisaQty) {
+        this.isSubmit = false;
+        if (value <= 0) {
           this.$toast.open({
-            message: `Qty added for Item in PO ${id}`,
+            message: "Qty cannot be 0!",
+            type: "error",
+          });
+        }
+        if (value > this.sisaQty) {
+          this.$toast.open({
+            message: "Qty cannot exceed remaining PO qty!",
+            type: "error",
+          });
+        }
+      } else {
+        if (this.items[index] != undefined) {
+          this.items[index].qty = value;
+          this.$toast.open({
+            message: `Quantity added for receiving items ${index}`,
+            type: "info",
+            duration: 1000,
+          });
+        } else {
+          this.formSubmit.no_po = po_no;
+          this.formSubmit.kd_barang = kdbar;
+          this.formSubmit.qty = parseInt(value);
+          this.items.push({ ...this.formSubmit });
+          this.formSubmit.no_po = "";
+          this.formSubmit.kd_barang = "";
+          this.formSubmit.qty = 0;
+          this.$toast.open({
+            message: `Quantity added for receiving items ${index}`,
             type: "info",
             duration: 1000,
           });
         }
+        if (this.items.length == this.poDetail.items.length) {
+          this.isSubmit = true;
+        }
+      }
+    },
+
+    submitted(value) {
+      this.showAlert = false;
+      this.$toast.open({
+        message: value.message,
+        type: "info",
+        duration: 1000,
       });
 
-      // this.poDetail.items.filter((item) =>
-      //   item.filter((obj) => {
-      //     if (obj.po_no === id) {
-      //       obj.qty = parseFloat(
-      //         document.getElementById(`qtyInput${id}`).value
-      //       );
-
-      //       this.$toast.open({
-      //         message: `Qty added for Item in PO ${id}`,
-      //         type: "info",
-      //         duration: 1000,
-      //       });
-      //     }
-      //   })
-      // );
+      setTimeout(() => {
+        // window.location.href = "/receiving";
+      }, 1000);
+    },
+    onError(value) {
+      this.showAlert = false;
+      this.message = value.message;
+      this.success = false;
+      this.showNotifAlert = true;
+      this.alertMessage = null;
+    },
+    onClosed(value) {
+      this.showAlert = value;
+    },
+    onClosedNotif(value) {
+      this.showNotifAlert = value;
     },
   },
 };

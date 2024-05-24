@@ -33,24 +33,6 @@
                   <option value="100">100</option>
                 </select>
 
-                <!-- 
-                  <div class="filter-wrapper">
-                    <button class="export-btn" @click="showingFilter">
-                      <i class="ri-filter-3-fill"></i>
-                      Filter
-                    </button>
-  
-                    <button
-                      class="export-btn"
-                      @click="showingSort"
-                      :class="{ 'bg-gradient-orange': showSort }"
-                    >
-                      <i class="ri-sort-desc"></i>
-                      Sort
-                    </button>
-                  </div>
-                  -->
-
                 <div class="filter-wrapper" style="top: 40px">
                   <div
                     class="filter-dialog"
@@ -190,7 +172,7 @@
                     </th>
                   </tr>
                 </thead>
-                <loader v-if="isloading"></loader>
+                <loader v-if="isLoading"></loader>
                 <tbody v-if="!isLoading">
                   <tr
                     v-for="(po, idx) in purchaseOrderss[selectedPage]"
@@ -291,6 +273,11 @@ export default {
     return {
       purchaseOrderss: [],
       purchaseOrders: [],
+      showFilter: false,
+      showSort: false,
+      isLoading: false,
+      end: 8,
+      start: false,
       sidebarWidth: "18%",
       contentWidth: "78%",
       allselected: false,
@@ -384,12 +371,6 @@ export default {
           newPO.push(data);
         });
 
-        // let j = 1;
-        // this.purchaseOrders.forEach((data) => {
-        //   data.no = j;
-        //   newPO.push(data);
-        //   j++;
-        // });
         this.pagelength = this.purchaseOrders.length;
         for (let i = 0; i < newPO.length; i += groupSize) {
           this.purchaseOrderss.push(newPO.slice(i, i + groupSize));
@@ -399,8 +380,6 @@ export default {
           this.total_page.push(i);
         }
         this.isLoading = false;
-
-        console.log(this.purchaseOrderss);
       } catch (error) {
         console.error("Error fetching purchase orders:", error);
       }
@@ -431,37 +410,7 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    // async getPO() {
-    //   try {
-    //     const { data } = await axios.get(
-    //       `/prservice/approve/${this.authToken}`
-    //     );
-    //     this.pr = data;
-    //     console.log("oke");
 
-    //     const groupSize = this.perpage;
-    //     const newPR = [];
-    //     this.prs = [];
-    //     this.total_page = [];
-
-    //     let j = 1;
-    //     this.pr.forEach((data) => {
-    //       data.no = j;
-    //       newPR.push(data);
-    //       j++;
-    //     });
-
-    //     for (let i = 0; i < newPR.length; i += groupSize) {
-    //       this.prs.push(newPR.slice(i, i + groupSize));
-    //     }
-
-    //     for (let i = 0; i < this.prs.length; i++) {
-    //       this.total_page.push(i);
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
     changePerPage() {
       this.purchaseOrderss = [];
       this.total_page = [];
