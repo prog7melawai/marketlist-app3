@@ -1,5 +1,5 @@
 <template>
-  <div class="loader-container">
+  <div class="loaders-container">
     <div id="wifi-loader">
         <svg class="circle-outer" viewBox="0 0 86 86">
             <circle class="back" cx="43" cy="43" r="40"></circle>
@@ -26,7 +26,8 @@ export default {
 </script>
 
 <style>
-.loader-container{
+.loaders-container{
+    position: relative;
     width: 100%;
     height: 400px;
     background-color: #fff;
@@ -36,8 +37,8 @@ export default {
 }
 
 #wifi-loader {
-  --background: var(--red);
-  --front-color: var(--red);
+  --background: var(--basecolor);
+  --front-color: var(--basecolor);
   --back-color: #c3c8de;
   --text-color: #414856;
   width: 64px;

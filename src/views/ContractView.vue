@@ -33,44 +33,6 @@
                   <option value="100">100</option>
                 </select>
 
-                <div class="export-wrapper">
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-left-radius: 5px;
-                      border-top-left-radius: 5px;
-                    ">
-                    CSV
-                  </button>
-                  <button class="export-btn">XLSX</button>
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-right-radius: 5px;
-                      border-top-right-radius: 5px;
-                    ">
-                    PDF
-                  </button>
-                </div>
-
-                <!-- 
-                  <div class="filter-wrapper">
-                    <button class="export-btn" @click="showingFilter">
-                      <i class="ri-filter-3-fill"></i>
-                      Filter
-                    </button>
-  
-                    <button
-                      class="export-btn"
-                      @click="showingSort"
-                      :class="{ 'bg-gradient-orange': showSort }"
-                    >
-                      <i class="ri-sort-desc"></i>
-                      Sort
-                    </button>
-                  </div>
-                  -->
-
                 <div class="filter-wrapper" style="top: 40px">
                   <div
                     class="filter-dialog"
@@ -212,13 +174,12 @@
                     </th>
                   </tr>
                 </thead>
-                <loader v-if="isloading"></loader>
                 <tbody v-if="!isLoading">
                   <tr
                     v-for="(contract, idx) in contracts[selectedPage]"
                     :key="contract.id"
                     :class="{ 'bg-canvas': idx % 2 == 0 }">
-                    <td>{{ idx + 1 }}</td>
+                    <td>{{ contract.no }}</td>
                     <td>{{ contract.kontrakno }}</td>
                     <td>{{ contract.sup_nm }}</td>
                     <td>{{ contract.div_nm }}</td>
@@ -254,7 +215,7 @@
                   </tr>
                 </tbody>
               </table>
-
+              <loader v-if="isLoading"></loader>
               <div class="page-wrapper" v-if="total_page.length > 0">
                 <div style="width: 50%">
                   <span style="font-size: 10pt">
@@ -313,7 +274,6 @@
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import Loader from "@/components/Loader.vue";
-import ExcelJS from "exceljs";
 import axios from "axios";
 
 export default {
@@ -359,7 +319,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("contract")) window.location.href = "/";
+    if (!this.permission.includes("contract")) this.$router.back();
     this.isCreate = this.permission.includes("create-contract");
   },
   methods: {
@@ -379,8 +339,12 @@ export default {
 
         console.log(this.contract);
         this.total_page = [];
+
+        let nou = 1;
         this.contract.forEach((data) => {
+          data.no = nou;
           newPR.push(data);
+          nou++;
         });
 
         this.pagelength = this.contract.length;
@@ -404,10 +368,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -513,142 +477,6 @@ export default {
 
       for (let a = 0; a < this.contracts.length; a++) {
         this.total_page.push(a);
-      }
-    },
-    async downloadPR(prno) {
-      try {
-        if (this.isDownload) return;
-        this.isDownload = true;
-        const { data } = await axios.get(
-          `/prdetailbarang/${prno}/${this.authToken}`
-        );
-        const barang = data.items;
-
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet("Sheet1");
-
-        worksheet.columns = [
-          { header: "Kode Barang", key: "kdbar", width: 15 },
-          { header: "Nama Barang", key: "nmbar", width: 30 },
-          { header: "Nama Barang 2", key: "nmbar2", width: 30 },
-          { header: "NO PR", key: "nopr", width: 20 },
-          { header: "Kode Jenis", key: "kode_jenis", width: 10 },
-          { header: "Nama Jenis", key: "nama_jenis", width: 20 },
-          { header: "Kdstn Kirim", key: "kdstn_krm", width: 10 },
-          { header: "Satuan Kirim", key: "nama_krm", width: 20 },
-          { header: "Kdstn Stok", key: "kdstn_stok", width: 10 },
-          { header: "Satuann Stok", key: "nama_stok", width: 20 },
-          { header: "Quantity", key: "qty", width: 15 },
-          { header: "Qty Revise", key: "qty_revise", width: 15 },
-          { header: "Revise Note", key: "revise_note", width: 40 },
-        ];
-
-        worksheet.getRow(1).height = 30;
-
-        const startCell = "A1";
-        const endCell = "N1";
-        worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
-          row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
-            const cellAddress = cell.address;
-            if (cellAddress >= startCell && cellAddress <= endCell) {
-              console.log(rowNumber, colNumber);
-              cell.fill = {
-                type: "pattern",
-                pattern: "solid",
-                fgColor: { argb: "F3F3F3" },
-              };
-              cell.alignment = {
-                horizontal: "center",
-                vertical: "middle",
-              };
-            }
-          });
-        });
-
-        barang.forEach(async (data) => {
-          worksheet.addRow({
-            kdbar: data.kode_barang,
-            nmbar: data.nama_barang,
-            nmbar2: data.nama_barang2,
-            nopr: prno,
-            kode_jenis: data.kd_jenis,
-            nama_jenis: data.nm_jenis,
-            kdstn_stok: data.kdstn_stok,
-            nama_stok: data.nm_stok,
-            kdstn_krm: data.kdstn_kirim,
-            nama_krm: data.nm_kirim,
-            qty: data.qty,
-            qty_revise: data.qty,
-            revise_note: data.revise_note,
-          });
-        });
-
-        // const startColumn = 'A';
-        // const endColumn = 'I';
-        worksheet.eachRow({ includeEmpty: false }, function (row, rowNumber) {
-          row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
-            const startCell = `A${rowNumber}`;
-            const endCell = `N${rowNumber}`;
-            const cellAddress = cell.address;
-            if (cellAddress >= startCell && cellAddress <= endCell) {
-              console.log(rowNumber, colNumber);
-              cell.border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-              };
-            }
-          });
-
-          // for (let col = startColumn.charCodeAt(0); col <= endColumn.charCodeAt(0); col++) {
-          //   const cell = row.getCell(String.fromCharCode(col));
-          //   cell.locked = true;
-          // }
-        });
-
-        // worksheet.getColumn('J').eachCell(function(cell) {
-        //   cell.locked = false;
-        // });
-
-        // worksheet.protect('faamelawai', {
-        //   selectLockedCells: false,
-        //   selectUnlockedCells: true,
-        // });
-
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-
-        a.href = url;
-        a.download = "TemplatePR.xlsx";
-        a.style = "opacity: 0";
-        document.body.appendChild(a);
-
-        a.click();
-
-        document.body.removeChild(a);
-        this.isDownload = false;
-      } catch (error) {
-        console.log(error);
-        if (error.response.status == 401) {
-          this.$toast.open({
-            message: "Session expired!",
-            type: "error",
-          });
-
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ path: "/login" });
-            })
-            .catch(() => {
-              this.$router.push({ path: "/login" });
-            });
-        }
       }
     },
   },

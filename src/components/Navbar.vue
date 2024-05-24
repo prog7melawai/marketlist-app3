@@ -14,6 +14,7 @@
         </div>
       </div> -->
       <div class="navbar-content">
+        <!-- 
         <div class="navbar-link" style="position: relative" @click="showNotif">
           <div class="notif">4</div>
           <i class="ri-notification-2-fill"></i>
@@ -21,12 +22,13 @@
         <div class="navbar-link">
           <i class="ri-moon-fill"></i>
         </div>
+        -->
         <div class="user-detail">
           <div class="user-image">
             <img class="profile-image" src="/images/user/user.png" alt="user" />
           </div>
           <div class="username" @click="showUsrDrp">
-            <h4>{{ username }}</h4>
+            <h4>{{ username.charAt(0).toUpperCase() + username.slice(1) }}</h4>
             <h5>
               {{ deptkd }}
               <i class="ri-arrow-down-s-fill"></i>
@@ -35,6 +37,7 @@
         </div>
       </div>
 
+      <!-- 
       <div class="dropdown-wrapper" v-if="showNotification">
         <div class="dropdown-overlay" @click="showNotification = false"></div>
         <div class="notification-dropdown">
@@ -48,7 +51,8 @@
           </a>
         </div>
       </div>
-
+      -->
+      
       <div class="dropdown-wrapper" v-if="showUserDropdown">
         <div class="dropdown-overlay" @click="showUserDropdown = false"></div>
         <div class="user-dropdown">
@@ -96,10 +100,10 @@ export default {
       this.$store.dispatch("LOGOUT")
       .then(() => {
           this.$store.commit('SET_CONTRACT_NOTIF', {is_open: false, count: 0})
-          this.$router.push({ path : '/login'});
+          this.$router.push({ name : 'login'});
       }).catch(() => {
           this.$store.commit('SET_CONTRACT_NOTIF', {is_open: false, count: 0})
-          this.$router.push({ path : '/login'});
+          this.$router.push({ name : 'login'});
       });
     }
   },

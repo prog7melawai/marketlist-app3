@@ -1,90 +1,410 @@
 <template>
-  <div id="main-wrapper" class="oxyy-login-register">
-    <div class="hero-wrap d-flex align-items-center">
-        <div class="hero-mask opacity-4 bg-dark"></div>
-        <div class="hero-bg hero-bg-scroll" style="background-image:url('images/login-bg-3.jpg');"></div>
-        <div class="hero-content w-100">
-        <div class="container">
-            <div class="row g-0 min-vh-100"> 
-            <!-- Welcome Text
-            ========================= -->
-            <div class="col-md-6 d-flex flex-column">
-                <div class="row g-0 my-auto">
-                <div class="col-11 col-sm-10 col-lg-9 mx-auto text-center">
-                    <div class="logo mt-5 mb-3"> <a href="index.html" title="Oxyy"><img src="images/logo-lg-light.png" alt="Oxyy"></a> </div>
-                    <h1 class="text-5 fw-400 text-white mb-5">We are glad to see you again!</h1>
-                    <p><img src="images/qr-code.jpg" class="shadow-lg" alt="qr code"></p>
-                    <p class="text-white mb-0">Log In with QR Code</p>
-                    <p class="text-light text-2 mx-lg-5">Scan this with your camera or our mobile app to login instantly.</p>
-                </div>
-                </div>
+  <div>
+    <video class="bg-video" preload="true" autoplay="true" muted loop>
+      <source src="../assets/bg-movenpick.mp4" type="video/mp4" />
+    </video>
+
+    <div class="bg-login-container">
+      <div class="login-logo" v-if="!isMobile">
+        <img class="lg-logo" src="/images/logo/movenpick-white.png" alt="" />
+      </div>
+
+      <div class="login-divider" v-if="!isMobile"></div>
+
+      <div class="login-forms">
+        <div class="login-card" v-if="state === 'login'">
+          <span
+            class="login-title"
+            style="
+              margin-top: 10px;
+              margin-bottom: 3svh;
+              color: var(--themecolor);
+            ">
+            Welcome Back!
+          </span>
+          <div
+            style="
+              width: 80%;
+              display: flex;
+              flex-direction: column;
+              margin-top: -10px;
+            ">
+            <div class="form-login-group">
+              <label class="login-form-labels" style="color: var(--paper)"
+                >Userid</label
+              >
+              <input
+                type="text"
+                class="login-form2"
+                placeholder="Enter your userid"
+                v-model="username"
+                @keyup.enter="login" />
+              <span class="error-input">{{ errorUser }}</span>
             </div>
-            <!-- Welcome Text End --> 
-            
-            <!-- Login Form
-            ========================= -->
-            <div class="col-md-6 d-flex align-items-center py-5">
-                <div class="container my-auto py-4 shadow-lg bg-white">
-                <div class="row">
-                    <div class="col-11 col-lg-10 mx-auto">
-                    <h3 class="text-9 fw-600 text-center my-3">Sign In</h3>
-                    <p class="text-center mb-4">New to Oxyy? <a href="register-5.html"><u>Create an Account</u></a></p>
-                    <form id="loginForm" method="post">
-                        <div class="mb-3">
-                        <label class="form-label text-dark fw-600" for="emailAddress">Username or Email Address</label>
-                        <input type="email" class="form-control rounded-0" id="emailAddress" required="" placeholder="Enter Your Email">
-                        </div>
-                        <div class="mb-3">
-                        <label class="form-label text-dark fw-600" for="loginPassword">Password</label>
-                        <input type="password" class="form-control rounded-0" id="loginPassword" required="" placeholder="Enter Password">
-                        </div>
-                        <div class="row mt-4">
-                        <div class="col">
-                            <div class="form-check">
-                            <input id="remember-me" name="remember" class="form-check-input rounded-0" type="checkbox">
-                            <label class="form-check-label" for="remember-me">Keep me signed in</label>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="d-grid my-4">
-                            <button class="btn btn-dark rounded-0" type="submit">Sign In</button>
-                        </div>
-                    </form>
-                    <div class="d-flex align-items-center my-4">
-                        <hr class="flex-grow-1">
-                        <span class="mx-2 text-2 text-muted">Or sign in with</span>
-                        <hr class="flex-grow-1">
-                    </div>
-                    <div class="row g-3 mb-4">
-                        <div class="col-sm-4 d-grid">
-                        <button type="button" class="btn btn-outline-facebook btn-sm border-2 rounded-0 shadow-none"><span class="me-2"><i class="fab fa-facebook-f"></i></span>Facebook</button>
-                        </div>
-                        <div class="col-sm-4 d-grid">
-                        <button type="button" class="btn btn-outline-google btn-sm border-2 rounded-0 shadow-none"><span class="me-2"><i class="fab fa-google"></i></span>Google</button>
-                        </div>
-                        <div class="col-sm-4 d-grid">
-                        <button type="button" class="btn btn-outline-twitter btn-sm border-2 rounded-0 shadow-none"><span class="me-2"><i class="fab fa-twitter"></i></span>twitter</button>
-                        </div>
-                    </div>
-                    <p class="text-center">Need to find <a href="forgot-password-5.html"><u>your username</u></a> or <a href="forgot-Password-5.html"><u>your password</u></a>?</p>
-                    </div>
-                </div>
-                </div>
+
+            <div class="form-login-group" style="margin-top: -1%">
+              <label class="login-form-labels" style="color: var(--paper)"
+                >Password</label
+              >
+              <input
+                type="password"
+                id="password"
+                class="login-form2"
+                placeholder="Enter your password"
+                v-model="password"
+                @keyup.enter="login" />
+              <div class="show-passwords" @click="showPass">
+                <i v-if="!showPassword" class="ri-eye-close-line"></i>
+                <i v-if="showPassword" class="ri-eye-line"></i>
+              </div>
+              <span class="error-input">{{ errorPass }}</span>
             </div>
-            <!-- Login Form End --> 
+
+            <div style="display: flex; gap: 10px; margin-top: -10px">
+              <input
+                type="checkbox"
+                class="remember-me"
+                style="background: transparent; border: 1px solid var(--paper)"
+                v-model="remember" />
+              <span style="color: var(--paper)">Keep me signed in</span>
             </div>
+
+            <button class="login-button2" @click="login">
+              <spinner v-if="is_proccess"></spinner>
+              <span v-if="!is_proccess">Log In</span>
+            </button>
+
+            <div class="forgot-wrapper" style="margin-top: 30px">
+              <span style="color: var(--paper)"
+                >Forgot your password ?
+                <a @click="state = 'forgot'" class="reset-link2">Reset</a>
+              </span>
+            </div>
+          </div>
         </div>
+
+        <div class="login-card" v-if="state === 'forgot'">
+          <span
+            class="login-title"
+            style="
+              margin-top: 10px;
+              margin-bottom: 3svh;
+              color: var(--themecolor);
+            ">
+            Forgot Password
+          </span>
+          <form
+            style="
+              width: 80%;
+              display: flex;
+              flex-direction: column;
+              margin-top: -10px;
+            ">
+            <div class="form-login-group">
+              <label class="login-form-labels" style="color: var(--paper)"
+                >Email</label
+              >
+              <input
+                type="email"
+                class="login-form2"
+                placeholder="Enter your mail"
+                v-model="email"
+                @keyup.enter="forgot" />
+              <span class="error-input">{{ errorEmail }}</span>
+            </div>
+
+            <button type="submit" class="login-button2" @click="forgot">
+              <spinner v-if="is_proccess"></spinner>
+              <span v-if="!is_proccess">Reset</span>
+            </button>
+
+            <div class="forgot-wrapper" style="margin-top: 30px">
+              <span style="color: var(--paper)"
+                >Already registered ?
+                <a @click="state = 'login'" class="reset-link2">Login</a>
+              </span>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script>
+import Spinner from "@/components/Spinner.vue";
+
 export default {
-    name: 'SignInView',
-}
+  name: "SignInView",
+  components: {
+    Spinner,
+  },
+  data() {
+    return {
+      username: null,
+      password: null,
+      email: null,
+      remember: false,
+      errorUser: null,
+      errorPass: null,
+      errorMail: null,
+      is_proccess: false,
+      showPassword: false,
+      isMobile: false,
+      state: "login",
+    };
+  },
+  created() {
+    if (window.screen.width < 768) {
+      this.isMobile = true;
+    }
+  },
+  methods: {
+    login() {
+      if (!this.username) this.errorUser = "Field Username is required!";
+      if (!this.password) this.errorPass = "Field Password is required!";
+      if (!this.username || !this.password) return;
+
+      this.is_proccess = true;
+
+      const data = {
+        username: this.username,
+        password: this.password,
+        remember: this.remember,
+      };
+
+      if (this.username && this.password) {
+        this.$store
+          .dispatch("LOGIN", data)
+          .then(() => {
+            this.is_proccess = false;
+            this.$router.push({ name: "home" });
+          })
+          .catch((error) => {
+            this.is_proccess = false;
+            if (error.response.status === 401) {
+              this.$toast.open({
+                message: "Invalid Credentials!",
+                type: "error",
+                duration: 2000,
+                dismissible: true,
+              });
+            } else {
+              this.$toast.open({
+                message: "Internal server error",
+                type: "error",
+                duration: 2000,
+                dismissible: true,
+              });
+            }
+          });
+      }
+
+      setTimeout(() => {
+        this.errorNik = null;
+        this.errorPass = null;
+      }, 5000);
+    },
+    forgot() {},
+    showPass() {
+      if (this.showPassword === false) {
+        this.showPassword = true;
+        document.getElementById("password").type = "text";
+      } else {
+        this.showPassword = false;
+        document.getElementById("password").type = "password";
+      }
+    },
+  },
+};
 </script>
 
-<style>
+<style scoped>
+.login-logo {
+  width: 30%;
+  overflow: hidden;
+}
 
+.login-divider {
+  height: 480px;
+  width: 1px;
+  background: var(--paper);
+}
+
+.login-forms {
+  width: 40%;
+  height: 500px;
+}
+
+@media (max-width: 768px) {
+  .login-forms {
+    width: 100%;
+  }
+}
+
+.login-logo img {
+  width: 90%;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100svw;
+  height: 100svh;
+  margin: 0 auto;
+  object-fit: fill;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .bg-video {
+    object-fit: cover;
+  }
+}
+
+.bg-video source {
+  position: fixed;
+  width: 100%;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.bg-login-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100svw;
+  height: 100svh;
+  /* background: #0000009a; */
+  background-image: linear-gradient(to top, #000000, #0000005a);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  z-index: 10;
+}
+.login-card {
+  width: 100%;
+  max-width: 650px;
+  height: 80%;
+  max-height: 500px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0px;
+}
+
+.login-form2 {
+  width: 96%;
+  height: 50px;
+  border: 1px solid var(--light);
+  background: transparent;
+  font-size: 12pt;
+  padding: 0px 10px;
+  color: var(--paper);
+  margin-bottom: 21px;
+  border-radius: 3px;
+}
+
+.login-form2::placeholder {
+  color: var(--canvas);
+  font-size: 12pt;
+}
+
+@media (max-width: 768px) {
+  .login-form2 {
+    width: 93%;
+  }
+}
+
+@media (max-width: 1366px) {
+  .login-form2 {
+    width: 94%;
+  }
+}
+
+.login-form2:focus {
+  outline: 2px solid var(--red);
+  border: none;
+}
+
+.error-input {
+  position: absolute;
+  color: var(--red);
+  bottom: 0;
+  font-size: 11pt;
+}
+
+.forgot-wrapper {
+  position: relative;
+  margin-top: 15px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.forgot-wrapper span {
+  color: var(--paper);
+  font-family: "Noto Sans Lao", sans-serif;
+}
+
+.line-breaks {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: var(--canvas);
+  z-index: 1;
+}
+
+.reset-link2 {
+  font-size: 12pt;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--red);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.login-button2 {
+  width: 100%;
+  height: 60px;
+  background: var(--basecolor);
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  margin-top: 30px;
+  font-family: "Noto Sans Lao", sans-serif;
+  font-size: 16pt;
+  border-radius: 3px;
+}
+
+.login-button2:hover {
+  background: var(--basehover);
+}
+
+.show-passwords {
+  position: absolute;
+  top: 40px;
+  right: 3%;
+  font-size: 18pt;
+  cursor: pointer;
+  color: var(--paper);
+}
+
+@media (max-width: 1366px) {
+  .show-passwords {
+    top: 40px;
+  }
+}
+
+.login-form-labels {
+  font-weight: 400;
+  margin-bottom: -5px;
+  font-family: "Noto Sans Lao", sans-serif;
+  font-size: 12pt;
+}
 </style>

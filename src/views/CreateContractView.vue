@@ -6,8 +6,11 @@
     <div class="container">
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
-        <div class="content-wrapper">
+        <div class="content-wrapper pl-30">
           <div class="content-title">
+            <i
+              @click="$router.back()"
+              class="ri-arrow-left-circle-fill back-btn"></i>
             <h2>Create New Contract</h2>
           </div>
 
@@ -198,6 +201,7 @@
                     <th width="5%">Purchase Units</th>
                     <th width="10%">Price</th>
                     <th width="5%">Disc%</th>
+                    <th width="5%">PPN</th>
                   </tr>
                 </thead>
 
@@ -250,6 +254,7 @@
                         @change="addKdstn(masbar.kdbar)"
                         :disabled="masbar.readonly"
                         :value="`${masbar.kdstn}-${masbar.nmstn_beli}`">
+                        <!-- <option :value="null">Satuan</option> -->
                         <spinner
                           style="position: absolute; top: 5px"
                           :id="`spinner${masbar.kdbar}`"></spinner>
@@ -276,6 +281,16 @@
                         v-on:keydown.enter="addDisc(masbar.kdbar)"
                         v-on:keydown.tab="addDisc(masbar.kdbar)"
                         :value="masbar.disc" />
+                    </td>
+                    <td>
+                      <input
+                        class="form-input"
+                        type="checkbox"
+                        style="width: 15px"
+                        :id="'ppn' + masbar.kdbar"
+                        :disabled="masbar.readonly"
+                        @change="addPPN(masbar.kdbar)"
+                        :value="masbar.ppn" />
                     </td>
                   </tr>
                 </tbody>
@@ -397,6 +412,7 @@ export default {
       showNotif: false,
       showAlert: false,
       showNotifAlert: false,
+      showMasbar: false,
       title: null,
       alertMessage: null,
       methods: null,
@@ -445,20 +461,21 @@ export default {
       jenis: null,
       selectedImage: null,
       showPreview: false,
+      searchItem: null,
     };
   },
   mounted() {
     this.getJenis();
-    this.getVat();
     this.getDivisi();
+    this.getProduct();
   },
   created() {
+    this.setWidth();
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("create-contract"))
-      window.location.href = "/";
+    if (!this.permission.includes("create-contract")) this.$router.back();
   },
   methods: {
     async getJenis() {
@@ -475,10 +492,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -497,10 +514,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -521,10 +538,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -545,10 +562,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -578,33 +595,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
-            });
-        }
-      }
-    },
-    async getVat() {
-      try {
-        const { data } = await axios.get(`/tarif/${this.authToken}`);
-        this.vat = data.tarif;
-        this.getProduct();
-      } catch (error) {
-        if (error.response.status == 401) {
-          this.$toast.open({
-            message: "Session expired!",
-            type: "error",
-          });
-
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ path: "/login" });
-            })
-            .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -625,10 +619,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -642,9 +636,7 @@ export default {
 
         this.isLoading = true;
         const url = `/holdingmasbar/${this.kdjns}/${this.authToken}`;
-
         const { data } = await axios.get(url);
-        console.log(data);
 
         this.masterbarang = data;
         this.total_page = [];
@@ -660,7 +652,7 @@ export default {
           data.readonly = true;
           data.price = null;
           data.disc = null;
-          data.ppn = this.vat;
+          data.ppn = false;
           data.kdstn = null;
           data.nmstn_beli = null;
           newMasbars.push(data);
@@ -687,10 +679,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -771,7 +763,7 @@ export default {
             obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
 
             this.$toast.open({
-              message: `Price added for items ${id}`,
+              message: `Price changed for items ${id}`,
               type: "info",
               duration: 1000,
             });
@@ -787,7 +779,22 @@ export default {
             obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
 
             this.$toast.open({
-              message: `Disc added for items ${id}`,
+              message: `Disc changed for items ${id}`,
+              type: "info",
+              duration: 1000,
+            });
+          }
+        })
+      );
+    },
+    addPPN(id) {
+      this.masbars.filter((data) =>
+        data.filter((obj) => {
+          if (obj.kdbar === id) {
+            obj.ppn = !!document.getElementById(`ppn${id}`).value;
+
+            this.$toast.open({
+              message: `PPN changed for items ${id}`,
               type: "info",
               duration: 1000,
             });
@@ -808,6 +815,43 @@ export default {
     },
     async submitContract() {
       try {
+        let errCnt = 0;
+        if (!this.contract.divisi_kd) {
+          this.error.divisi_kd = "Field Divisi is required!";
+          errCnt += 1;
+        }
+        if (!this.contract.subdiv_kd) {
+          this.error.subdiv_kd = "Field Subdivisi is required!";
+          errCnt += 1;
+        }
+
+        if (!this.contract.sup_kd) {
+          this.error.sup_kd = "Field Supplier is required!";
+          errCnt += 1;
+        }
+
+        if (!this.contract.currency) {
+          this.error.currency = "Field Currency is required!";
+          errCnt += 1;
+        }
+
+        if (!this.contract.top) {
+          this.error.top = "Terms of Payment is required!";
+          errCnt += 1;
+        }
+
+        if (!this.contract.start_date) {
+          this.error.start_date = "Please enter kontrak date!";
+          errCnt += 1;
+        }
+
+        if (!this.contract.end_date) {
+          this.error.end_date = "Please enter end kontrak date!";
+          errCnt += 1;
+        }
+
+        if (errCnt > 0) return;
+
         this.contract.items = [];
         this.masbars.forEach((data) =>
           data.forEach((obj) => {
@@ -817,6 +861,16 @@ export default {
             }
           })
         );
+
+        if (this.contract.items.length <= 0) {
+          this.$toast.open({
+            message: "Please insert at least 1 items!",
+            type: "error",
+            duration: 3000,
+            dismissible: true,
+          });
+          return;
+        }
 
         this.title = "Confirmation";
         this.alertMessage = `Are you sure want to submit Transaction ?`;
@@ -835,10 +889,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -928,16 +982,16 @@ export default {
     },
     getFoodImage(filename) {
       if (filename === undefined) {
-        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+        return `${this.base_url}/masbarimages/${this.authToken}/default.png`;
       } else {
-        return `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${filename}`;
+        return `${this.base_url}/masbarimages/${this.authToken}/${filename}`;
       }
     },
     showingPreview(src) {
       if (src === undefined) {
-        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/default.png`;
+        this.selectedImage = `${this.base_url}/masbarimages/${this.authToken}/default.png`;
       } else {
-        this.selectedImage = `https://procurement-api.saritirta-group.com/procurement/web/masbarimages/${this.authToken}/${src}`;
+        this.selectedImage = `${this.base_url}/masbarimages/${this.authToken}/${src}`;
       }
 
       this.showPreview = true;

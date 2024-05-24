@@ -80,14 +80,13 @@ export default {
         this.$emit("onResolve", response.data);
         this.loading = false
       } catch (error) {
-        console.log(error);
         this.$emit("onError", error.response.data);
         if(error.response.status == 401){
           this.$store.dispatch("LOGOUT")
           .then(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           }).catch(() => {
-              this.$router.push({ path : '/login'});
+              this.$router.push({ name: 'login'});
           });
         }
       }

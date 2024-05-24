@@ -58,8 +58,7 @@
                 aria-describedby="Purchase Order Data">
                 <thead class="bg-dark">
                   <tr>
-                    <th style="width: 10%; 
-                    border-top-left-radius: 5px">No</th>
+                    <th style="width: 10%; border-top-left-radius: 5px">No</th>
                     <th style="width: 15%">Divisi</th>
                     <th style="width: 15%">Subdivisi</th>
                     <th style="width: 15%">Department</th>
@@ -72,15 +71,18 @@
                   </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, idx) in masters[selectedPage]" :key="item.no"
-                        :class="{ 'bg-canvas': idx % 2 == 0 }" style="height: 50px;">
-                        <td>{{ item.no }}</td>
-                        <td>{{ item.div_nm }}</td>
-                        <td>{{ item.subdiv_nm }}</td>
-                        <td>{{ item.dept_nm }}</td>
-                        <td>{{ item.kd_jenis }}</td>
-                        <td>{{ item.nm_jenis }}</td>
-                        <!-- <td>
+                  <tr
+                    v-for="(item, idx) in masters[selectedPage]"
+                    :key="item.no"
+                    :class="{ 'bg-canvas': idx % 2 == 0 }"
+                    style="height: 50px">
+                    <td>{{ item.no }}</td>
+                    <td>{{ item.div_nm }}</td>
+                    <td>{{ item.subdiv_nm }}</td>
+                    <td>{{ item.dept_nm }}</td>
+                    <td>{{ item.kd_jenis }}</td>
+                    <td>{{ item.nm_jenis }}</td>
+                    <!-- <td>
                           <button class="btn-theme" 
                                   @click="editModal(item)">
                             Edit
@@ -92,7 +94,7 @@
                             Delete
                           </button>
                         </td> -->
-                    </tr>
+                  </tr>
                 </tbody>
               </table>
 
@@ -100,8 +102,10 @@
                 <div style="width: 50%">
                   <span style="font-size: 10pt">
                     Showing {{ masters[selectedPage][0].no }} to
-                    {{ masters[selectedPage][masters[selectedPage].length - 1].no }} of
-                    {{ arrlength }} entries.
+                    {{
+                      masters[selectedPage][masters[selectedPage].length - 1].no
+                    }}
+                    of {{ arrlength }} entries.
                   </span>
                 </div>
                 <div
@@ -133,47 +137,44 @@
     </div>
   </div>
 
-  <create-unit-modal 
-      v-if="showCreate"
-      :tittle="tittle"
-      :url="select"
-      @closed="onClosedModal"
-      @onResolve="resolveResponse">
+  <create-unit-modal
+    v-if="showCreate"
+    :tittle="tittle"
+    :url="select"
+    @closed="onClosedModal"
+    @onResolve="resolveResponse">
   </create-unit-modal>
 
   <edit-unit-modal
-      v-if="showEdit"
-      :tittle="tittle"
-      :url="select"
-      :master="selectedUnit"
-      @closed="onClosedModal"
-      @onResolve="resolveResponse">
+    v-if="showEdit"
+    :tittle="tittle"
+    :url="select"
+    :master="selectedUnit"
+    @closed="onClosedModal"
+    @onResolve="resolveResponse">
   </edit-unit-modal>
 
-  <notification 
-      v-if="showNotification"
-      :message="message"
-      :success="succes">
+  <notification v-if="showNotification" :message="message" :success="succes">
   </notification>
 
-  <alert-confirm 
-      v-if="showAlert"
-      :title="tittle" 
-      :message="deleteMessage" 
-      :methods="methods" 
-      :url="url" 
-      :header="sheaders"
-      :data="item"
-      @onClosed="onClose"
-      @onResolve="deleteItem">
+  <alert-confirm
+    v-if="showAlert"
+    :title="tittle"
+    :message="deleteMessage"
+    :methods="methods"
+    :url="url"
+    :header="sheaders"
+    :data="item"
+    @onClosed="onClose"
+    @onResolve="deleteItem">
   </alert-confirm>
 </template>
 
 <script>
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
-import CreateUnitModal from '@/components/CreateUnitModal.vue';
-import EditUnitModal from '@/components/EditUnitModal.vue';
+import CreateUnitModal from "@/components/CreateUnitModal.vue";
+import EditUnitModal from "@/components/EditUnitModal.vue";
 import Notification from "@/components/Notification.vue";
 import AlertConfirm from "@/components/AlertConfirm.vue";
 import axios from "axios";
@@ -203,8 +204,8 @@ export default {
       selectedPage: 0,
       selectedUnit: {},
       perpage: 10,
-      select: 'satuan',
-      tittle: '',
+      select: "satuan",
+      tittle: "",
       message: null,
       deleteMessage: null,
       succes: false,
@@ -213,10 +214,15 @@ export default {
       sheaders: {},
       item: {},
       authToken: null,
+      perm: null,
+      permission: [],
     };
   },
-  created(){
-    this.authToken = this.$store.getters.GET_AUTH_TOKEN
+  created() {
+    this.authToken = this.$store.getters.GET_AUTH_TOKEN;
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission;
+    this.permission = this.perm.split(",");
+    if (!this.permission.includes("master-jenis")) this.$router.back();
   },
   mounted() {
     this.getMaster();
@@ -227,27 +233,27 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    onClose(value){
-      this.showAlert = value
-      this.deleteMessage = null
-      this.title = false
-      this.url = null
-      this.methods = null
+    onClose(value) {
+      this.showAlert = value;
+      this.deleteMessage = null;
+      this.title = false;
+      this.url = null;
+      this.methods = null;
     },
-    showingAlert(data){
-      this.selectedID = data.kd_jenis
-      this.tittle = 'Confirmation'
+    showingAlert(data) {
+      this.selectedID = data.kd_jenis;
+      this.tittle = "Confirmation";
 
-      this.item = { kd_jenis: data.kd_jenis }
-      this.deleteMessage = `Are you sure want to delete ${data.nm_jenis} ?`
-      
-      this.methods = 'delete'
-      this.url = `/masbarjenis/${this.authToken}`
+      this.item = { kd_jenis: data.kd_jenis };
+      this.deleteMessage = `Are you sure want to delete ${data.nm_jenis} ?`;
+
+      this.methods = "delete";
+      this.url = `/masbarjenis/${this.authToken}`;
       this.sheaders = null;
-      this.showAlert = true
+      this.showAlert = true;
     },
-    deleteItem(data){
-      this.showAlert = false      
+    deleteItem(data) {
+      this.showAlert = false;
       this.message = data.message;
       this.succes = true;
       this.showNotification = true;
@@ -256,23 +262,21 @@ export default {
         this.message = null;
         this.succes = false;
         this.showNotification = false;
-        window.location.reload()
-      }, 1300)
+        window.location.reload();
+      }, 1300);
     },
     async getMaster() {
       const groupSize = this.perpage;
-      this.masters = []
+      this.masters = [];
       this.total_page = [];
 
-      const { data } = await axios.get(`/masbarjenis/${this.authToken}`)
+      const { data } = await axios.get(`/masbarjenis/${this.authToken}`);
 
-      this.master = data
-
-      console.log(this.master)
-      this.arrlength = this.master.length
+      this.master = data;
+      this.arrlength = this.master.length;
       this.master.forEach((data, index) => {
-          data['no'] = index + 1
-      })
+        data["no"] = index + 1;
+      });
 
       for (let i = 0; i < this.master.length; i += groupSize) {
         this.masters.push(this.master.slice(i, i + groupSize));
@@ -294,24 +298,24 @@ export default {
       this.showEdit = value;
     },
     editModal(item) {
-      console.log(item)
-      this.tittle = 'Edit Master Jenis'
+      console.log(item);
+      this.tittle = "Edit Master Jenis";
       this.selectedUnit = {
         kd_jenis: item.kd_jenis,
-        nm_jenis: item.nm_jenis
+        nm_jenis: item.nm_jenis,
       };
-      
+
       this.showEdit = true;
     },
-    createModal(){
-      if(this.select === 'jenis') this.tittle = 'Add New Master Jenis'
-      else this.tittle = 'Add New Master Satuan'
+    createModal() {
+      if (this.select === "jenis") this.tittle = "Add New Master Jenis";
+      else this.tittle = "Add New Master Satuan";
 
-      this.showCreate = true
+      this.showCreate = true;
     },
-    resolveResponse(data){
-      this.showEdit = false
-      this.showCreate = false
+    resolveResponse(data) {
+      this.showEdit = false;
+      this.showCreate = false;
 
       this.message = data.message;
       this.succes = true;
@@ -321,9 +325,9 @@ export default {
         this.message = null;
         this.succes = false;
         this.showNotification = false;
-        window.location.reload()
-      }, 1300)
-    }
+        window.location.reload();
+      }, 1300);
+    },
   },
 };
 </script>

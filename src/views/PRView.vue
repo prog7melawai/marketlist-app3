@@ -34,44 +34,6 @@
                   <option value="all">All</option>
                 </select>
 
-                <div class="export-wrapper">
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-left-radius: 5px;
-                      border-top-left-radius: 5px;
-                    ">
-                    CSV
-                  </button>
-                  <button class="export-btn">XLSX</button>
-                  <button
-                    class="export-btn"
-                    style="
-                      border-bottom-right-radius: 5px;
-                      border-top-right-radius: 5px;
-                    ">
-                    PDF
-                  </button>
-                </div>
-
-                <!-- 
-                <div class="filter-wrapper">
-                  <button class="export-btn" @click="showingFilter">
-                    <i class="ri-filter-3-fill"></i>
-                    Filter
-                  </button>
-
-                  <button
-                    class="export-btn"
-                    @click="showingSort"
-                    :class="{ 'bg-gradient-orange': showSort }"
-                  >
-                    <i class="ri-sort-desc"></i>
-                    Sort
-                  </button>
-                </div>
-                -->
-
                 <div class="filter-wrapper" style="top: 40px">
                   <div
                     class="filter-dialog"
@@ -265,11 +227,19 @@
                       </button>
                       <button
                         class="btn-success"
-                        style="width: 80px; overflow: hidden"
+                        style="
+                          width: 80px;
+                          overflow: hidden;
+                          display: flex;
+                          justify-content: center;
+                          align-items: center;
+                        "
                         @click="downloadPR(pr.pr_no)"
                         v-if="pr.f_revise && isDownloader">
-                        <spinner v-if="isDownload"></spinner>
-                        <span v-if="!isDownload">Download</span>
+                        <spinner
+                          :id="`spinner${pr.pr_no}`"
+                          style="display: none"></spinner>
+                        <span :id="`download${pr.pr_no}`">Download</span>
                       </button>
                     </td>
                   </tr>
@@ -374,7 +344,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("pr")) window.location.href = "/";
+    if (!this.permission.includes("pr")) this.$router.back();
     this.isDownloader = this.permission.includes("download-pr");
   },
   mounted() {
@@ -419,13 +389,19 @@ export default {
       } catch (error) {
         console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+            message: error.response.data.message,
+            type: "error",
+            duration: 1000,
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -515,6 +491,10 @@ export default {
       try {
         if (this.isDownload) return;
         this.isDownload = true;
+
+        document.getElementById(`spinner${prno}`).style.display = "inline";
+        document.getElementById(`download${prno}`).style.display = "none";
+
         const { data } = await axios.get(
           `/prdetail2/all/${prno}/${this.authToken}`
         );
@@ -527,12 +507,9 @@ export default {
         worksheet.columns = [
           { header: "Kode Barang", key: "kdbar", width: 15 },
           { header: "Nama Barang", key: "nmbar", width: 30 },
-          { header: "Nama Barang 2", key: "nmbar2", width: 30 },
           { header: "NO PR", key: "nopr", width: 20 },
           { header: "Kode Jenis", key: "kode_jenis", width: 10 },
           { header: "Nama Jenis", key: "nama_jenis", width: 20 },
-          { header: "Kdstn Kirim", key: "kdstn_krm", width: 10 },
-          { header: "Satuan Kirim", key: "nama_krm", width: 20 },
           { header: "Kdstn Stok", key: "kdstn_stok", width: 10 },
           { header: "Satuann Stok", key: "nama_stok", width: 20 },
           { header: "Quantity", key: "qty", width: 15 },
@@ -566,14 +543,11 @@ export default {
           worksheet.addRow({
             kdbar: data.kode_barang,
             nmbar: data.nama_barang,
-            nmbar2: data.nama_barang2,
             nopr: prno,
             kode_jenis: data.kd_jenis,
             nama_jenis: data.nm_jenis,
             kdstn_stok: data.kdstn_stok,
             nama_stok: data.nm_stok,
-            kdstn_krm: data.kdstn_kirim,
-            nama_krm: data.nm_kirim,
             qty: data.qty,
             qty_revise: data.qty,
             revise_note: data.revise_note,
@@ -591,18 +565,14 @@ export default {
           row.getCell(6).protection = { locked: true };
           row.getCell(7).protection = { locked: true };
           row.getCell(8).protection = { locked: true };
-          row.getCell(9).protection = { locked: true };
+          row.getCell(9).protection = { locked: false };
           row.getCell(10).protection = { locked: true };
-          row.getCell(11).protection = { locked: true };
-          row.getCell(12).protection = { locked: false };
-          row.getCell(13).protection = { locked: true };
 
-          row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
+          row.eachCell({ includeEmpty: true }, function (cell) {
             const startCell = `A${rowNumber}`;
             const endCell = `N${rowNumber}`;
             const cellAddress = cell.address;
             if (cellAddress >= startCell && cellAddress <= endCell) {
-              console.log(rowNumber, colNumber);
               cell.border = {
                 top: { style: "thin" },
                 left: { style: "thin" },
@@ -626,24 +596,26 @@ export default {
         const a = document.createElement("a");
 
         a.href = url;
-        a.download = "TemplatePR.xlsx";
+        a.download = `PR_Revise-${prno}.xlsx`;
         a.style = "opacity: 0";
         document.body.appendChild(a);
 
         a.click();
 
         document.body.removeChild(a);
+
+        document.getElementById(`spinner${prno}`).style.display = "none";
+        document.getElementById(`download${prno}`).style.display = "inline";
         this.isDownload = false;
       } catch (error) {
-        console.log(error);
         if (error.response.status == 401) {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -651,53 +623,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.filter-wrapper {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-}
-
-.sort-item {
-  position: relative;
-  width: 100%;
-  height: 50px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  cursor: pointer;
-  background: var(--canvas);
-  gap: 5px;
-}
-
-.sort-item:hover {
-  background: var(--orangelight);
-}
-
-.sort-active {
-  background: var(--orangelight);
-}
-
-.filter-dialog {
-  position: relative;
-  width: 150px;
-  height: auto;
-  box-shadow: 0.5px 0.3px 0.3px rgba(0, 0, 0, 0.024),
-    1.6px 1.1px 0.9px rgba(0, 0, 0, 0.032), 7px 5px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  font-size: 10pt;
-}
-
-.filter-dialog .checkmark {
-  font-size: 13pt;
-  font-weight: bold;
-  margin-left: 5px;
-  margin-top: -3px;
-}
-</style>

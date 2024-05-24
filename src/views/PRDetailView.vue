@@ -7,7 +7,11 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
+          <div class="content-title pl-30">
+            <i
+              @click="$router.back()"
+              class="ri-arrow-left-circle-fill"
+              back-btn></i>
             <h2>Detail for #{{ this.$route.params.id }}</h2>
             <span
               >{{ getMonth(new Date(selectedPR.pr_date).getMonth()) }},
@@ -17,9 +21,9 @@
           </div>
 
           <div class="confirm-wrapper">
-            <button class="export-btn">
-              <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
-            </button>
+            <!-- <button class="export-btn">
+                <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
+              </button> -->
 
             <button
               class="btn-success"
@@ -284,7 +288,8 @@
                         :readonly="
                           selectedPR.f_revise ||
                           selectedPR.f_approve ||
-                          selectedPR.f_batal
+                          selectedPR.f_batal ||
+                          !isRevise
                         ">
                       </textarea>
                     </td>
@@ -428,7 +433,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("pr-detail")) window.location.href = "/";
+    if (!this.permission.includes("pr-detail")) this.$router.back();
     this.isApproval = this.permission.includes("approve-pr");
     this.isRejector = this.permission.includes("reject-pr");
     this.isRevisor = this.permission.includes("revise-pr");
@@ -449,15 +454,14 @@ export default {
         this.getItem(this.selectedPR.items);
         this.isLoading = false;
       } catch (error) {
-        console.log(error);
         if (error.response.status == 401) {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -469,15 +473,14 @@ export default {
         );
         this.jenis = data;
       } catch (error) {
-        console.log(error);
         if (error.response.status == 401) {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }

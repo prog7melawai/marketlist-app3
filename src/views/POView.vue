@@ -79,14 +79,29 @@
                     :key="po.pr_no"
                     :class="{ 'bg-canvas': idx % 2 == 0 }"
                     style="height: 50px">
-                    <td>{{ po.no }}</td>
-                    <td>{{ po.pr_no }}</td>
-                    <td>{{ po.pr_date }}</td>
-                    <td>{{ po.div_kd }}</td>
-                    <td>{{ po.subdiv_kd }}</td>
-                    <td>{{ po.dept_kd }}</td>
-                    <td>Waiting</td>
+                    <td :class="{ 'bg-warning': po.total_po === 0 }">
+                      {{ po.no }}
+                    </td>
+                    <td :class="{ 'bg-warning': po.total_po === 0 }">
+                      {{ po.pr_no }}
+                    </td>
+                    <td :class="{ 'bg-warning': po.total_po === 0 }">
+                      {{ po.pr_date }}
+                    </td>
+                    <td :class="{ 'bg-warning': po.total_po === 0 }">
+                      {{ po.div_kd }}
+                    </td>
+                    <td :class="{ 'bg-warning': po.total_po === 0 }">
+                      {{ po.subdiv_kd }}
+                    </td>
+                    <td :class="{ 'bg-warning': po.total_po === 0 }">
+                      {{ po.dept_kd }}
+                    </td>
+                    <td :class="{ 'bg-warning': po.total_po === 0 }">
+                      {{ po.total_po }}
+                    </td>
                     <td
+                      :class="{ 'bg-warning': po.total_po === 0 }"
                       style="
                         display: flex;
                         flex-direction: row;
@@ -99,7 +114,7 @@
                         style="width: 80px"
                         @click="
                           this.$router.push({
-                            name: 'pr-po',
+                            name: 'po',
                             params: { id: po.pr_no },
                           })
                         ">
@@ -178,10 +193,15 @@ export default {
       },
       authToken: null,
       searchFood: null,
+      perm: null,
+      permission: [],
     };
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission;
+    this.permission = this.perm.split(",");
+    if (!this.permission.includes("po")) this.$router.back();
   },
   mounted() {
     this.getPO();
@@ -220,7 +240,16 @@ export default {
           this.total_page.push(i);
         }
       } catch (error) {
-        console.log(error);
+        if (error.response.status == 401) {
+          this.$store
+            .dispatch("LOGOUT")
+            .then(() => {
+              this.$router.push({ name: "login" });
+            })
+            .catch(() => {
+              this.$router.push({ name: "login" });
+            });
+        }
       }
     },
     getFooImage(filename) {
@@ -276,3 +305,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.bg-warning {
+  background: #fff8e2;
+}
+</style>

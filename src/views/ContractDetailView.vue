@@ -7,8 +7,15 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
-            <h2>Kontrak {{ this.$route.params.id }}</h2>
+          <div class="content-title pl-30">
+            <i
+              @click="$router.back()"
+              class="ri-arrow-left-circle-fill"
+              back-btn></i>
+            <h2>
+              Contract {{ this.$route.params.id }} -
+              {{ selectedContract.sup_nm }}
+            </h2>
             <span
               >{{
                 getMonth(new Date(selectedContract.kontrak_date).getMonth())
@@ -19,9 +26,9 @@
           </div>
 
           <div class="confirm-wrapper" v-if="selectedContract.kontrakno">
-            <button class="export-btn">
+            <!-- <button class="export-btn">
               <i class="ri-file-pdf-2-fill" style="font-size: 18pt"></i>
-            </button>
+            </button> -->
 
             <button
               class="btn-success"
@@ -254,7 +261,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("pr-detail")) window.location.href = "/";
+    if (!this.permission.includes("contract-detail")) this.$router.back();
     this.isApproval = this.permission.includes("approve-contract");
     this.isDecliner = this.permission.includes("decline-contract");
   },
@@ -271,6 +278,7 @@ export default {
           `/contractdetail/${this.$route.params.id}/${this.authToken}`
         );
         this.selectedContract = data;
+
         console.log(this.selectedContract);
         this.getItem(this.selectedContract.items);
         this.isLoading = false;
@@ -285,10 +293,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -305,10 +313,10 @@ export default {
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             });
         }
       }
@@ -456,10 +464,11 @@ export default {
     },
     onError(value) {
       this.showAlert = false;
-      this.message = value.message;
-      this.success = false;
-      this.showNotifAlert = true;
-      this.alertMessage = null;
+      this.$toast.open({
+        message: value.message,
+        type: "error",
+        duration: 1000,
+      });
     },
     formatPrice(value) {
       let val = (value / 1).toFixed(2).replace(".", ",");

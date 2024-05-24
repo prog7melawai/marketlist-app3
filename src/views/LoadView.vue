@@ -44,7 +44,8 @@
                   flex-direction: row;
                   flex-wrap: wrap;
                   justify-content: space-between;
-                ">
+                "
+                v-if="!isRevisedPR">
                 <div class="form-group">
                   <label
                     class="form-label"
@@ -217,9 +218,10 @@
                 <thead>
                   <th width="5%" style="text-align: center">No</th>
                   <th width="10%" style="text-align: center">Kode Barang</th>
-                  <th width="25%" style="text-align: left">Nama Barang</th>
+                  <th width="20%" style="text-align: left">Nama Barang</th>
                   <th width="15%" style="text-align: left">NO PR</th>
-                  <th width="20%" style="text-align: left">Jenis</th>
+                  <th width="15%" style="text-align: left">Jenis</th>
+                  <th width="10%" style="text-align: left">Satuan</th>
                   <th width="5%" style="text-align: center">Qty</th>
                   <th width="5%" style="text-align: center">Qty Revise</th>
                   <th width="15%" style="text-align: center">Revise Note</th>
@@ -229,8 +231,9 @@
                     <td style="text-align: center">{{ item.no }}</td>
                     <td style="text-align: center">{{ item.kode_barang }}</td>
                     <td style="text-align: left">{{ item.nama_barang }}</td>
-                    <td style="text-align: left">{{ item.no_pr }}</td>
+                    <td style="text-align: left">{{ item.pr_no }}</td>
                     <td style="text-align: left">{{ item.nama_jenis }}</td>
+                    <td style="text-align: left">{{ item.satuan_stock }}</td>
                     <td style="text-align: center">{{ item.qty }}</td>
                     <td style="text-align: center">{{ item.qty_revise }}</td>
                     <td style="text-align: center">{{ item.revise_note }}</td>
@@ -340,6 +343,7 @@ export default {
       location: null,
       errorDivisi: null,
       jenis: "marketlist",
+      isRevisedPR: false,
       error: {
         divisi: null,
         subdivisi: null,
@@ -354,7 +358,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("loadpr")) window.location.href = "/";
+    if (!this.permission.includes("loadpr")) this.$router.back();
     this.getDivisi();
   },
   methods: {
@@ -534,15 +538,21 @@ export default {
         document.body.removeChild(a);
         this.isDownload = false;
       } catch (error) {
-        console.log(error);
         if (error.response.status == 401) {
+          this.$toast.open({
+            message: "Invalid Credentials!",
+            type: "error",
+            duration: 1000,
+            dismissible: true,
+          });
+
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ name: "login" });
             })
             .catch(() => {
-              this.$router.push({ path: "/login" });
+              this.$router.push({ path: "login" });
             });
         }
       }
@@ -582,34 +592,50 @@ export default {
       this.selectedfile = null;
       document.getElementById("drop-box").classList.remove("bg-orange");
       document.getElementById("drop-box").classList.add("bg-canvas");
+      this.isRevisedPR = false;
     },
     async submitFile() {
       this.errorDivisi = null;
 
-      if (!this.selectedDivisi) this.error.divisi = "Please select division!";
-      if (!this.selectedSubdiv)
-        this.error.subdivisi = "Please select subdivision!";
-      if (!this.selectedDept)
-        this.error.department = "Please select Department";
-      if (!this.selectedLocation) this.error.lokasi = "Please select Location!";
-      if (!this.expected_date)
-        this.error.expected_date = "Please select Expected Date";
+      if (!this.isRevisedPR) {
+        if (!this.selectedDivisi) this.error.divisi = "Please select division!";
+        if (!this.selectedSubdiv)
+          this.error.subdivisi = "Please select subdivision!";
+        if (!this.selectedDept)
+          this.error.department = "Please select Department";
+        if (!this.selectedLocation)
+          this.error.lokasi = "Please select Location!";
+        if (!this.expected_date)
+          this.error.expected_date = "Please select Expected Date";
 
-      if (
-        !this.selectedDivisi ||
-        !this.selectedSubdiv ||
-        !this.selectedDept ||
-        !this.selectedLocation ||
-        !this.expected_date
-      ) {
-        return;
+        if (
+          !this.selectedDivisi ||
+          !this.selectedSubdiv ||
+          !this.selectedDept ||
+          !this.selectedLocation ||
+          !this.expected_date
+        ) {
+          return;
+        }
       }
 
       const items = this.content.filter((data) => {
         return data.qty > 0;
       });
 
+      if (items.length <= 0) {
+        this.$toast.open({
+          message: "Please insert at least 1 items!",
+          type: "error",
+          duration: 3000,
+          dismissible: true,
+        });
+
+        return;
+      }
+
       const body = {
+        userid: this.$store.getters.GET_AUTH_INFO.id,
         divkd: this.selectedDivisi,
         subdivkd: this.selectedSubdiv,
         deptkd: this.selectedDept,
@@ -628,9 +654,12 @@ export default {
     },
     submitted(value) {
       this.showAlert = false;
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
+      this.isRevisedPR = false;
+      this.$toast.open({
+        message: value.message,
+        type: "info",
+        duration: 1000,
+      });
 
       setTimeout(() => {
         this.message = null;
@@ -683,18 +712,19 @@ export default {
               no: nou,
               kode_barang: row.getCell(1).value,
               nama_barang: row.getCell(2).value,
-              nama_barang2: row.getCell(3).value,
-              pr_no: row.getCell(4).value,
-              kd_jenis: row.getCell(5).value,
-              nama_jenis: row.getCell(6).value,
-              kdstn_krm: row.getCell(7).value,
-              satuan_kirim: row.getCell(8).value,
-              kdstn_stock: row.getCell(9).value,
-              satuan_stock: row.getCell(10).value,
-              qty: row.getCell(11).value,
-              qty_revise: row.getCell(12).value,
-              revise_note: row.getCell(13).value,
+              pr_no: row.getCell(3).value,
+              kd_jenis: row.getCell(4).value,
+              nama_jenis: row.getCell(5).value,
+              kdstn_stock: row.getCell(6).value,
+              satuan_stock: row.getCell(7).value,
+              qty: row.getCell(8).value,
+              qty_revise: row.getCell(9).value,
+              revise_note: row.getCell(10).value,
             };
+
+            if (data.revise_note !== "") {
+              this.isRevisedPR = true;
+            }
 
             if (row.getCell(11).value > 0) {
               this.content.push(data);

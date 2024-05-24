@@ -7,7 +7,10 @@
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
         <div class="content-wrapper">
-          <div class="content-title">
+          <div class="content-title pl-30">
+            <i
+              @click="$router.back()"
+              class="ri-arrow-left-circle-fill back-btn"></i>
             <h2>Create New PO</h2>
           </div>
 
@@ -19,27 +22,17 @@
                 flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: start;
-              "
-            >
+              ">
               <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{'color-orange': po.pr_no }">
+                <label class="form-label" :class="{ 'color-orange': po.pr_no }">
                   PR NUMBER
                 </label>
-                <select
-                  style="width: 99%; 
-                  height: 40px; 
-                  border-radius: 5px"
+                <input
+                  style="margin-top: -3px"
+                  type="text"
+                  class="form-input"
                   v-model="po.pr_no"
-                >
-                  <option 
-                    v-for="pr in prs" 
-                    :key="pr.pr_no" 
-                    :value="pr.pr_no">
-                        {{ pr.pr_no }} - {{ pr.pr_date }} | {{ pr.dept_kd }}
-                  </option>
-                </select>
+                  readonly />
                 <span>{{ error.sup_kd }}</span>
               </div>
 
@@ -54,8 +47,8 @@
                   v-model="po.expected_date"
                   placeholder="Expected Date"
                   :enable-time-picker="false"
-                  :format="format"
-                />
+                  :min-date="new Date()"
+                  :format="format" />
                 <span>{{ error.expected_date }}</span>
               </div>
               <div class="form-group">
@@ -68,8 +61,8 @@
                   v-model="po.expired_date"
                   placeholder="Expired Date"
                   :enable-time-picker="false"
-                  :format="format"
-                />
+                  :min-date="new Date()"
+                  :format="format" />
                 <span>{{ error.expired_date }}</span>
               </div>
             </div>
@@ -77,8 +70,7 @@
             <button
               class="btn-block btn-success"
               style="margin-top: 20px"
-              @click="submitPO"
-            >
+              @click="submitPO">
               Submit
             </button>
           </div>
@@ -87,10 +79,7 @@
     </div>
   </div>
 
-  <notification 
-    v-if="showNotif" 
-    :success="success" 
-    :message="message">
+  <notification v-if="showNotif" :success="success" :message="message">
   </notification>
 
   <alert-confirm
@@ -103,7 +92,7 @@
     :data="item"
     @onClosed="onClosed"
     @onResolve="submitted"
-  >
+    @onError="onError">
   </alert-confirm>
 </template>
 
@@ -114,7 +103,6 @@ import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import axios from "axios";
 
 export default {
   name: "CreatePOView",
@@ -166,13 +154,16 @@ export default {
       subdivisi: null,
       dept: null,
       prs: null,
+      perm: null,
+      permission: [],
     };
   },
   created() {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
-  },
-  mounted(){
-    this.getPR()
+    this.po.pr_no = this.$route.params.id;
+    this.perm = this.$store.getters.GET_AUTH_INFO.permission;
+    this.permission = this.perm.split(",");
+    if (!this.permission.includes("create-po")) this.$router.back();
   },
   methods: {
     format(date) {
@@ -186,50 +177,49 @@ export default {
       if (value === "18%") this.contentWidth = "78%";
       else this.contentWidth = "92%";
     },
-    async getPR() {
-      try {
-        const { data } = await axios.get(`/prservice/approve/${this.authToken}`);
-        this.prs = data;
-        console.log(this.prs)
-      } catch (error) {
-        console.log(error);
-        if (error.response.status == 401) {
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ path: "/login" });
-            })
-            .catch(() => {
-              this.$router.push({ path: "/login" });
-            });
-        }
-      }
-    },
     async submitPO() {
-      try {
-        this.title = "Confirmation";
-        this.alertMessage = `Are you sure want to submit Transaction ?`;
-        this.methods = "post";
-        this.url = `/pobarang/${this.authToken}`;
-        this.sheaders = null;
-        this.item = this.po;
-        this.showAlert = true;
-      } catch (error) {
-        console.log(error);
+      let counter = 0;
+      if (!this.po.expected_date) {
+        this.error.expected_date = "Please enter expected date!";
+        counter += 1;
       }
+
+      if (!this.po.expired_date) {
+        this.error.expired_date = "Please enter expired date!";
+        counter += 1;
+      }
+
+      if (counter > 0) {
+        return;
+      }
+
+      this.title = "Confirmation";
+      this.alertMessage = `Are you sure want to submit Transaction ?`;
+      this.methods = "post";
+      this.url = `/pobarang/${this.authToken}`;
+      this.sheaders = null;
+      this.item = this.po;
+      this.showAlert = true;
     },
     submitted(value) {
       this.showAlert = false;
-      this.message = value.message;
-      this.success = true;
-      this.showNotif = true;
+      this.$toast.open({
+        message: value.message,
+        type: "info",
+        duration: 1000,
+      });
 
       setTimeout(() => {
-        this.message = null;
-        this.succes = false;
-        this.showNotif = false;
-        window.location.href = "/po";
-      }, 1300);
+        window.location.href = `/po/${this.$route.params.id}`;
+      }, 1000);
+    },
+    onError(value) {
+      this.showAlert = false;
+      this.$toast.open({
+        message: value.message,
+        type: "error",
+        duration: 1000,
+      });
     },
     onClosed(value) {
       this.showAlert = value;
