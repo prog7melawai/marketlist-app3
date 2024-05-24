@@ -16,7 +16,7 @@
             class="btn-theme"
             v-if="isCreator"
             style="position: absolute; top: 20px; right: 20px"
-            @click="this.$router.push(`/create-po/${this.$route.params.id}`)">
+            @click="createPO">
             Add New PO
           </button>
 
@@ -181,11 +181,34 @@
       </div>
     </div>
   </div>
+
+  <create-po-modal
+    tittle="Create New PO"
+    v-if="showCreate"
+    :pr="prno"
+    @onClosed="onClosedModal"
+    @onSubmit="submitPO">
+  </create-po-modal>
+
+  <alert-confirm
+    v-if="showAlert"
+    :title="title"
+    :message="alertMessage"
+    :methods="methods"
+    :url="url"
+    :header="sheaders"
+    :data="item"
+    @onClosed="onClosed"
+    @onResolve="submitted"
+    @onError="onError">
+  </alert-confirm>
 </template>
 
 <script>
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
+import CreatePoModal from "@/components/CreatePOModal.vue";
+import AlertConfirm from "@/components/AlertConfirm.vue";
 import axios from "axios";
 
 export default {
@@ -193,6 +216,8 @@ export default {
   components: {
     SidebarVue,
     NavbarVue,
+    CreatePoModal,
+    AlertConfirm,
   },
   data() {
     return {
@@ -201,6 +226,7 @@ export default {
       allselected: false,
       showCreate: false,
       showEdit: false,
+      showAlert: false,
       pr: [],
       prs: [],
       total_page: [],
@@ -208,6 +234,7 @@ export default {
       selectedPR: {},
       perpage: 10,
       pr_no: null,
+      prno: null,
       error: {
         pr_no: null,
       },
@@ -290,11 +317,47 @@ export default {
     },
     onClosedModal(value) {
       this.showCreate = value;
-      this.showEdit = value;
+    },
+    createPO(){
+      this.prno = this.$route.params.id
+      this.showCreate = true
+    },
+    async submitPO(value) {
+      this.showCreate = false;
+      this.title = "Confirmation";
+      this.alertMessage = `Are you sure want to submit Transaction ?`;
+      this.methods = "post";
+      this.url = `/pobarang/${this.authToken}`;
+      this.sheaders = null;
+      this.item = value;
+      this.showAlert = true;
+    },
+    submitted(value) {
+      this.showAlert = false;
+      this.$toast.open({
+          message: value.message,
+          type: 'info',
+          duration: 1000,
+      });
+
+      setTimeout(() => {
+        window.location.href = `/po/${this.$route.params.id}`;
+      }, 1000);
     },
     editModal(item) {
       this.showEdit = true;
       this.selectedFood = item;
+    },
+    onError(value){
+      this.showAlert = false      
+      this.$toast.open({
+          message: value.message,
+          type: 'error',
+          duration: 1000,
+      });   
+    },
+    onClosed(value) {
+      this.showAlert = value;
     },
   },
 };

@@ -189,7 +189,6 @@
                     </th>
                   </tr>
                 </thead>
-                <loader v-if="isLoading"></loader>
                 <tbody v-if="!isLoading">
                   <tr
                     v-for="(contract, idx) in contracts[selectedPage]"
@@ -231,7 +230,7 @@
                   </tr>
                 </tbody>
               </table>
-
+              <loader v-if="isLoading"></loader>
               <div class="page-wrapper" v-if="total_page.length > 0">
                 <div style="width: 50%">
                   <span style="font-size: 10pt">

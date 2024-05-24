@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import LoginView from '../views/LoginView.vue'
+// import LoginView from '../views/LoginView.vue'
 import LoadView from '../views/LoadView.vue'
 import PRView from '../views/PRView.vue'
 import PRDetailView from '../views/PRDetailView.vue'
@@ -16,12 +16,12 @@ import MasterBarangView from '@/views/MasterBarangView.vue'
 import PODetailView from '@/views/PODetailView'
 import CreatePOManualView from '@/views/CreatePOManualView'
 import PageNotFound from '@/views/PageNotFoundView'
-// import SignInView from '@/views/SignInView.vue'
+import SignInView from '@/views/SignInView.vue'
 import store from '../store'
 
 const routes = [
   {path: '/home', name: 'home', component: HomeView, meta: {login: true}},
-  {path: '/', name: 'login', component: LoginView, meta: {guest: true}},
+  {path: '/', name: 'login', component: SignInView, meta: {guest: true}},
 //   {path: '/login', name: 'signin', component: SignInView, meta: {guest: true}},
   {path: '/pr', name: 'pr', component: PRView, meta: {login: true}},
   {path: '/pr-detail/:id', name: 'pr-detail', component: PRDetailView, meta: {login: true}},

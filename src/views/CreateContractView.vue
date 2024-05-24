@@ -109,6 +109,7 @@
                                 <th width="5%">Purchase Units</th>
                                 <th width="10%">Price</th>
                                 <th width="5%">Disc%</th>
+                                <th width="5%">PPN</th>
                             </tr>
                         </thead>
 
@@ -188,6 +189,16 @@
                                         v-on:keydown.enter="addDisc(masbar.kdbar)"
                                         v-on:keydown.tab="addDisc(masbar.kdbar)"
                                         :value="masbar.disc">
+                                </td>
+                                <td>
+                                    <input 
+                                        class="form-input" 
+                                        type="checkbox" 
+                                        style="width: 15px;"
+                                        :id="'ppn' + masbar.kdbar"
+                                        :disabled="masbar.readonly"
+                                        @change="addPPN(masbar.kdbar)"
+                                        :value="masbar.ppn">
                                 </td>
                             </tr>
                         </tbody>
@@ -360,14 +371,16 @@ export default {
         jenis: null,
         selectedImage: null,
         showPreview: false,
+        searchItem: null,
     }
   },
   mounted(){
     this.getJenis()
-    this.getVat()
     this.getDivisi()
+    this.getProduct()
   },
   created(){
+    this.setWidth()
     this.authToken = this.$store.getters.GET_AUTH_TOKEN
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
@@ -494,27 +507,6 @@ export default {
             }
         }
     },
-    async getVat(){
-        try {
-            const { data } = await axios.get(`/tarif/${this.authToken}`)
-            this.vat = data.tarif
-            this.getProduct()
-        } catch(error){
-            if(error.response.status == 401){
-                this.$toast.open({
-                    message: 'Session expired!',
-                    type: 'error',
-                });
-
-                this.$store.dispatch("LOGOUT")
-                .then(() => {
-                    this.$router.push({ name: 'login'});
-                }).catch(() => {
-                    this.$router.push({ name: 'login'});
-                });
-            }
-        }
-    },
     async getSuppliers(){
         try {
             const { data } = await axios.get(`/supplier/${this.contract.divisi_kd}/${this.contract.subdiv_kd}/${this.authToken}`)
@@ -560,7 +552,7 @@ export default {
                 data.readonly = true
                 data.price = null
                 data.disc = null
-                data.ppn = this.vat
+                data.ppn = false
                 data.kdstn = null
                 data.nmstn_beli = null
                 newMasbars.push(data);
@@ -665,7 +657,7 @@ export default {
                     obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
 
                     this.$toast.open({
-                        message: `Price added for items ${id}`,
+                        message: `Price changed for items ${id}`,
                         type: 'info',
                         duration: 1000,
                     });
@@ -681,7 +673,22 @@ export default {
                     obj.disc = parseFloat(document.getElementById(`disc${id}`).value);
 
                     this.$toast.open({
-                        message: `Disc added for items ${id}`,
+                        message: `Disc changed for items ${id}`,
+                        type: 'info',
+                        duration: 1000,
+                    });
+                }
+            })
+        )
+    },
+    addPPN(id){
+        this.masbars.filter(data =>
+            data.filter(obj => {
+                if(obj.kdbar === id) {
+                    obj.ppn = !!document.getElementById(`ppn${id}`).value;
+
+                    this.$toast.open({
+                        message: `PPN changed for items ${id}`,
                         type: 'info',
                         duration: 1000,
                     });

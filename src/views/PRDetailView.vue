@@ -361,8 +361,6 @@ export default {
         const { data } = await axios.get(`/prdetail2/${this.jenisitems}/${this.$route.params.id}/${this.authToken}`)
         this.selectedPR = data
         this.getItem(this.selectedPR.items);
-
-        console.log(this.selectedPR)
         this.isLoading = false;
       } catch(error){
         if(error.response.status == 401){

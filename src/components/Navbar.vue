@@ -14,6 +14,7 @@
         </div>
       </div> -->
       <div class="navbar-content">
+        <!-- 
         <div class="navbar-link" style="position: relative" @click="showNotif">
           <div class="notif">4</div>
           <i class="ri-notification-2-fill"></i>
@@ -21,6 +22,7 @@
         <div class="navbar-link">
           <i class="ri-moon-fill"></i>
         </div>
+        -->
         <div class="user-detail">
           <div class="user-image">
             <img class="profile-image" src="/images/user/user.png" alt="user" />
@@ -35,6 +37,7 @@
         </div>
       </div>
 
+      <!-- 
       <div class="dropdown-wrapper" v-if="showNotification">
         <div class="dropdown-overlay" @click="showNotification = false"></div>
         <div class="notification-dropdown">
@@ -48,7 +51,8 @@
           </a>
         </div>
       </div>
-
+      -->
+      
       <div class="dropdown-wrapper" v-if="showUserDropdown">
         <div class="dropdown-overlay" @click="showUserDropdown = false"></div>
         <div class="user-dropdown">

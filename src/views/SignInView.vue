@@ -6,18 +6,18 @@
 
     <div class="bg-login-container">
         <div class="login-logo" v-if="!isMobile">
-            <img class="lg-logo" src="/images/logo/movenpick.png" alt="">
+            <img class="lg-logo" src="/images/logo/movenpick-white.png" alt="">
         </div>
 
         <div class="login-divider" v-if="!isMobile">
         </div>
 
         <div class="login-forms">
-            <div class="login-card">
+            <div class="login-card" v-if="state === 'login'">
                 <span class="login-title" 
                     style="margin-top: 10px;
                     margin-bottom: 3svh;
-                    color: var(--paper);">
+                    color: var(--themecolor);">
                     Welcome Back!
                 </span>
                 <div style="width: 80%;display: flex;flex-direction: column;margin-top: -10px;">
@@ -66,10 +66,44 @@
                     <div class="forgot-wrapper" 
                     style="margin-top: 30px;">
                         <span style="color: var(--paper)">Forgot your password ? 
-                            <a href="" class="reset-link2">Reset</a>
+                            <a @click="state = 'forgot'" class="reset-link2">Reset</a>
                         </span>
                     </div>
                 </div>
+            </div>
+
+            <div class="login-card" v-if="state === 'forgot'">
+                <span class="login-title" 
+                    style="margin-top: 10px;
+                    margin-bottom: 3svh;
+                    color: var(--themecolor);">
+                    Forgot Password
+                </span>
+                <form style="width: 80%;display: flex;flex-direction: column;margin-top: -10px;">
+                    <div class="form-login-group">
+                    <label class="login-form-labels"
+                    style="color: var(--paper)">Email</label>
+                    <input 
+                        type="email" 
+                        class="login-form2" 
+                        placeholder="Enter your mail" 
+                        v-model="email"
+                        @keyup.enter="forgot">
+                    <span class="error-input">{{ errorEmail }}</span>
+                    </div>
+
+                    <button type="submit" class="login-button2" @click="forgot">
+                        <spinner v-if="is_proccess"></spinner>
+                        <span v-if="!is_proccess">Reset</span>
+                    </button>
+
+                    <div class="forgot-wrapper" 
+                    style="margin-top: 30px;">
+                        <span style="color: var(--paper)">Already registered ? 
+                            <a @click="state = 'login'" class="reset-link2">Login</a>
+                        </span>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -88,12 +122,15 @@ export default {
     return {
       username: null,
       password: null,
+      email: null,
       remember: false,
       errorUser: null,
       errorPass: null,
+      errorMail: null,
       is_proccess: false,
       showPassword: false,
       isMobile: false,
+      state: 'login'
     }
   },
   created(){
@@ -144,6 +181,9 @@ export default {
             this.errorNik = null;
             this.errorPass = null;
         }, 5000);
+    },
+    forgot(){
+        
     },
     showPass(){
       if(this.showPassword === false) {
@@ -218,7 +258,7 @@ export default {
     width: 100svw;
     height: 100svh;
     /* background: #0000009a; */
-    background-image: linear-gradient(to top, #000000df, #0000005a);
+    background-image: linear-gradient(to top, #000000, #0000005a);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -274,7 +314,7 @@ export default {
 
 .error-input {
     position: absolute;
-    color: red;
+    color: var(--red);
     bottom: 0;
     font-size: 11pt;
 }
@@ -305,12 +345,13 @@ export default {
     font-family: Arial, Helvetica, sans-serif;
     color: var(--red);
     text-decoration: underline;
+    cursor: pointer;
 }
 
 .login-button2 {
     width: 100%;
     height: 60px;
-    background: var(--themehover);
+    background: var(--basecolor);
     color: #fff;
     cursor: pointer;
     border: none;
@@ -321,7 +362,7 @@ export default {
 }
 
 .login-button2:hover {
-    background: var(--themecolor);
+    background: var(--basehover);
 }
 
 .show-passwords {
@@ -335,7 +376,7 @@ export default {
 
 @media(max-width: 1366px){
     .show-passwords {
-        top: 60px;
+        top: 40px;
     }
 }
 

@@ -218,7 +218,7 @@ export default {
   left: 0;
   width: 100svw;
   height: 100svh;
-  background: #ffd7a3;
+  background: #a38f72;
   display: flex;
   flex-direction: column;
   justify-content: center;

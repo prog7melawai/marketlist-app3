@@ -38,8 +38,10 @@ body::-webkit-scrollbar-thumb {
 :root {
     --green: #0da487;
     --greenhover: #056b57;
-    --themecolor: #a4880d;
-    --themehover: #b89e4a;
+    --themecolor: #8c7343; 
+    --themehover: #63512f;
+    --basecolor: #a19076;
+    --basehover: #8c8678;
     --themedark: #a4740d;
     --orangelight: #ffe9d4;
     --orange: #ff9f43;
@@ -48,7 +50,7 @@ body::-webkit-scrollbar-thumb {
     --dark: #313131;
     --light: #909090;
     --canvas: #f3f3f3;
-    --paper: #cccccc;
+    --paper: #ffffff;
     --white: #fff;
     --form: #f9f9f6;
     --red: #b21c1c;
@@ -526,8 +528,8 @@ select {
     padding: 0 15px;
     border-radius: 3px;
     background: var(--themecolor);
-    background: -webkit-linear-gradient(bottom, var(--themehover), var(--themecolor));
-    background: linear-gradient(to bottom, var(--themehover), var(--themecolor));
+    /* background: -webkit-linear-gradient(bottom, var(--themehover), var(--themecolor));
+    background: linear-gradient(to bottom, var(--themehover), var(--themecolor)); */
     border: none;
     cursor: pointer;
     color: var(--white);
@@ -991,7 +993,7 @@ thead {
     list-style: none;
     width: 20px;
     height: 20px;
-    background: rgba(197, 151, 23, 0.507);
+    background: var(--basecolor);
     animation: animate 25s linear infinite;
     bottom: -150px;
 
@@ -2535,6 +2537,7 @@ textarea:read-only {
 }
 
 .table-responsive {
+    position: relative;
     width: 100%;
     border-collapse: collapse;
 }
@@ -2749,4 +2752,9 @@ textarea:read-only {
     font-weight: bold;
     margin-left: 5px;
     margin-top: -3px;
+}
+
+.error-form{
+    font-size: 10pt;
+    color: var(--red);
 }
