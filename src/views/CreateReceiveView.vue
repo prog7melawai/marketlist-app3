@@ -6,14 +6,17 @@
     <div class="container">
       <div :style="{ width: sidebarWidth }" class="content-spacer"></div>
       <div :style="{ width: contentWidth }" class="content-body">
-        <div class="content-wrapper">
+        <div class="content-wrapper pl-30">
           <div class="content-title">
+            <i
+              @click="$router.back()"
+              class="ri-arrow-left-circle-fill back-btn"></i>
             <h2>Create New Receive</h2>
           </div>
 
           <div class="content">
             <div class="form-group">
-              <label class="form-label">Nomor PO</label>
+              <label class="form-label">Nomor PO dan tanggal PO</label>
               <select
                 style="width: 99%; height: 40px; border-radius: 5px"
                 v-model="poNoCall"
@@ -23,7 +26,7 @@
                   :key="poDrop.po_no"
                   :selected="poDrop.po_no"
                   :value="poDrop.po_no">
-                  {{ poDrop.po_no }}
+                  {{ poDrop.po_no + "  -   " + poDrop.po_date }}
                 </option>
               </select>
               <span>{{ error.po_no }}</span>
@@ -33,10 +36,20 @@
               <table class="table-responsive" style="width: 100%">
                 <thead class="bg-dark">
                   <tr>
-                    <th width="15%">NO PO</th>
-                    <th width="30%">KD Product</th>
-                    <th width="20%">Sisa PO Qty</th>
-                    <th width="20%">Insert Qty Receiving</th>
+                    <!-- <th width="5%">NO PO</th>
+                    <th width="5%">KD Product</th>
+                    <th width="10%">Nama</th>
+                    <th width="5%">Jenis</th>
+                    <th width="5%">Satuan</th>
+                    <th width="5%">Sisa PO Qty</th>
+                    <th width="5%">Insert Qty Receiving</th> -->
+                    <th width="10%">NO PO</th>
+                    <th width="10%">Nama Barang</th>
+                    <th width="10%">Kode Produk</th>
+                    <th width="8%">Jenis</th>
+                    <th width="8%">Satuan</th>
+                    <th width="10%">Sisa Qty PO</th>
+                    <th width="20%">Masukkan Qty Receiving</th>
                   </tr>
                 </thead>
 
@@ -54,10 +67,15 @@
                     :key="index"
                     :class="{ 'bg-canvas': index % 2 == 0 }">
                     <td>{{ item.po_no }}</td>
+                    <td>{{ item.nmbar }}</td>
                     <td>{{ item.kdbar }}</td>
+
+                    <td>{{ item.nmjns }}</td>
+                    <td>{{ item.nmstn_beli }}</td>
                     <td>{{ item.qty - item.qty_terima }}</td>
                     <td style="text-align: left">
                       <input
+                        placeholder="Masukkan Qty dan tekan tombol Tab / Enter"
                         class="form-input"
                         type="number"
                         style="width: 85%"
@@ -133,6 +151,8 @@ import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import axios from "axios";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 export default {
   name: "CreateReceiveView",
@@ -193,6 +213,22 @@ export default {
     // if (!this.permission.includes("create-receive")) window.location.href = "/";
     this.getPurchaseOrders();
     // this.getPoDetail();
+
+    const driverObj = driver({
+      popoverClass: "driverjs-theme",
+      stagePadding: 1,
+    });
+
+    driverObj.highlight({
+      element: "h2",
+      popover: {
+        side: "left",
+        align: "start",
+        title: "Cara Create New Receiving ",
+        description:
+          "Pilih PO number nya melalui form select kemudian masukan quantity baru dan klik tombol Tab atau Enter  setelah itu submit datanya untuk create new receiving",
+      },
+    });
   },
   computed: {
     sisaQty() {
@@ -246,7 +282,7 @@ export default {
         this.title = "CONFIRMATION";
         this.alertMessage = `Are you sure want to submit Transaction?`;
         this.methods = "post";
-        this.url = `/receiving/${this.authToken}`;
+        this.url = `recv/asdf/${this.authToken}`;
         this.sheaders = null;
         this.item = wrapped;
         this.showAlert = true;

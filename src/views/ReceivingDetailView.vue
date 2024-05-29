@@ -87,7 +87,7 @@
                   <td>{{ po.nm_barang }}</td>
                   <td>{{ po.qty }}</td>
                   <td>{{ po.qty_bonus }}</td>
-                  <td>{{ po.satuan }}</td>
+                  <td>{{ po.nmstn }}</td>
                 </tr>
               </tbody>
             </table>

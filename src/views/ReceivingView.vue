@@ -14,6 +14,14 @@
           <button
             class="btn-theme"
             v-if="isCreate"
+            style="position: absolute; top: 20px; right: 180px"
+            @click="getSortedData">
+            Sort Asc/Desc by Date
+          </button>
+
+          <button
+            class="btn-theme"
+            v-if="isCreate"
             style="position: absolute; top: 20px; right: 20px"
             @click="this.$router.push('/create-receive')">
             Add New Receiving
@@ -146,7 +154,7 @@
 
                 <div
                   class="search-container"
-                  style="margin-right: 0px; height: 38px">
+                  style="margin-right: 0px; height: 38px; width: 327px">
                   <input
                     type="text"
                     class="form-input"
@@ -162,7 +170,8 @@
                 aria-describedby="Purchase Review Data">
                 <thead class="bg-dark">
                   <tr>
-                    <th style="width: 15%">No Karcis</th>
+                    <th style="width: 10%">No Karcis</th>
+                    <th style="width: 10%">Tanggal</th>
                     <th style="width: 16%">Divisi</th>
                     <th style="width: 16%">Subdivisi</th>
                     <th style="width: 16%">Department</th>
@@ -179,6 +188,7 @@
                     :key="po.pr_no"
                     :class="{ 'bg-canvas': idx % 2 == 0 }">
                     <td>{{ po.no_karcis }}</td>
+                    <td>{{ po.tgl_karcis }}</td>
                     <td>{{ po.divisi_kd }}</td>
                     <td>{{ po.subdiv_kd }}</td>
                     <td>{{ po.dept_kd }}</td>
@@ -206,8 +216,8 @@
                     Showing {{ purchaseOrderss[selectedPage]?.[0].no }} to
                     {{
                       purchaseOrderss[selectedPage][
-                        purchaseOrderss[selectedPage].length - 1
-                      ].no
+                        purchaseOrderss[selectedPage]?.length - 1
+                      ]?.no
                     }}
                     of {{ pagelength }} entries.
                   </span>
@@ -296,6 +306,7 @@ export default {
       searchItem: null,
       isCreate: false,
       pagelength: 0,
+      sortUrl: null,
     };
   },
   mounted() {
@@ -362,11 +373,15 @@ export default {
     async fetchPurchaseOrders() {
       const groupSize = this.perpage;
       const newPO = [];
+      this.purchaseOrders = [];
+      this.purchaseOrderss = [];
+      this.total_page = [];
       try {
-        const { data } = await axios.get(`/receiving/${this.authToken}`);
+        const { data } = await axios.get(
+          `recv/${this.sortUrl}/${this.authToken}`
+        );
         this.purchaseOrders = data;
 
-        this.total_page = [];
         this.purchaseOrders.forEach((data) => {
           newPO.push(data);
         });
@@ -384,19 +399,19 @@ export default {
         console.error("Error fetching purchase orders:", error);
       }
     },
-    async postPurchaseOrders(purchaseOrders) {
-      // Post the fetched data to another endpoint
-      axios
-        .post(`/receiving/${this.authToken}`, purchaseOrders)
-        .then((response) => {
-          console.log("Data posted successfully:", response.data);
-          // Handle response if needed
-        })
-        .catch((error) => {
-          console.error("Error posting data:", error);
-          // Handle error if needed
-        });
-    },
+    // async postPurchaseOrders(purchaseOrders) {
+    //   // Post the fetched data to another endpoint
+    //   axios
+    //     .post(`/recv/asdf/${this.authToken}`, purchaseOrders)
+    //     .then((response) => {
+    //       console.log("Data posted successfully:", response.data);
+    //       // Handle response if needed
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error posting data:", error);
+    //       // Handle error if needed
+    //     });
+    // },
 
     redirectToDetails(prNo) {
       this.$router.push({
@@ -441,6 +456,18 @@ export default {
       }
     },
 
+    getSortedData() {
+      if (this.sortUrl === "ASC") {
+        this.sortUrl = "DESC";
+
+        this.fetchPurchaseOrders();
+      } else {
+        this.sortUrl = "ASC";
+
+        this.fetchPurchaseOrders();
+      }
+    },
+
     getFooImage(filename) {
       return "/images/foods/" + filename;
     },
@@ -464,6 +491,7 @@ export default {
     this.permission = this.perm.split(",");
     if (!this.permission.includes("contract")) window.location.href = "/";
     this.isCreate = this.permission.includes("create-contract");
+    this.sortUrl = "DESC";
   },
 };
 </script>

@@ -21,6 +21,7 @@ import store from "../store";
 import ReceivingView from "@/views/ReceivingView.vue";
 import ReceivingDetailView from "@/views/ReceivingDetailView.vue";
 import CreateReceiveView from "@/views/CreateReceiveView.vue";
+import CreateReceiveView2 from "@/views/CreateReceiveView2.vue";
 const routes = [
     { path: "/home", name: "home", component: HomeView, meta: { login: true } },
     { path: "/", name: "login", component: SignInView, meta: { guest: true } },
@@ -116,6 +117,12 @@ const routes = [
         path: "/create-receive",
         name: "create-receive",
         component: CreateReceiveView,
+        meta: { login: true },
+    },
+    {
+        path: "/create-receive2",
+        name: "create-receive2",
+        component: CreateReceiveView2,
         meta: { login: true },
     },
 ];

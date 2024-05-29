@@ -11,7 +11,7 @@
             <i
               @click="$router.back()"
               class="ri-arrow-left-circle-fill back-btn"></i>
-            <h2>Create New Contract</h2>
+            <h2>Create Receive View</h2>
           </div>
 
           <div class="content">
@@ -26,12 +26,12 @@
               <div class="form-group">
                 <label
                   class="form-label"
-                  :class="{ 'color-orange': contract.divisi_kd }"
+                  :class="{ 'color-orange': receiving.divisi_kd }"
                   >Divisi</label
                 >
                 <select
                   style="width: 99%; height: 40px; border-radius: 5px"
-                  v-model="contract.divisi_kd"
+                  v-model="receiving.divisi_kd"
                   @change="getSubdiv">
                   <option
                     v-for="div in divisi"
@@ -40,17 +40,18 @@
                     {{ div.divnm }}
                   </option>
                 </select>
+                <div>{{ divisi }}</div>
                 <span>{{ error.divisi_kd }}</span>
               </div>
               <div class="form-group">
                 <label
                   class="form-label"
-                  :class="{ 'color-orange': contract.subdiv_kd }"
+                  :class="{ 'color-orange': receiving.subdiv_kd }"
                   >Subdivisi</label
                 >
                 <select
                   style="width: 99%; height: 40px; border-radius: 5px"
-                  v-model="contract.subdiv_kd"
+                  v-model="receiving.subdiv_kd"
                   @change="getSuppliers">
                   <option
                     v-for="subdiv in subdivisi"
@@ -64,12 +65,12 @@
               <div class="form-group">
                 <label
                   class="form-label"
-                  :class="{ 'color-orange': contract.sup_kd }"
+                  :class="{ 'color-orange': receiving.suppliers }"
                   >Supplier</label
                 >
                 <select
                   style="width: 99%; height: 40px; border-radius: 5px"
-                  v-model="contract.sup_kd">
+                  v-model="receiving.suppliers">
                   <option
                     v-for="supp in suppliers"
                     :key="supp.sup_kd"
@@ -82,71 +83,20 @@
               <div class="form-group">
                 <label
                   class="form-label"
-                  :class="{ 'color-orange': contract.currency }"
-                  >Currency</label
-                >
-                <input
-                  type="text"
-                  style="width: 99%; padding: 0"
-                  class="form-input"
-                  v-model="contract.currency" />
+                  :class="{ 'color-orange': receiving.suppliers }"
+                  >Get PO
+                </label>
+                <select
+                  style="width: 99%; height: 40px; border-radius: 5px"
+                  v-model="receiving.suppliers">
+                  <option
+                    v-for="supp in suppliers"
+                    :key="supp.sup_kd"
+                    :value="supp.sup_kd">
+                    {{ supp.sup_nm }}
+                  </option>
+                </select>
                 <span>{{ error.sup_kd }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.top }"
-                  >Terms Of Payment</label
-                >
-                <input
-                  type="number"
-                  style="width: 99%; padding: 0"
-                  class="form-input"
-                  v-model="contract.top" />
-                <span>{{ error.top }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.start_date }"
-                  >Start Date</label
-                >
-                <VueDatePicker
-                  style="width: 99%"
-                  v-model="contract.start_date"
-                  placeholder="Start Contract Date"
-                  :min-date="new Date()"
-                  :enable-time-picker="false"
-                  :format="format" />
-                <span>{{ error.start_date }}</span>
-              </div>
-              <div class="form-group">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.end_date }"
-                  >End Date</label
-                >
-                <VueDatePicker
-                  v-model="contract.end_date"
-                  placeholder="End Contract Date"
-                  :min-date="new Date()"
-                  :enable-time-picker="false"
-                  :format="format" />
-                <span>{{ error.end_date }}</span>
-              </div>
-            </div>
-
-            <div style="width: 100%; margin: 0 auto">
-              <div class="form-group" style="width: 100%">
-                <label
-                  class="form-label"
-                  :class="{ 'color-orange': contract.note }"
-                  >Notes</label
-                >
-                <textarea
-                  style="width: 100%; border: 1px solid gray"
-                  rows="7"
-                  v-model="contract.note"></textarea>
               </div>
             </div>
 
@@ -343,7 +293,7 @@
             <button
               class="btn-block btn-success"
               style="margin-top: 20px"
-              @click="submitContract">
+              @click="submitreceiving">
               Submit
             </button>
           </div>
@@ -386,17 +336,15 @@ import AlertConfirm from "@/components/AlertConfirm.vue";
 import Loader from "@/components/Loader.vue";
 import SidebarVue from "@/components/Sidebar.vue";
 import NavbarVue from "@/components/Navbar.vue";
-import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import PreviewImage from "@/components/PreviewImage.vue";
 import axios from "axios";
 
 export default {
-  name: "CreateContractView",
+  name: "CreateReceiveView2",
   components: {
     SidebarVue,
     NavbarVue,
-    VueDatePicker,
     Loader,
     NotificationAlert,
     AlertConfirm,
@@ -419,17 +367,17 @@ export default {
       sheaders: null,
       url: null,
       item: null,
-      contract: {
+      receiving: {
         sup_kd: null,
-        currency: null,
         divisi_kd: null,
         subdiv_kd: null,
-        rate: null,
-        top: null,
-        start_date: null,
-        end_date: null,
-        note: null,
-        items: [],
+        // currency: null,
+        // rate: null,
+        // top: null,
+        // start_date: null,
+        // end_date: null,
+        // note: null,
+        // items: [],
       },
       error: {
         sup_kd: null,
@@ -465,9 +413,9 @@ export default {
     };
   },
   mounted() {
-    this.getJenis();
+    // this.getJenis();
     this.getDivisi();
-    this.getProduct();
+    // this.getProduct();
   },
   created() {
     this.setWidth();
@@ -475,7 +423,7 @@ export default {
     this.authToken = this.$store.getters.GET_AUTH_TOKEN;
     this.perm = this.$store.getters.GET_AUTH_INFO.permission;
     this.permission = this.perm.split(",");
-    if (!this.permission.includes("create-contract")) this.$router.back();
+    // if (!this.permission.includes("create-receiving")) this.$router.back();
   },
   methods: {
     async getJenis() {
@@ -504,6 +452,7 @@ export default {
       try {
         const { data } = await axios.get(`/divisi/${this.authToken}`);
         this.divisi = data;
+        console.log * this.divisi;
       } catch (error) {
         if (error.response.status == 401) {
           this.$toast.open({
@@ -525,9 +474,10 @@ export default {
     async getSubdiv() {
       try {
         const { data } = await axios.get(
-          `/subdivisi/${this.contract.divisi_kd}/${this.authToken}`
+          `/subdivisi/${this.receiving.divisi_kd}/${this.authToken}`
         );
         this.subdivisi = data;
+        console.log(this.subdivisi);
       } catch (error) {
         if (error.response.status == 401) {
           this.$toast.open({
@@ -546,30 +496,30 @@ export default {
         }
       }
     },
-    async getDept() {
-      try {
-        const { data } = await axios.get(
-          `/department/${this.contract.divisi_kd}/${this.contract.subdiv_kd}/${this.authToken}`
-        );
-        this.dept = data;
-      } catch (error) {
-        if (error.response.status == 401) {
-          this.$toast.open({
-            message: "Session expired!",
-            type: "error",
-          });
+    // async getDept() {
+    //   try {
+    //     const { data } = await axios.get(
+    //       `/department/${this.receiving.divisi_kd}/${this.receiving.subdiv_kd}/${this.authToken}`
+    //     );
+    //     this.dept = data;
+    //   } catch (error) {
+    //     if (error.response.status == 401) {
+    //       this.$toast.open({
+    //         message: "Session expired!",
+    //         type: "error",
+    //       });
 
-          this.$store
-            .dispatch("LOGOUT")
-            .then(() => {
-              this.$router.push({ name: "login" });
-            })
-            .catch(() => {
-              this.$router.push({ name: "login" });
-            });
-        }
-      }
-    },
+    //       this.$store
+    //         .dispatch("LOGOUT")
+    //         .then(() => {
+    //           this.$router.push({ name: "login" });
+    //         })
+    //         .catch(() => {
+    //           this.$router.push({ name: "login" });
+    //         });
+    //     }
+    //   }
+    // },
     format(date) {
       const day = date.getDate();
       const month = date.getMonth() + 1;
@@ -606,16 +556,16 @@ export default {
     async getSuppliers() {
       try {
         const { data } = await axios.get(
-          `/supplier/${this.contract.divisi_kd}/${this.contract.subdiv_kd}/${this.authToken}`
+          `/supplier/${this.receiving.divisi_kd}/${this.receiving.subdiv_kd}/${this.authToken}`
         );
         this.suppliers = data;
+        console.log(this.suppliers);
       } catch (error) {
         if (error.response.status == 401) {
           this.$toast.open({
             message: "Session expired!",
             type: "error",
           });
-
           this.$store
             .dispatch("LOGOUT")
             .then(() => {
@@ -813,56 +763,56 @@ export default {
         })
       );
     },
-    async submitContract() {
+    async submitreceiving() {
       try {
         let errCnt = 0;
-        if (!this.contract.divisi_kd) {
+        if (!this.receiving.divisi_kd) {
           this.error.divisi_kd = "Field Divisi is required!";
           errCnt += 1;
         }
-        if (!this.contract.subdiv_kd) {
+        if (!this.receiving.subdiv_kd) {
           this.error.subdiv_kd = "Field Subdivisi is required!";
           errCnt += 1;
         }
 
-        if (!this.contract.sup_kd) {
+        if (!this.receiving.sup_kd) {
           this.error.sup_kd = "Field Supplier is required!";
           errCnt += 1;
         }
 
-        if (!this.contract.currency) {
+        if (!this.receiving.currency) {
           this.error.currency = "Field Currency is required!";
           errCnt += 1;
         }
 
-        if (!this.contract.top) {
+        if (!this.receiving.top) {
           this.error.top = "Terms of Payment is required!";
           errCnt += 1;
         }
 
-        if (!this.contract.start_date) {
+        if (!this.receiving.start_date) {
           this.error.start_date = "Please enter kontrak date!";
           errCnt += 1;
         }
 
-        if (!this.contract.end_date) {
+        if (!this.receiving.end_date) {
           this.error.end_date = "Please enter end kontrak date!";
           errCnt += 1;
         }
 
         if (errCnt > 0) return;
 
-        this.contract.items = [];
+        this.receiving.items = [];
         this.masbars.forEach((data) =>
           data.forEach((obj) => {
             if (obj.price && obj.kdstn) {
               obj.vat = 0;
-              this.contract.items.push(obj);
+              this.receiving.items.push(obj);
             }
           })
         );
 
-        if (this.contract.items.length <= 0) {
+        if (this.receiving.items.length <= 0) {
           this.$toast.open({
             message: "Please insert at least 1 items!",
             type: "error",
@@ -875,9 +825,9 @@ export default {
         this.title = "Confirmation";
         this.alertMessage = `Are you sure want to submit Transaction ?`;
         this.methods = "post";
-        this.url = `/contractsupplier/${this.authToken}`;
+        this.url = `/receivingsupplier/${this.authToken}`;
         this.sheaders = null;
-        this.item = this.contract;
+        this.item = this.receiving;
         this.showAlert = true;
       } catch (error) {
         if (error.response.status == 401) {
@@ -929,7 +879,7 @@ export default {
       });
 
       setTimeout(() => {
-        window.location.href = "/contract";
+        window.location.href = "/receiving";
       }, 1000);
     },
     onError(value) {
